@@ -95,7 +95,7 @@ class DataCenterAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=dc_info)
-        print r.text
+#         print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def updateDataCenter(self, dc_name, update_info):
