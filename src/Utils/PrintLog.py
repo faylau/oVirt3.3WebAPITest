@@ -1,8 +1,23 @@
-#coding=utf-8
+#encoding=utf-8
+
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/06/20          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 import logging
 
 class LogPrint():
+    '''
+    @summary: 日志打印及管理类
+    '''
     def __init__(self, log_file="log.txt", log_level=logging.DEBUG):
         logging.basicConfig(level=log_level,
                             format='%(asctime)s %(levelname)s\t| %(filename)s[line:%(lineno)d]\t| %(message)s',
@@ -10,8 +25,12 @@ class LogPrint():
                             filename=log_file,
                             filemode="a")
     
-    def set_log_level(self):
-        pass
+    def set_log_level(self, log_level):
+        '''
+        @summary: 设置日志级别
+        @param log_level: 日志级别，取值包含DEBUG、INFO、ERROR、WARNING、CRITICAL
+        '''
+        self.log_level = log_level
     
     def debug(self, msg):
         logging.debug(msg)

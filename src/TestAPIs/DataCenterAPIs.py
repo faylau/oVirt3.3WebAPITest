@@ -19,7 +19,7 @@ from StorageDomainAPIs import StorageDomainAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 
-class DataCentersAPIs(BaseAPIs):
+class DataCenterAPIs(BaseAPIs):
     '''
     @summary: 提供数据中心各种常用操作，通过HttpClient调用相应的REST接口实现。
     '''
@@ -257,7 +257,7 @@ class DataCentersAPIs(BaseAPIs):
     
 
 if __name__ == "__main__":
-    dcapi = DataCentersAPIs()
+    dcapi = DataCenterAPIs()
     data = '''
     <data_center>
         <name>NewDatacenter</name>
