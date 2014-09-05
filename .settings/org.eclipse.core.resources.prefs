@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//src/Configs/GlobalConfig.py=utf-8
 encoding//src/TestAPIs/BaseAPIs.py=utf-8
+encoding//src/TestAPIs/ClusterAPIs.py=utf-8
 encoding//src/TestAPIs/DataCenterAPIs.py=utf-8
 encoding//src/TestAPIs/HostAPIs.py=utf-8
 encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
