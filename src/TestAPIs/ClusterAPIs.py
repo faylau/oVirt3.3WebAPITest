@@ -244,7 +244,7 @@ if __name__=='__main__':
     '''
     #print clusterapi.updateNetworkOfCluster('Default', 'aaa', data4)
     print clusterapi.updateNetworkOfCluster('Default', 'network11', data4)
-
+#test
    
 
     
