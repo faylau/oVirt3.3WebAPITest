@@ -17,6 +17,7 @@ import xmltodict
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
+from ClusterAPIs import ClusterAPIs
 
 class HostAPIs(BaseAPIs):
     '''
@@ -83,6 +84,16 @@ class HostAPIs(BaseAPIs):
         @return: 虚拟化主机状态（up、maintenance等）
         '''
         return self.getHostInfo(host_name)['result']['host']['status']['state']
+    
+    def getSPMInfo(self, host_name):
+        '''
+        @summary: 判断虚拟化主机是否为SPM
+        @param host_name: 虚拟化主机名称
+        @return: 字典，key为：（1）spm_priority（SPM优先级）；（2）is_spm（True or False）。
+        '''
+        isSPM = self.getHostInfo(host_name)['result']['host']['storage_manager']['#text']
+        priority = self.getHostInfo(host_name)['result']['host']['storage_manager']['@priority']
+        return {'spm_priority':priority, 'is_spm':isSPM}
 
     def createHost(self, xml_host_info):
         '''
@@ -205,22 +216,177 @@ class HostAPIs(BaseAPIs):
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_iscsi_info)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def iscsiLogin(self, host_name, xml_target_info):
+        '''
+        @summary: ISCSI存储登陆（挂载）
+        @param host_name: 主机名称
+        @param xml_target_info: 要登录的ISCSI存储信息，至少包括ip、target_name等信息，举例如下：
+            <action>
+                <iscsi>
+                    <address>mysan.exam ple.com </address>
+                    <target>iqn.2009-08.com .exam...</target>
+                    <username>jimmy</username>
+                    <password>s3kr37</password>
+                </iscsi>
+            </action>
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式，host挂载的target信息）      
+        '''
+        host_id = self.getHostIdByName(host_name)
+        api_url = '%s/%s/iscsilogin' % (self.base_url, host_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_target_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def commitNetConfig(self, host_name, xml_action='<action/>'):
+        '''
+        @summary: 提交保存虚拟化主机网络配置
+        @param host_name: 虚拟化主机名称
+        @param xml_action: XML格式的action，向服务器发送POST请求时需要传输的数据，取值只能是'<action/>'
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式，包括操作结果）
+        '''
+        host_id = self.getHostIdByName(host_name)
+        api_url = '%s/%s/commitnetconfig' % (self.base_url, host_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_action)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
+    def forceSelectSPM(self, host_name, xml_action='<action/>'):
+        '''
+        @summary: 强制将虚拟化主机设置为SPM
+        @param host_name: 虚拟化主机名称
+        @param xml_action: XML格式的action，向服务器发送POST请求时需要传输的数据，取值只能是'<action/>'
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式，包括操作结果）
+        '''
+        host_id = self.getHostIdByName(host_name)
+        api_url = '%s/%s/forceselectspm' % (self.base_url, host_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_action)
+        print r.text
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+class HostNicAPIs(HostAPIs):
+    '''
+    @summary: 虚拟化主机网络接口子接口，提供主机网络各种常用操作，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义HostNic相关子接口的base_url，如'https://10.1.167.2/api/hosts/<host_id>/nics'
+        '''
+        self.base_url = '%s/hosts' % WebBaseApiUrl
+        self.sub_url = 'nics'
+        
+    def getHostNicIdByName(self, host_name, nic_name):
+        '''
+        @summary: 根据虚拟化主机网络接口名称获得其ID
+        @param host_name: 虚拟化主机名称
+        @param nic_name: 虚拟化主机网络接口名称（如eth0等）
+        @return: 虚拟化主机网络接口ID
+        '''
+        host_nics_list = self.getHostNicsList(host_name)['result']['host_nics']['host_nic']
+        for nic in host_nics_list:
+            if nic['name']==nic_name:
+                return nic['@id']
+            
+    def getHostNicsList(self, host_name):
+        '''
+        @summary: 获取虚拟化主机网络接口列表
+        @param host_name: 虚拟化主机名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式主机网络接口列表）
+        '''
+        host_id = self.getHostIdByName(host_name)
+        api_url = '%s/%s/%s' % (self.base_url, host_id, self.sub_url)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getHostNicInfo(self, host_name, nic_name):
+        '''
+        @summary: 获取虚拟化主机网络接口信息
+        @param host_name: 虚拟化主机名称
+        @param nic_name: 虚拟化主机网络接口名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式网络接口信息）
+        '''
+        host_id = self.getHostIdByName(host_name)
+        nic_id = self.getHostNicIdByName(host_name, nic_name)
+        api_url = '%s/%s/nics/%s' % (self.base_url, host_id, nic_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        if r.status_code==200:
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        else:
+            return {'status_code':r.status_code, 'result':r.text}
+        
+    def updateHostNic(self, host_name, nic_name):
+        '''
+        @summary: 更新虚拟化主机网络接口信息，
+        '''
+        pass
+    
+    def attachNicWithNetwork(self, host_name, nic_name, network_name):
+        '''
+        @summary: 将虚拟化主机网卡与逻辑网络绑定（附加）
+        @param host_name: 虚拟化主机名称
+        @param nic_name: 虚拟化主机网络接口名称
+        @param xml_network_info: network的XML信息（提供network的name或id即可），如：
+            <action>
+                <network id="id"/>
+            </action>
+        @return: 
+        @todo: 验证尚未通过
+        '''
+        host_id = self.getHostIdByName(host_name)
+        nic_id = self.getHostNicIdByName(host_name, nic_name)
+        api_url = '%s/%s/%s/%s/attach' % (self.base_url, host_id, self.sub_url, nic_id)
+        method = 'POST'
+        xml_network_info = '''
+        <action>
+            <network>
+                <name>%s</name>
+            </network>
+            <boot_protocol>static</boot_protocol>
+            <ip address="192.168.0.1" netmask="255.255.255.0" gateway="192.168.0.254"/>
+        </action>
+        ''' % network_name
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_network_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
     
+    
+
 
 if __name__ == "__main__":
     hostapi = HostAPIs()
+    hostnicapi = HostNicAPIs()
     
-    xml_iscsi_info = '''
-    <action>
-        <iscsi>
-            <address>10.1.161.61</address>
-                <port>3260</port>
-        </iscsi>
-    </action>
-    '''
-    print xmltodict.unparse(hostapi.iscsiDiscoverByHost('node3.com', xml_iscsi_info)['result'], pretty=True)
+    print hostnicapi.attachNicWithNetwork('node3.com', 'eth1', 'test1')
+#     print hostnicapi.getHostNicInfo('node1.com', 'eth3')
+#     print hostnicapi.getHostNicIdByName('node1.com', 'eth1')
+#     print hostnicapi.getHostNicsList('node3.com')
+    
+#     print hostapi.getSPMInfo('node2')
+#     print hostapi.forceSelectSPM('node2')
+#     print hostapi.commitNetConfig('node3.com')
+    
+#     xml_target_info = '''
+#     <action>
+#         <iscsi>
+#             <address>10.1.161.61</address>
+#             <target>iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.mari</target>
+#         </iscsi>
+#     </action>
+#     '''
+#     print hostapi.iscsiLogin('node3.com', xml_target_info)
+    
+#     xml_iscsi_info = '''
+#     <action>
+#         <iscsi>
+#             <address>10.1.161.61</address>
+#                 <port>3260</port>
+#         </iscsi>
+#     </action>
+#     '''
+#     print xmltodict.unparse(hostapi.iscsiDiscoverByHost('node3.com', xml_iscsi_info)['result'], pretty=True)
     
 #     xml_install_option = '''
 #     <action>
