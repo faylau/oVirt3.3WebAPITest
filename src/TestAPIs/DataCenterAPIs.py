@@ -52,9 +52,12 @@ class DataCenterAPIs(BaseAPIs):
         @summary: 根据数据中心的id返回其名称
         @param dc_id: 数据中心id
         @return: 数据中心名称
-        @todo: 无需实现该功能，后续如果有需要再实现。
         '''
-        pass
+        api_url = '%s/%s' % (self.base_url, dc_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        if r.status_code==200:
+            return xmltodict.parse(r.text)['data_center']['name']
     
     def getDataCentersList(self):
         '''
@@ -266,6 +269,7 @@ if __name__ == "__main__":
     </data_center>
     '''
     dcapi.createDataCenter(data)
+    print dcapi.getDataCenterNameById('5849b030-626e-47cb-ad90-3ce782d831b3')
 #     print dcapi.getDCClustersList('Default')
 #     print dcapi.deactiveDCStorageDomain('Default', 'data1')
 #     print dcapi.activeDCStorageDomain('Default', 'data1')
