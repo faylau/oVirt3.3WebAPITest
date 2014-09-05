@@ -69,13 +69,15 @@ class DataCenterAPIs(BaseAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def getDataCenterInfo(self, dc_name):
+    def getDataCenterInfo(self, dc_name=None, dc_id=None):
         '''
-        @summary: 根据数据中心名称，获取数据中心详细信息
-        @param dc_name: 数据中心名称
+        @summary: 根据数据中心名称或ID，获取数据中心详细信息
+        @param dc_name: 数据中心名称，缺省为None
+        @param dc_id: 数据中心ID，缺省为None
         @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的数据中心信息
         '''
-        dc_id = self.getDataCenterIdByName(dc_name)
+        if not dc_id and dc_name:
+            dc_id = self.getDataCenterIdByName(dc_name)
         api_url = '%s/%s' % (self.base_url, dc_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
@@ -261,15 +263,16 @@ class DataCenterAPIs(BaseAPIs):
 
 if __name__ == "__main__":
     dcapi = DataCenterAPIs()
-    data = '''
-    <data_center>
-        <name>NewDatacenter</name>
-        <storage_type>nfs</storage_type>
-        <version minor="1" major="3"/>
-    </data_center>
-    '''
-    dcapi.createDataCenter(data)
-    print dcapi.getDataCenterNameById('5849b030-626e-47cb-ad90-3ce782d831b3')
+    print dcapi.getDataCenterInfo(dc_id='8cfa5137-e11f-445b-bbd5-c5611338d8eb')
+#     data = '''
+#     <data_center>
+#         <name>NewDatacenter</name>
+#         <storage_type>nfs</storage_type>
+#         <version minor="1" major="3"/>
+#     </data_center>
+#     '''
+#     dcapi.createDataCenter(data)
+#     print dcapi.getDataCenterNameById('5849b030-626e-47cb-ad90-3ce782d831b3')
 #     print dcapi.getDCClustersList('Default')
 #     print dcapi.deactiveDCStorageDomain('Default', 'data1')
 #     print dcapi.activeDCStorageDomain('Default', 'data1')
