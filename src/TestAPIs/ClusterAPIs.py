@@ -17,7 +17,7 @@ __version__ = "V0.1"
 import xmltodict
 
 from BaseAPIs import BaseAPIs
-from StorageDomainAPIs import StorageDomainAPIs
+from NetworkAPIs import NetworkAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 
