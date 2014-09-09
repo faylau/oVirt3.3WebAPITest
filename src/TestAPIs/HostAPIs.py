@@ -17,11 +17,11 @@ import xmltodict
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
-from ClusterAPIs import ClusterAPIs
 
 class HostAPIs(BaseAPIs):
     '''
     @summary: 提供主机各种常用操作，通过HttpClient调用相应的REST接口实现。
+    @attention: 与虚拟化主机Nic和逻辑网络相关的接口尚未完全调试，建议在V0.1版本中暂时不要调用或测试。
     '''
     def __init__(self):
         '''
@@ -65,13 +65,15 @@ class HostAPIs(BaseAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def getHostInfo(self, host_name):
+    def getHostInfo(self, host_name=None, host_id=None):
         '''
-        @summary: 获取虚拟化主机详细信息
-        @param host_name: 虚拟化主机名称
+        @summary: 获取虚拟化主机详细信息（可根据主机名称或id）
+        @param host_name: 虚拟化主机名称，缺省为None
+        @param host_id: 虚拟化主机id，缺少为None
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：虚拟化主机详细信息（dict格式）。
         '''
-        host_id = self.getHostIdByName(host_name)
+        if not host_id and host_name:
+            host_id = self.getHostIdByName(host_name)
         api_url = '%s/%s' % (self.base_url, host_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
@@ -265,6 +267,18 @@ class HostAPIs(BaseAPIs):
         print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
+    def getHostStatistics(self, host_name):
+        '''
+        @summary: 获取虚拟化主机统计信息（包括memory、swap、cpu）
+        @param host_name: 虚拟化主机名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式，包括操作结果）
+        '''
+        host_id = self.getHostIdByName(host_name)
+        api_url = '%s/%s/statistics' % (self.base_url, host_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
 class HostNicAPIs(HostAPIs):
     '''
     @summary: 虚拟化主机网络接口子接口，提供主机网络各种常用操作，通过HttpClient调用相应的REST接口实现。
@@ -317,23 +331,37 @@ class HostNicAPIs(HostAPIs):
         else:
             return {'status_code':r.status_code, 'result':r.text}
         
-    def updateHostNic(self, host_name, nic_name):
+    def updateHostNic(self, host_name, nic_name, xml_nic_info):
         '''
-        @summary: 更新虚拟化主机网络接口信息，
+        @summary: 更新虚拟化主机网络接口信息
+        @param host_name: 虚拟化主机名称
+        @param nic_name: 虚拟化主机网络接口名称
+        @param xml_nic_info: 要修改的网络接口信息，如：
+            <host_nic>
+                <boot_protocol>static</boot_protocol>
+                <ip address="192.168.0.1" netmask="255.255.255.0" gateway="192.168.1.1"/>
+            </host_nic>
+        @return: 
+        @attention: 通过验证，目前暂未完成明白该接口实现的功能
         '''
-        pass
+        host_id = self.getHostIdByName(host_name)
+        nic_id = self.getHostNicIdByName(host_name, nic_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, host_id, self.sub_url, nic_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_nic_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def attachNicWithNetwork(self, host_name, nic_name, network_name):
         '''
         @summary: 将虚拟化主机网卡与逻辑网络绑定（附加）
         @param host_name: 虚拟化主机名称
         @param nic_name: 虚拟化主机网络接口名称
-        @param xml_network_info: network的XML信息（提供network的name或id即可），如：
+        @param xml_network_info: network的XML信息（需提供network的name或id），如：
             <action>
                 <network id="id"/>
             </action>
-        @return: 
-        @todo: 验证尚未通过
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容
+        @todo: 其功能只是将逻辑网络与物理网卡绑定，至于具体的配置需要调用其他接口？
         '''
         host_id = self.getHostIdByName(host_name)
         nic_id = self.getHostNicIdByName(host_name, nic_name)
@@ -344,22 +372,140 @@ class HostNicAPIs(HostAPIs):
             <network>
                 <name>%s</name>
             </network>
-            <boot_protocol>static</boot_protocol>
-            <ip address="192.168.0.1" netmask="255.255.255.0" gateway="192.168.0.254"/>
         </action>
         ''' % network_name
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_network_info)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def detachNicFromNetwork(self, host_name, nic_name, network_name):
+        '''
+        @summary: 解决虚拟化主机网卡与逻辑网络的绑定（分离）
+        @param host_name: 虚拟化主机名称
+        @param nic_name: 虚拟化主机网络接口名称
+        @param network_name: 逻辑网络名称
+        @attention: 通过接口调用时，要求主机处于维护状态才能进行detach操作，与UI不一致，原因不明确
+        @return: 
+        '''
+        host_id = self.getHostIdByName(host_name)
+        nic_id = self.getHostNicIdByName(host_name, nic_name)
+        api_url = '%s/%s/%s/%s/detach' % (self.base_url, host_id, self.sub_url, nic_id)
+        method = 'POST'
+        xml_network_info = '''
+        <action>
+            <network>
+                <name>%s</name>
+            </network>
+        </action>
+        ''' % network_name
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_network_info)
+        print r.text
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def setupNetworks(self, host_name, xml_networks_info):
+        '''
+        @summary: 对虚拟化主机上的多个网络接口进行配置
+        @param xml_networks_info: 虚拟化主机网络配置信息，如：
+            <action>
+                <host_nics>
+                    <host_nic id="41561e1c-c653-4b45-b9c9-126630e8e3b9">
+                        <name>em1</name>
+                        <network id="00000000-0000-0000-0000-000000000009"/>
+                        <boot_protocol>dhcp</boot_protocol>
+                    </host_nic>
+                    <host_nic id="3c3f442f-948b-4cdc-9a48-89bb0593cfbd">
+                        <name>em2</name>
+                        <network id="00000000-0000-0000-0000-000000000010"/>
+                        <ip address="10.35.1.247" netmask="255.255.254.0" gateway="10.35.1.254"/>
+                        <boot_protocol>static</boot_protocol>
+                    </host_nic>
+                    <checkConnectivity>true</checkConnectivity>
+                    <connectivityTimeout>60</connectivityTimeout>
+                    <force>false</force>
+                </host_nics>
+            </action>
+        @attention: 没有指定的nic是否直接设置为空？
+        @return: 
+        '''
+        host_id = self.getHostIdByName(host_name)
+        api_url = '%s/%s/%s/setupnetworks' % (self.base_url, host_id, self.sub_url)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_networks_info)
+        print r.text
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getHostNicStatistics(self, host_name, nic_name):
+        '''
+        @summary: 获取虚拟化主机Nic的统计信息
+        @param host_name: 虚拟化主机名称
+        @param nic_name: 虚拟化主机网络接口名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（Nic的速率信息）
+        '''
+        host_id = self.getHostIdByName(host_name)
+        nic_id = self.getHostNicIdByName(host_name, nic_name)
+        api_url = '%s/%s/%s/%s/statistics' % (self.base_url, host_id, self.sub_url, nic_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+class HostStorageAPIs(HostAPIs):
+    '''
+    @summary: 虚拟化主机网络接口子接口，提供主机存储相关操作，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义HostNic相关子接口的base_url，如'https://10.1.167.2/api/hosts/<host_id>/nics'
+        '''
+        self.base_url = '%s/hosts' % WebBaseApiUrl
+        self.sub_url = 'storage'
         
-    
-    
+    def getHostStoragesList(self, host_name):
+        '''
+        @summary: 获取主机可用的iSCSI或FC存储域
+        @param host_name: 虚拟化主机名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（主机可用的iSCSI或FC存储）
+        '''
+        host_id = self.getHostIdByName(host_name)
+        api_url = '%s/%s/%s' % (self.base_url, host_id, self.sub_url)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
 
-
+    
+        
 if __name__ == "__main__":
     hostapi = HostAPIs()
     hostnicapi = HostNicAPIs()
     
-    print hostnicapi.attachNicWithNetwork('node3.com', 'eth1', 'test1')
+#     print hostapi.getHostStatistics('node1.com')
+#     print HostStorageAPIs().getHostStoragesList('node1.com')
+#     print hostnicapi.getHostNicStatistics('node3.com', 'eth2')
+    
+#     xml_networks_info='''
+#     <action>
+#         <host_nics>
+#             <host_nic>
+#                 <name>eth1</name>
+#                 <network>
+#                     <name>test1</name>
+#                 </network>
+#                 <ip address="10.35.1.247" netmask="255.255.254.0" gateway="10.35.1.254"/>
+#                 <boot_protocol>static</boot_protocol>
+#             </host_nic>
+#         </host_nics>
+#     </action>
+#     '''
+#     print hostnicapi.setupNetworks('node3.com', xml_networks_info)
+    
+#     xml_nic_info = '''
+#     <host_nic>
+#         <boot_protocol>static</boot_protocol>
+#         <ip address="192.168.0.1" netmask="255.255.255.0" gateway="192.168.1.1"/>
+#     </host_nic>
+#     '''
+#     print hostnicapi.updateHostNic('node3.com', 'eth1', xml_nic_info)
+    
+#     print hostnicapi.detachNicFromNetwork('node3.com', 'eth1', 'test1')
+#     print hostnicapi.attachNicWithNetwork('node3.com', 'eth1', 'test1')
 #     print hostnicapi.getHostNicInfo('node1.com', 'eth3')
 #     print hostnicapi.getHostNicIdByName('node1.com', 'eth1')
 #     print hostnicapi.getHostNicsList('node3.com')
@@ -368,15 +514,15 @@ if __name__ == "__main__":
 #     print hostapi.forceSelectSPM('node2')
 #     print hostapi.commitNetConfig('node3.com')
     
-#     xml_target_info = '''
-#     <action>
-#         <iscsi>
-#             <address>10.1.161.61</address>
-#             <target>iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.mari</target>
-#         </iscsi>
-#     </action>
-#     '''
-#     print hostapi.iscsiLogin('node3.com', xml_target_info)
+    xml_target_info = '''
+    <action>
+        <iscsi>
+            <address>10.1.161.61</address>
+            <target>iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.mari</target>
+        </iscsi>
+    </action>
+    '''
+    print xmltodict.unparse(hostapi.iscsiLogin('node3.com', xml_target_info)['result'], pretty=True)
     
 #     xml_iscsi_info = '''
 #     <action>
