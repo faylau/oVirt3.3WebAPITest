@@ -13,7 +13,9 @@ __version__ = "V0.1"
 '''
 
 import xmltodict
+
 from BaseAPIs import BaseAPIs
+from VirtualMachineAPIs import VirtualMachineAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 
@@ -128,9 +130,9 @@ class StorageDomainAPIs(BaseAPIs):
                     <override_luns>true</override_luns>
                 </storage>
             </storage_domain>
-        (3) FC类型存储描述文件：应该是同(2)，更改一下类型即可，缺少环境未调试。
+        (4) FC类型存储描述文件：应该是同(2)，更改一下类型即可，缺少环境未调试。
         @attention: lun_id的获取有两种思路：（1）手动写在xml文件中；（2）写一个getLunIdByName方法，执行login操作后，通过hosts/host-id/storage接口根据name获得lun_id。
-        @return: 
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         api_url = self.base_url
         method = 'POST'
@@ -141,13 +143,317 @@ class StorageDomainAPIs(BaseAPIs):
     def updateStorageDomain(self, sd_name, xml_update_info):
         '''
         @summary: 更新存储域信息
-        @param xml_update_info: XML格式的待更新存储域信息
+        @param xml_update_info: XML格式的待更新存储域信息，通过该接口可以编辑NFS、ISCSC和FC类型存储域，如下：
+        (1) 编辑NFS类型存储域（NFS类型存储域只能编辑名称、描述等字段）：
+            <storage_domain>
+                <name>data-new</name>
+                <description>aaa</description>
+            </storage_domain>
+        (2) 编辑ISCSI/FC类型存储域（编辑名称、描述）
+            <storage_domain>
+                <name>Data2-ISCSI</name>
+                <description>bbb</description>
+                <storage>
+                    <type>iscsi</type>
+                    <logical_unit id="35005907f57002df5"/>
+                    <override_luns>true</override_luns>
+                </storage>
+            </storage_domain>
+        (3) 编辑ISCSI/FC类型存储域（添加LUN，前提是主机已经登陆该Target）
+            <storage_domain>
+                <host>
+                    <name>node2</name>
+                </host>
+                <storage>
+                    <type>iscsi</type>
+                    <logical_unit id="35005907f57002df5"/>
+                    <override_luns>true</override_luns>
+                </storage>
+            </storage_domain>
+        (4) 编辑ISCSI/FC类型存储域（添加LUN，前提是主机未登录该Target）
+            <storage_domain>
+                <host>
+                    <name>node2</name>
+                </host>
+                <storage>
+                    <type>iscsi</type>
+                    <logical_unit id="35005907f57002df5">
+                        <address>10.1.161.61</address>
+                        <port>3260</port>
+                        <target>iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.wangyy</target>
+                        <serial>SLENOVO_LIFELINE-DISK</serial>
+                        <vendor_id>LENOVO</vendor_id>
+                        <product_id>LIFELINE-DISK</product_id>
+                        <lun_mapping>1</lun_mapping>
+                    </logical_unit>
+                    <override_luns>true</override_luns>
+                </storage>
+            </storage_domain>
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
+        '''
+        sd_id = self.getStorageDomainIdByName(sd_name)
+        api_url = '%s/%s' % (self.base_url, sd_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_update_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def delStorageDomain(self, sd_name, xml_del_option):
+        '''
+        @summary: 删除存储域（包括删除、销毁）
+        @param sd_name: 存储域名称
+        @param xml_del_option: XML格式的删除选项信息；如下：
+        <storage_domain>
+            <host>
+                <name>node2</name>
+            </host>
+            <format>true</format>
+            <destroy>true</destroy>
+            <async>false</async>
+        </storage_domain>
+        @attention: 
+        (1) <host>字段是必须提供的；（2）<destroy>字段表示销毁操作，销毁时不需要另外指定<format>字段；
+        (3)<format>字段表示是否格式化域，在进行删除操作时必须指定该字段；（4）<async>表示是否异步返回。
+        @attention: (1)Maintenance状态可以销毁；（2）游离状态可以删除。
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
+        '''
+        sd_id = self.getStorageDomainIdByName(sd_name)
+        api_url = '%s/%s' % (self.base_url, sd_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_del_option)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+
+    def importStorageDomain(self, xml_sd_info):
+        '''
+        @summary: 导入被销毁的ISO/Export域
+        @attention: 该接口只能完成导入域操作，导入之后的存储域处于游离状态，需要调用其他接口将其附加到某个数据中心。
+        @param xml_sd_info: XML格式的待导入的存储域信息，如：
+        <storage_domain>
+            <type>iso</type>
+            <storage>
+                <type>nfs</type>
+                <address>10.1.167.2</address>
+                <path>/storage/iso</path>
+            </storage>
+            <host>
+                <name>node2</name>
+            </host>
+        </storage_domain>
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
+        '''
+        api_url = self.base_url
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_sd_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+class DataStorageAPIs(StorageDomainAPIs):
+    '''
+    @summary: Data存储域磁盘管理子接口，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义Data存储域磁盘管理子接口的base_url，如'https://10.1.167.2/api/storagedomains/<sd-id>/disks'
+        '''
+        self.base_url = '%s/storagedomains' % WebBaseApiUrl
+        self.sub_url = 'disks'
+        
+    def getDisksListFromDataStorage(self, ds_name):
+        '''
+        @summary: 从指定的Data存储域中获取磁盘列表
+        @param ds_name: Data存储域名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（存储域中磁盘列表）。
+        '''
+        ds_id = self.getStorageDomainIdByName(ds_name)
+        api_url = '%s/%s/%s' % (self.base_url, ds_id, self.sub_url)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getDiskInfoFromDataStorage(self, ds_name, disk_name=None, disk_id=None):
+        '''
+        @summary: 获取指定的虚拟磁盘详细信息
+        @param ds_name: Data存储域名称
+        @param disk_name: 虚拟磁盘名称
+        @param disk_id: 虚拟磁盘ID
+        @return: 
+        @todo: 未完成，由于同一存储域中的disk名称可以重复，无法根据disk name进行定位。
+        '''
+        # todo
+        pass
+        
+    def delDiskFromDataStorage(self, ds_name, disk_name=None, disk_id=None):
+        '''
+        @summary: 从Data存储域中删除指定的磁盘
+        @todo: 问题同上
+        '''
+        # todo
+        pass
+    
+class ISOStorageAPIs(StorageDomainAPIs):
+    '''
+    @summary: ISO存储域文件管理子接口，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义ISO域文件管理子接口的base_url，如'https://10.1.167.2/api/storagedomains/<sd-id>/files'
+        '''
+        self.base_url = '%s/storagedomains' % WebBaseApiUrl
+        self.sub_url = 'files'
+        
+    def getFilesListFromISOStorage(self, is_name):
+        '''
+        @summary: 从ISO域获取文件列表
+        @param is_name: ISO域名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（ISO域中文件列表）。
+        '''
+        is_id = self.getStorageDomainIdByName(is_name)
+        api_url = '%s/%s/%s' % (self.base_url, is_id, self.sub_url)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getFileInfoFromISOStorage(self, is_name, file_name):
+        '''
+        @summary: 获取ISO域中镜像文件详细信息
+        @param is_name: ISO域名称
+        @param file_name: 文件名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（文件详细信息）。
+        '''
+        is_id = self.getStorageDomainIdByName(is_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, is_id, self.sub_url, file_name)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+
+class ExportStorageAPIs(StorageDomainAPIs):
+    '''
+    @summary: Export存储域管理子接口（VM和Template），通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义Export域管理子接口的base_url，如'https://10.1.167.2/api/storagedomains/<sd-id>/files'
+        '''
+        self.base_url = '%s/storagedomains' % WebBaseApiUrl
+        self.sub_url_vms = 'vms'
+        self.sub_url_templates = 'templates'
+        self.subz_url_disks = 'disks'
+        
+    def getVMsListFromExportStorage(self, es_name):
+        '''
+        @summary: 获取Export域中待导入虚拟机列表
+        @param es_name: Export域名称
         @return: 
         '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        api_url = '%s/%s/%s' % (self.base_url, es_id, self.sub_url_vms)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getVmInfoFromExportStorage(self, es_name, vm_name):
+        '''
+        @summary: 获取Export域中待导入虚拟机详细信息
+        @param es_name: Export域名称
+        @param vm_name: 待导入虚拟机名称
+        @return: 
+        '''
+        vm_id = VirtualMachineAPIs().getVmIdByName(vm_name)
+        es_id = self.getStorageDomainIdByName(es_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, es_id, self.sub_url_vms, vm_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        print r.text
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def importVmFromExportStorage(self, xml_import_vm_info):
+        '''
+        @summary: 从Export域导入虚拟机
+        @param xml_import_vm_info: XML格式的导入虚拟机的设置信息
+        '''
         pass
+    
+    
+
+
 
 if __name__ == "__main__":
     sdapi = StorageDomainAPIs()
+    dsdapi = DataStorageAPIs()
+    isoapi = ISOStorageAPIs()
+    exportapi = ExportStorageAPIs()
+    
+    print exportapi.getVmInfoFromExportStorage('export1', 'haproxy-qcow2')
+#     print exportapi.getVMsListFromExportStorage('export1')
+    
+#     print isoapi.getFileInfoFromISOStorage('ISO', 'ns60-adv-x64-b43.lic.iso')
+#     print isoapi.getFilesListFromISOStorage('ISO')
+    
+#     print dsdapi.getDisksListFromDataStorage('data')
+    
+    xml_sd_import_info = '''
+    <storage_domain>
+        <type>export</type>
+        <storage>
+            <type>nfs</type>
+            <address>10.1.167.2</address>
+            <path>/storage/export</path>
+        </storage>
+        <host>
+            <name>node1.com</name>
+        </host>
+    </storage_domain>
+    '''    
+#     print sdapi.importStorageDomain(xml_sd_import_info)
+    
+    xml_del_sd_option = '''
+    <storage_domain>
+        <host><name>node1.com</name></host>
+        <destroy>true</destroy>
+        <async>false</async>
+    </storage_domain>
+    '''
+#     print sdapi.delStorageDomain('export', xml_del_sd_option)
+    
+    xml_update_nfs_info = '''
+    <storage_domain>
+        <name>data1</name>
+        <description>aaa</description>
+    </storage_domain>
+    '''
+    xml_update_iscsi_info = '''
+    <storage_domain>
+        <name>Data2-ISCSI-new</name>
+        <description>bbb</description>
+        <host>
+            <name>node2</name>
+        </host>
+        <storage>
+            <type>iscsi</type>
+            <logical_unit id="35005907f57002df5"/>
+            <override_luns>true</override_luns>
+        </storage>
+    </storage_domain>
+    '''
+    xml_update_iscsi_info_1 = '''
+    <storage_domain>
+        <host>
+            <name>node2</name>
+        </host>
+        <storage>
+            <type>iscsi</type>
+            <logical_unit id="35005907f57002df5">
+                <address>10.1.161.61</address>
+                <port>3260</port>
+                <target>iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.wangyy</target>
+                <serial>SLENOVO_LIFELINE-DISK</serial>
+                <vendor_id>LENOVO</vendor_id>
+                <product_id>LIFELINE-DISK</product_id>
+                <lun_mapping>1</lun_mapping>
+            </logical_unit>
+            <override_luns>true</override_luns>
+        </storage>
+    </storage_domain>
+    '''
+#     print sdapi.updateStorageDomain('Data2-ISCSI', xml_update_iscsi_info_1)
     
     xml_nfs_sd_info = '''
     <storage_domain>
@@ -199,7 +505,7 @@ if __name__ == "__main__":
         </storage>
     </storage_domain>
     '''
-    print sdapi.createStorageDomain(xml_iscsi_sd_info_2)
+#     print sdapi.createStorageDomain(xml_iscsi_sd_info_2)
     
 #     print sdapi.getStorageDomainInfo('data1')
 #     print xmltodict.unparse(sdapi.getStorageDomainInfo('data1')['result'], pretty=True)
