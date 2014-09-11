@@ -15,7 +15,6 @@ __version__ = "V0.1"
 import xmltodict
 
 from BaseAPIs import BaseAPIs
-from VirtualMachineAPIs import VirtualMachineAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 
@@ -72,7 +71,7 @@ class StorageDomainAPIs(BaseAPIs):
         '''
         if not sd_id and sd_name:
             sd_id = self.getStorageDomainIdByName(sd_name)
-            print sd_id
+#             print sd_id
         api_url = '%s/%s' % (self.base_url, sd_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
@@ -137,7 +136,7 @@ class StorageDomainAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_sd_info)
-        print r.status_code, r.text
+#         print r.status_code, r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def updateStorageDomain(self, sd_name, xml_update_info):
@@ -337,11 +336,27 @@ class ExportStorageAPIs(StorageDomainAPIs):
         self.sub_url_templates = 'templates'
         self.subz_url_disks = 'disks'
         
-    def getVMsListFromExportStorage(self, es_name):
+    def getVmIdByNameFromExportStorage(self, es_name, vm_name):
+        '''
+        @summary: 根据Export域中的VM名称获取VM的ID
+        @param es_name: Export域名称
+        @param vm_name: Export域中的VM名称
+        @return: Export域中的VM的ID
+        '''
+        vms = self.getVmsListFromExportStorage(es_name)['result']['vms']['vm']
+        if isinstance(vms, list):
+            for vm in vms:
+                if vm['name']==vm_name:
+                    return vm['@id']
+        else:
+            if vms['name']==vm_name:
+                return vms['@id']
+        
+    def getVmsListFromExportStorage(self, es_name):
         '''
         @summary: 获取Export域中待导入虚拟机列表
         @param es_name: Export域名称
-        @return: 
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（Export域中的VM列表）。
         '''
         es_id = self.getStorageDomainIdByName(es_name)
         api_url = '%s/%s/%s' % (self.base_url, es_id, self.sub_url_vms)
@@ -354,24 +369,184 @@ class ExportStorageAPIs(StorageDomainAPIs):
         @summary: 获取Export域中待导入虚拟机详细信息
         @param es_name: Export域名称
         @param vm_name: 待导入虚拟机名称
-        @return: 
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（Export域中的VM信息）。
         '''
-        vm_id = VirtualMachineAPIs().getVmIdByName(vm_name)
+        vm_id = self.getVmIdByNameFromExportStorage(es_name, vm_name)
         es_id = self.getStorageDomainIdByName(es_name)
         api_url = '%s/%s/%s/%s' % (self.base_url, es_id, self.sub_url_vms, vm_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def importVmFromExportStorage(self, xml_import_vm_info):
+    def importVmFromExportStorage(self, es_name, vm_name, xml_import_vm_info):
         '''
         @summary: 从Export域导入虚拟机
-        @param xml_import_vm_info: XML格式的导入虚拟机的设置信息
+        @param es_name: Export域名称
+        @param vm_name: 待导入的VM名称
+        @param xml_import_vm_info: XML格式的导入虚拟机的设置信息，如下：
+        (1) 进行最普通的导入虚拟机操作，只需要指定cluster、storage_domain即可，其中<async>设定是否异步，<collapse_snapshot>如果不指定，则缺省值为false（导入的虚拟机带有原来的快照）：
+        <action>
+            <cluster>
+                <name>Default</name>
+            </cluster>
+            <async>false</async>
+            <storage_domain>
+                <name>Data2-ISCSI</name>
+            </storage_domain>
+        (2) 其他几个参数的意义，举例如下：
+            (a)<clone>：是否克隆，若克隆则必须设定<collapse_snapshot>为true；
+            (b)<collapse_snapshot>：是否去掉快照：
+            <action>
+                <cluster>
+                    <name>Default</name>
+                </cluster>
+                <async>false</async>
+                <storage_domain>
+                    <name>data</name>
+                </storage_domain>
+                <clone>true</clone>
+                <vm>
+                    <name>new</name>
+                    <snapshots>
+                        <collapse_snapshots>true</collapse_snapshots>
+                    </snapshots>
+                </vm>
+            </action>
+        (3) 导入VM时，若需要更改磁盘的分配策略和存储域，则需要在上述<vm>下增加如下字段：
+        <disks>
+            <disk id="">
+                <storage_domains>
+                    <storage_domain id=""/>
+                    <sparse></sparse>
+                    <format></format>
+                </storage_domains>
+            </disk>
+        </disks>
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（操作结果等信息）。
+        @todo: xml_info中的第(3)未验证
         '''
-        pass
+        es_id = self.getStorageDomainIdByName(es_name)
+        vm_id = self.getVmIdByNameFromExportStorage(es_name, vm_name)
+        api_url = '%s/%s/%s/%s/import' % (self.base_url, es_id, self.sub_url_vms, vm_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_import_vm_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
+    def delVmFromExportStorage(self, es_name, vm_name):
+        '''
+        @summary: 从Export域删除待导入的虚拟机
+        @param es_name: Export域名称
+        @param vm_name: 虚拟机名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（操作结果等信息）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        vm_id = self.getVmIdByNameFromExportStorage(es_name, vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, es_id, self.sub_url_vms, vm_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
+    def getTemplatesListFromExportStorage(self, es_name):
+        '''
+        @summary: 获取Export域中的模板列表
+        @param es_name: Export域名称
+        @return: @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（模板列表）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        api_url = '%s/%s/%s' % (self.base_url, es_id, self.sub_url_templates)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
+    def getTemplateIdByNameFromExportStorage(self, es_name, template_name):
+        '''
+        @summary: 根据Export域中的模板名称获取模板的ID
+        @param es_name: Export域名称
+        @param template_name: Export域中的模板名称
+        @return: Export域中的模板的ID
+        '''
+        temps = self.getTemplatesListFromExportStorage(es_name)['result']['templates']['template']
+        if isinstance(temps, list):
+            for temp in temps:
+                if temp['name']==template_name:
+                    return temp['@id']
+        else:
+            if temps['name']==template_name:
+                return temps['@id']
+    
+    def getTemplateInfoFromExportStorage(self, es_name, template_name):
+        '''
+        @summary: 获取Export域中的模板详细信息
+        @param es_name: Export域名称
+        @param template_name: Export域中模板名称
+        @return: @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（模板详细信息）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        template_id = self.getTemplateIdByNameFromExportStorage(es_name, template_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, es_id, self.sub_url_templates, template_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
+    def importTemplateFromExportStorage(self, es_name, template_name, xml_import_temp_info):
+        '''
+        @summary: 从Export域导入模板
+        @param es_name: Export域名称
+        @param template_name: Export域中的模板名称
+        @param xml_import_temp_info: XML格式的导入模板选项：
+        (1) 在通常情况下（不需要克隆），只需指定<storage_domain>、<cluster>即可，另个<async>设定是否异步：
+        <action>
+            <storage_domain>
+                <name>images0</name>
+            </storage_domain>
+            <cluster>
+                <name>Default</name>
+            </cluster>
+            <async>false</async>
+        </action>
+        (2) 在需要克隆的情况下，还需要指定<clone>、<template><name>项：
+        <action>
+            <storage_domain>
+                <name>images0</name>
+            </storage_domain>
+            <cluster>
+                <name>Default</name>
+            </cluster>
+            <clone>true</clone>
+            <async>false</async>
+            <template>
+                <name>NewABC</name>
+            </template>
+        </action>
+        (3) 若导入模板时需要对其disk进行操作，还需要增加如下disks相关字段（类似import vm时的设置，暂未验证）：
+        <disks>
+            <disk id="">
+                ...
+            </disk>
+        </disks>
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（操作结果）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        temp_id = self.getTemplateIdByNameFromExportStorage(es_name, template_name)
+        api_url = '%s/%s/%s/%s/import' % (self.base_url, es_id, self.sub_url_templates, temp_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_import_temp_info)
+#         print r.status_code, r.text
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
+    def delTemplateFromExportStorage(self, es_name, template_name):
+        '''
+        @summary: 从Export域中删除Template
+        @param es_name: Export域名称
+        @param template_name: 待删除的模板名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（操作结果）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        temp_id = self.getTemplateIdByNameFromExportStorage(es_name, template_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, es_id, self.sub_url_templates, temp_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
 
 
 
@@ -381,8 +556,76 @@ if __name__ == "__main__":
     isoapi = ISOStorageAPIs()
     exportapi = ExportStorageAPIs()
     
-    print exportapi.getVmInfoFromExportStorage('export1', 'haproxy-qcow2')
-#     print exportapi.getVMsListFromExportStorage('export1')
+    print exportapi.delTemplateFromExportStorage('export1', 'template-osvtest')
+    
+    xml_import_temp_info = '''
+    <action>
+        <storage_domain>
+            <name>Data1-ISCSI</name>
+        </storage_domain>
+        <cluster>
+            <name>Cluster-ISCSI</name>
+        </cluster>
+        <async>false</async>
+    </action>
+    '''
+    xml_import_temp_info_1 = '''
+    <action>
+        <storage_domain>
+            <name>Data1-ISCSI</name>
+        </storage_domain>
+        <cluster>
+            <name>Cluster-ISCSI</name>
+        </cluster>
+        <async>false</async>
+        <clone>true</clone>
+        <template>
+            <name>NewABC</name>
+        </template>
+    </action>
+    '''
+#     print exportapi.importTemplateFromExportStorage('export1', 'template-haproxy-osv', xml_import_temp_info_1)
+    
+#     print exportapi.getTemplateInfoFromExportStorage('export1', 'template-haproxy-osv')
+#     print exportapi.getTemplateIdByNameFromExportStorage('export1', 'template-osvtest')
+#     print exportapi.getTemplatesListFromExportStorage('export1')
+#     print exportapi.delVmFromExportStorage('export', 'test1')
+    
+    xml_import_vm_info = '''
+    <action>
+        <cluster>
+            <name>Default</name>
+        </cluster>
+        <storage_domain>
+            <name>data</name>
+        </storage_domain>
+        <async>false</async>
+    </action>
+    '''
+    xml_import_vm_info_1 = '''
+    <action>
+        <cluster>
+            <name>Default</name>
+        </cluster>
+        <async>false</async>
+        <storage_domain>
+            <name>data</name>
+        </storage_domain>
+        <clone>true</clone>
+        <vm>
+            <name>new</name>
+            <snapshots>
+                <collapse_snapshots>true</collapse_snapshots>
+            </snapshots>
+        </vm>
+
+    </action>
+    '''
+#     print exportapi.importVmFromExportStorage('export', 'test1', xml_import_vm_info_1)
+    
+#     print exportapi.getVmInfoFromExportStorage('export', 'test1')
+#     print exportapi.getVmIdByNameFromExportStorage('export', 'test1')
+#     print exportapi.getVmsListFromExportStorage('export1')
     
 #     print isoapi.getFileInfoFromISOStorage('ISO', 'ns60-adv-x64-b43.lic.iso')
 #     print isoapi.getFilesListFromISOStorage('ISO')
