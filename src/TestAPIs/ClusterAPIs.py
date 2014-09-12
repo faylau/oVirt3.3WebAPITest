@@ -46,7 +46,10 @@ class ClusterAPIs(BaseAPIs):
         @return: 集群id
         '''
         cluster_list = self.searchClusterByName(cluster_name)
-        return cluster_list['result']['clusters']['cluster']['@id']
+        if cluster_list['result']['clusters']:
+            return cluster_list['result']['clusters']['cluster']['@id']
+        else:
+            return None
     
     def getClusterNameById(self, cluster_id):
         '''
@@ -72,16 +75,18 @@ class ClusterAPIs(BaseAPIs):
     
     def getClusterInfo(self, cluster_name=None, cluster_id=None):
         '''
-        @summary: 根据集群名称，获取集群详细信息
+        @summary: 根据集群名称或集群名称，获取集群详细信息
         @param cluster_name: 集群名称
+        @param cluster_id: 集群id
         @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的数据中心信息
         '''
         if not cluster_id and cluster_name:
             cluster_id = self.getClusterIdByName(cluster_name)
-        api_url = '%s/%s' % (self.base_url, cluster_id)
-        method = 'GET'
-        r = HttpClient.sendRequest(method=method, api_url=api_url)
-        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        if cluster_id:
+            api_url = '%s/%s' % (self.base_url, cluster_id)
+            method = 'GET'
+            r = HttpClient.sendRequest(method=method, api_url=api_url)
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def createCluster(self, cluster_info):
         '''
@@ -103,10 +108,13 @@ class ClusterAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         cluster_id = self.getClusterIdByName(cluster_name)
-        api_url = '%s/%s' % (self.base_url, cluster_id)
-        method = 'PUT'
-        r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
-        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        if cluster_id:
+            api_url = '%s/%s' % (self.base_url, cluster_id)
+            method = 'PUT'
+            r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        else:
+            return None
         
     def delCluster(self, cluster_name, async=None):
         '''
@@ -169,9 +177,10 @@ class ClusterAPIs(BaseAPIs):
         '''
         cluster_id = self.getClusterIdByName(cluster_name)
         dc_id = self.getClusterInfo(cluster_name)['result']['cluster']['data_center']['@id']
-        print dc_id
         dc_name = DataCenterAPIs().getDataCenterNameById(dc_id)
+        print dc_name
         nw_id = NetworkAPIs().getNetworkIdByName(nw_name, dc_name)
+        print nw_id
         method = 'DELETE'
         api_url = '%s/%s/networks/%s' % (self.base_url, cluster_id, nw_id)
         r = HttpClient.sendRequest(method=method, api_url=api_url)
@@ -197,19 +206,53 @@ class ClusterAPIs(BaseAPIs):
 if __name__=='__main__':
     clusterapi = ClusterAPIs()
     #print clusterapi.searchClusterByName('Default')
-    #print clusterapi.getClusterIdByName('Default')
+    #print clusterapi.getClusterIdByName('Default1')
     #print clusterapi.getClusterNameById('46951ef6-5bdb-4da3-89e0-092782b35487')
     #print clusterapi.getClustersList()
-    #print clusterapi.getClusterInfo('Default')
+    #print clusterapi.getClusterInfo('Default1')
     #print clusterapi.getClusterInfo(cluster_id='46951ef6-5bdb-4da3-89e0-092782b35487')
+    '''
+    创建集群时集群名称、cpuid和数据中心为必需，其余为可选；
+    1)内存优化
+    <memory_policy>
+        <overcommit percent="150"/>  ；100，150，200，默认为200
+        <transparent_hugepages>
+            <enabled>true</enabled>  ；默认false
+        </transparent_hugepages>
+    </memory_policy>  
+    2）cpu线程
+    <threads_as_cores>false</threads_as_cores> ；默认为false
+    3）弹性策略
+    <error_handling>
+        <on_error>migrate_highly_available</on_error>；包括migrate，migrate_highly_available，do_not_migrate，默认为migrate
+    </error_handling>
+    4）集群策略
+    <scheduling_policy>
+         <policy>power_saving</policy>   ；包括none（默认），power_saving，evenly_distributed三种，其中none无需输入，evenly_distributed需要输入high和duration两个参数
+         <thresholds low="20" high="80" duration="120"/>
+    </scheduling_policy>
+    5）其他
+    <virt_service>true</virt_service>
+    <gluster_service>false</gluster_service>
+    <tunnel_migration>false</tunnel_migration>
+    <trusted_service>false</trusted_service> ；若设置true，前提是配置服务，否则创建失败
+    <ballooning_enabled>false</ballooning_enabled>
+    '''
+    
     data = '''
     <cluster>
-        <name>NewCluster1</name>
+        <name>NewCluster111</name>
         <cpu id="Intel Nehalem Family"/>
         <data_center href="/api/datacenters/8cfa5137-e11f-445b-bbd5-c5611338d8eb" id="8cfa5137-e11f-445b-bbd5-c5611338d8eb"/>
+        <virt_service>true</virt_service>
+        <gluster_service>true</gluster_service>
+        <tunnel_migration>ture</tunnel_migration>
+        <trusted_service>false</trusted_service> 
+        <ballooning_enabled>true</ballooning_enabled>
+    
     </cluster>
     '''
-    #print clusterapi.createCluster(data)
+    print clusterapi.createCluster(data)
     #print clusterapi.updateCluster('NewCluster',data)
     data1 = '''
     <action>
@@ -231,8 +274,7 @@ if __name__=='__main__':
    
     #print clusterapi.attachNetworkToCluster('Default', data2)
     #print clusterapi.attachNetworkToCluster('Default', data3)
-    
-    print clusterapi.detachNetworkFromCluster('Default','aaa')
+    #print clusterapi.detachNetworkFromCluster('Default','network11')
     data4 = '''
     <network>
     <display>false</display>
@@ -243,7 +285,7 @@ if __name__=='__main__':
     </network>
     '''
     #print clusterapi.updateNetworkOfCluster('Default', 'aaa', data4)
-    print clusterapi.updateNetworkOfCluster('Default', 'network11', data4)
+    #print clusterapi.updateNetworkOfCluster('Default', 'aaa', data4)
 #test
    
 

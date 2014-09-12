@@ -5,6 +5,7 @@ encoding//src/TestAPIs/ClusterAPIs.py=utf-8
 encoding//src/TestAPIs/DataCenterAPIs.py=utf-8
 encoding//src/TestAPIs/HostAPIs.py=utf-8
 encoding//src/TestAPIs/NetworkAPIs.py=utf-8
+encoding//src/TestAPIs/ProfilesAPIs.py=utf-8
 encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
 encoding//src/Utils/DBManager.py=utf-8
