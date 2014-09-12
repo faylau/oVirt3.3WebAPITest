@@ -378,6 +378,52 @@ class ExportStorageAPIs(StorageDomainAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
+    def getVmDisksListFromExportStorage(self, es_name, vm_name):
+        '''
+        @summary: 获取Export域中VM的Disk列表
+        @param es_name: Export域名称
+        @param vm_name: Export域中VM名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（VM的Disks列表）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        vm_id = self.getVmIdByNameFromExportStorage(es_name, vm_name)
+        api_url = '%s/%s/%s/%s/disks' % (self.base_url, es_id, self.sub_url_vms, vm_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getVmDiskIdByNameFromExportStorage(self, es_name, vm_name, disk_alias):
+        '''
+        @summary: 根据Export域中VM磁盘别名获取磁盘ID
+        @param es_name: Export域名称
+        @param vm_name: Export域中VM名称
+        @param disk_alias: Export域中VM磁盘的别名
+        @return: Export域中VM磁盘ID
+        '''
+        vm_disks = self.getVmDisksListFromExportStorage(es_name, vm_name)['result']['disks']['disk']
+        if isinstance(vm_disks, list):
+            for disk in vm_disks:
+                if disk['alias']==disk_alias:
+                    return disk['@id']
+        else:
+            return vm_disks['@id']
+    
+    def getVmDiskInfoFromExportStorage(self, es_name, vm_name, disk_alias):
+        '''
+        @summary: 获取Export域中VM的磁盘信息（根据Disk别名）
+        @param es_name: Export域名称
+        @param vm_name: Export域中VM名称
+        @param disk_alias: Export域中VM的Disk的别名
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（VM的Disks信息）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        vm_id = self.getVmIdByNameFromExportStorage(es_name, vm_name)
+        disk_id = self.getVmDiskIdByNameFromExportStorage(es_name, vm_name, disk_alias)
+        api_url = '%s/%s/%s/%s/disks/%s' % (self.base_url, es_id, self.sub_url_vms, vm_id, disk_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
     def importVmFromExportStorage(self, es_name, vm_name, xml_import_vm_info):
         '''
         @summary: 从Export域导入虚拟机
@@ -458,6 +504,52 @@ class ExportStorageAPIs(StorageDomainAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
+    def getTemplateDisksListFromExportStorage(self, es_name, template_name):
+        '''
+        @summary: 获取Export域中模板的Disk列表
+        @param es_name: Export域名称
+        @param template_name: Export域中模板名称
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（模板的Disks列表）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        template_id = self.getTemplateIdByNameFromExportStorage(es_name, template_name)
+        api_url = '%s/%s/%s/%s/disks' % (self.base_url, es_id, self.sub_url_templates, template_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getTemplateDiskIdByNameFromExportStorage(self, es_name, template_name, disk_alias):
+        '''
+        @summary: 根据Export域中模板磁盘别名获取磁盘ID
+        @param es_name: Export域名称
+        @param template_name: Export域中模板名称
+        @param disk_alias: Export域中模板磁盘的别名
+        @return: Export域中模板磁盘ID
+        '''
+        temp_disks = self.getTemplateDisksListFromExportStorage(es_name, template_name)['result']['disks']['disk']
+        if isinstance(temp_disks, list):
+            for disk in temp_disks:
+                if disk['alias']==disk_alias:
+                    return disk['@id']
+        else:
+            return temp_disks['@id']
+    
+    def getTemplateDiskInfoFromExportStorage(self, es_name, template_name, disk_alias):
+        '''
+        @summary: 获取Export域中模板的磁盘信息（根据Disk别名）
+        @param es_name: Export域名称
+        @param template_name: Export域中模板名称
+        @param disk_alias: Export域中模板的Disk的别名
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（模板的Disks信息）。
+        '''
+        es_id = self.getStorageDomainIdByName(es_name)
+        template_id = self.getTemplateIdByNameFromExportStorage(es_name, template_name)
+        disk_id = self.getTemplateDiskIdByNameFromExportStorage(es_name, template_name, disk_alias)
+        api_url = '%s/%s/%s/%s/disks/%s' % (self.base_url, es_id, self.sub_url_templates, template_id, disk_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
     def getTemplateIdByNameFromExportStorage(self, es_name, template_name):
         '''
         @summary: 根据Export域中的模板名称获取模板的ID
@@ -531,7 +623,6 @@ class ExportStorageAPIs(StorageDomainAPIs):
         api_url = '%s/%s/%s/%s/import' % (self.base_url, es_id, self.sub_url_templates, temp_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_import_temp_info)
-#         print r.status_code, r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
     def delTemplateFromExportStorage(self, es_name, template_name):
@@ -547,6 +638,8 @@ class ExportStorageAPIs(StorageDomainAPIs):
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    
 
 
 
@@ -556,7 +649,13 @@ if __name__ == "__main__":
     isoapi = ISOStorageAPIs()
     exportapi = ExportStorageAPIs()
     
-    print exportapi.delTemplateFromExportStorage('export1', 'template-osvtest')
+    print exportapi.getTemplateDiskInfoFromExportStorage('export1', 'template-haproxy-osv', 'haproxy-qcow2_Disk1')
+#     print exportapi.getTemplateDiskIdByNameFromExportStorage('export1', 'template-haproxy-osv', 'haproxy-qcow2_Disk1')
+#     print exportapi.getTemplateDisksListFromExportStorage('export1', 'template-haproxy-osv')
+#     print exportapi.getVmDiskInfoFromExportStorage('export', 'test1', 'test1_Disk1')
+#     print exportapi.getVmDiskIdByNameFromExportStorage('export', 'test1', 'test1_Disk3')
+#     print exportapi.getVmDisksListFromExportStorage('export1', 'haproxy-qcow2')
+#     print exportapi.delTemplateFromExportStorage('export1', 'template-osvtest')
     
     xml_import_temp_info = '''
     <action>
