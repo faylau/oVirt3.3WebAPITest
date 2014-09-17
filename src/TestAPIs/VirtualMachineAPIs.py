@@ -504,7 +504,7 @@ class VmDiskAPIs(VirtualMachineAPIs):
         @param vm_name: 虚拟机名称
         @param disk_id: 虚拟机磁盘ID（缺省为None，可以不提供，推荐提供）
         @param disk_alias: 虚拟机磁盘别名（缺省为None，与disk_id必须提供其中一个参数）
-        @return: 
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的操作结果。
         '''
         vm_id = self.getVmIdByName(vm_name)
         if not disk_id:
@@ -520,7 +520,7 @@ class VmDiskAPIs(VirtualMachineAPIs):
         @param vm_name: 虚拟机名称
         @param disk_id: 虚拟磁盘ID，缺省为None
         @bug: 目前不支持使用disk_name（因为disks接口中没有根据disk名称获取id的函数）
-        @return: 
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的操作结果。
         '''
         xml_disk_info = '''<disk id="%s"/>'''% disk_id
         return self.createVmDisk(vm_name, xml_disk_info)
@@ -536,7 +536,7 @@ class VmDiskAPIs(VirtualMachineAPIs):
         @param vm_name: 虚拟机名称
         @param disk_id: 虚拟磁盘ID，缺省为None
         @bug: 目前不支持使用disk_name（因为disks接口中没有根据disk名称获取id的函数）
-        @return: 
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的操作结果。
         '''
         xml_del_disk_option = '''
         <action>
@@ -557,16 +557,341 @@ class VmDiskAPIs(VirtualMachineAPIs):
         @param vm_name: 虚拟机名称
         @param disk_id: 待激活的虚拟机磁盘id，缺省为None
         @param disk_alias: 待激活的虚拟机磁盘别名，缺省为None（disk_id和disk_name必须提供其中之一，推荐使用disk_id）
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        if not disk_id:
+            disk_id = self.getVmDiskIdByName(vm_name, disk_alias)
+        api_url = '%s/%s/%s/%s/activate' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data='<action/>')
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def deactivateVmDisk(self, vm_name, disk_id=None, disk_alias=None):
+        '''
+        @summary: 取消激活虚拟机的磁盘
+        @param vm_name: 虚拟机名称
+        @param disk_id: 待激活的虚拟机磁盘id，缺省为None
+        @param disk_alias: 待激活的虚拟机磁盘别名，缺省为None（disk_id和disk_name必须提供其中之一，推荐使用disk_id）
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        if not disk_id:
+            disk_id = self.getVmDiskIdByName(vm_name, disk_alias)
+        api_url = '%s/%s/%s/%s/deactivate' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data='<action/>')
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def moveVmDisk(self, vm_name, xml_move_option, disk_id=None, disk_alias=None):
+        '''
+        @summary: 移动虚拟机磁盘到指定的存储域
+        @param vm_name: 虚拟机名称
+        @param disk_id: 待激活的虚拟机磁盘id，缺省为None
+        @param disk_alias: 待激活的虚拟机磁盘别名，缺省为None（disk_id和disk_name必须提供其中之一，推荐使用disk_id）
+        @param xml_move_info: XML格式的虚拟机磁盘移动设置信息：
+            <action>
+                <storage_domain>
+                    <name>storage2</name>
+                </storage_domain>
+                <async>false</async>
+            </action>
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        if not disk_id:
+            disk_id = self.getVmDiskIdByName(vm_name, disk_alias)
+        api_url = '%s/%s/%s/%s/move' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_move_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def exportVmDisk(self, vm_name, xml_export_option, disk_id=None, disk_alias=None):
+        '''
+        @summary: 导出虚拟机磁盘
+        @param vm_name: 虚拟机名称
+        @param xml_export_info: XML格式的虚拟机磁盘导出设置
+        @param disk_id: 待激活的虚拟机磁盘id，缺省为None
+        @param disk_alias: 待激活的虚拟机磁盘别名，缺省为None（disk_id和disk_name必须提供其中之一，推荐使用disk_id）
+        @return: 
+        @bug: 该接口调试未通过，UI上对应的功能也无法使用。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        if not disk_id:
+            disk_id = self.getVmDiskIdByName(vm_name, disk_alias)
+        api_url = '%s/%s/%s/%s/export' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_export_option)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+class VmNicAPIs(VirtualMachineAPIs):
+    '''
+    @summary: VM的网络接口管理子接口类，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义VM Nic相关API的base_url，如'https://10.1.167.2/api/vms'
+        '''
+        self.base_url = '%s/vms' % WebBaseApiUrl
+        self.sub_url_nics = 'nics'
+        
+    def getVmNicIdByName(self, vm_name, nic_name):
+        '''
+        @summary: 根据虚拟机Nic的名称返回其id
+        @param vm_name: 虚拟机名称
+        @param nic_name: 虚拟机Nic名称
+        @return: 虚拟机Nic的ID
+        '''
+        vm_nics = self.getVmNicsList(vm_name)['result']['nics']['nic']
+        if isinstance(vm_nics, list):
+            for nic in vm_nics:
+                if nic['name']==nic_name:
+                    return nic['@id']
+        else:
+            if vm_nics['name']==nic_name:
+                return vm_nics['@id']
+        
+    def getVmNicsList(self, vm_name):
+        '''
+        @summary: 获取虚拟机的Nic列表
+        @param vm_name: 虚拟机名称
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的虚拟机Nic列表。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_nics)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getVmNicInfo(self, vm_name, nic_name):
+        '''
+        @summary: 获取指定的虚拟机Nic详细信息
+        @param vm_name: 虚拟机名称
+        @param nic_name: 虚拟机Nic名称
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的Nic详细信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        nic_id = self.getVmNicIdByName(vm_name, nic_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_nics, nic_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def createVmNic(self, vm_name, xml_vm_nic_info):
+        '''
+        @summary: 为虚拟机创建网络接口
+        @param vm_name: 虚拟机名称
+        @param xml_vm_nic_info: XML格式的，要创建的虚拟机Nic信息：
+        (1) name是必须要指定的，其他都是可选字段（有缺省值）；
+        (2) vnic_profile若不指定则为空，若指定则必须提供vnic_profile的id；
+            <nic>
+                <name>nic2</name>
+                <vnic_profile id="6f1bff46-d0aa-49d2-9206-0bc9a4adf6aa"/>
+                <interface>virtio</interface>
+                <linked>false</linked>
+                <plugged>false</plugged>
+                <mac address="00:1a:4a:16:84:07"/>
+            </nic>
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的Nic详细信息及操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_nics)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_vm_nic_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def updateVmNic(self, vm_name, nic_name, xml_update_vm_nic_info):
+        '''
+        @summary: 更新虚拟机Nic信息
+        @param vm_name: 虚拟机名称
+        @param nic_name: 虚拟机Nic名称
+        @param xml_update_vm_nic_info: XML格式，虚拟机Nic的更新信息：
+            <nic>
+                <name>nic22</name>
+                <vnic_profile id="6f1bff46-d0aa-49d2-9206-0bc9a4adf6aa"/>
+                <interface>e1000</interface>
+                <linked>false</linked>
+                <plugged>false</plugged>
+                <mac address="00:1a:4a:16:84:08"/>
+            </nic>
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的Nic更新后信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        nic_id = self.getVmNicIdByName(vm_name, nic_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_nics, nic_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_update_vm_nic_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def delVmNic(self, vm_name, nic_name):
+        '''
+        @summary: 删除虚拟机Nic
+        @param vm_name: 虚拟机名称
+        @param nic_name: 虚拟机Nic名称（每个VM中的Nic名称是唯一的）
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的删除操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        nic_id = self.getVmNicIdByName(vm_name, nic_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_nics, nic_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def statisticsVmNic(self, vm_name, nic_name):
+        '''
+        @summary: 获取虚拟机Nic的统计信息
+        @param vm_name: 虚拟机名称
+        @param nic_name: 虚拟机Nic名称
+        @return: （1）status_code：请求返回码；（2）result：dict形式的统计结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        nic_id = self.getVmNicIdByName(vm_name, nic_name)
+        api_url = '%s/%s/%s/%s/statistics' % (self.base_url, vm_id, self.sub_url_nics, nic_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def activateVmNic(self, vm_name, nic_name):
+        '''
+        @summary: 激活虚拟机Nic
+        @param vm_name: 虚拟机名称
+        @param nic_name: 虚拟机Nic名称
+        @return: （1）status_code：请求返回码；（2）result：dict形式的操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        nic_id = self.getVmNicIdByName(vm_name, nic_name)
+        api_url = '%s/%s/%s/%s/activate' % (self.base_url, vm_id, self.sub_url_nics, nic_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data='<action/>')
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def deactivateVmNic(self, vm_name, nic_name):
+        '''
+        @summary: 取消激活虚拟机Nic
+        @param vm_name: 虚拟机名称
+        @param nic_name: 虚拟机Nic名称
+        @return: （1）status_code：请求返回码；（2）result：dict形式的操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        nic_id = self.getVmNicIdByName(vm_name, nic_name)
+        api_url = '%s/%s/%s/%s/deactivate' % (self.base_url, vm_id, self.sub_url_nics, nic_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data='<action/>')
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+class VmCdromAPIs(VirtualMachineAPIs):
+    '''
+    @summary: VM的CDROM管理子接口类，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义VM Nic相关API的base_url，如'https://10.1.167.2/api/vms'
+        '''
+        self.base_url = '%s/vms' % WebBaseApiUrl
+        self.sub_url_cdroms = 'cdroms'
+        
+    def getVmCdromsList(self, vm_name):
+        '''
+        @summary: 获取虚拟机CDROMs列表
+        @param vm_name: 虚拟机名称
+        @return: 
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_cdroms)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
+    def getVmCdromInfo(self, vm_name, cdrom_id='00000000-0000-0000-0000-000000000000'):
+        '''
+        @summary: 获取虚拟机的CDROM信息
+        @param vm_name: 虚拟机名称
+        @return: 
+        @note: 目前每个vm只有一个CDROM，且ID是固定的。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_cdroms, cdrom_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def addCdromFile(self, vm_name, file_id, cdrom_id='00000000-0000-0000-0000-000000000000'):
+        '''
+        @summary: 为虚拟机添加CDROM文件
+        @param vm_name: 虚拟机名称
+        @param file_id: CDROM文件ID（与名称一致）
+        @param cdrom_id: 虚拟机CDROM的ID
         @return: 
         '''
         pass
-        
-    
-    
+
     
 if __name__=='__main__':
     vmapi = VirtualMachineAPIs()
     vmdiskapi = VmDiskAPIs()
+    vmnicapi = VmNicAPIs()
+    vmcdromapi = VmCdromAPIs()
+    
+    print vmcdromapi.getVmCdromsList('test1')
+#     print vmcdromapi.getVmCdromInfo('test1')
+#     print vmnicapi.deactivateVmNic('test1', 'nic1')
+#     print vmnicapi.activateVmNic('test1', 'nic1')
+#     print vmnicapi.statisticsVmNic('test1', 'nic1')
+#     print vmnicapi.delVmNic('test1', 'nic22')
+    
+    xml_update_vm_nic_info = '''
+    <nic>
+        <name>nic22</name>
+        <vnic_profile id="54cdf976-03cd-4143-bd87-dbdc26508f28"/>
+        <interface>e1000</interface>
+        <linked>false</linked>
+        <plugged>false</plugged>
+        <mac address="00:1a:4a:16:84:08"/>
+    </nic>
+    '''
+#     print vmnicapi.updateVmNic('test1', 'nic2', xml_update_vm_nic_info)
+    
+    xml_vm_nic_info = '''
+    <nic>
+        <name>nic2</name>
+        <network>
+            <name>aaa</name>
+        </network>
+        <vnic_profile>
+            <name>test2</name>
+        </vnic_profile>
+        <interface>virtio</interface>
+        <linked>true</linked>
+        <plugged>true</plugged>
+        <mac address="00:1a:4a:16:84:07"/>
+    </nic>
+    '''
+#     print vmnicapi.createVmNic('test1', xml_vm_nic_info)
+    
+#     print vmnicapi.getVmNicInfo('test1', 'nic1')
+#     print vmnicapi.getVmNicIdByName('test1', 'nic1')
+#     print vmnicapi.getVmNicsList('test1')
+    
+    xml_export_option = '''
+    <action>
+        <storage_domain>
+            <name>data1</name>
+        </storage_domain>
+    </action>
+    '''
+#     print vmdiskapi.exportVmDisk('test1', xml_export_option, disk_alias='test1_Disk2')
+    
+    xml_move_info = '''
+    <action>
+        <storage_domain>
+            <name>data</name>
+        </storage_domain>
+    </action>
+    '''
+#     print vmdiskapi.moveVmDisk('test1', xml_move_info, disk_alias='test1_Disk2')
+    
+#     print vmdiskapi.activateVmDisk('test1', disk_id='a1a4b4aa-8239-4ab8-a14b-d0d31a73561c')
+#     print vmdiskapi.deactivateVmDisk('test1', disk_id='a1a4b4aa-8239-4ab8-a14b-d0d31a73561c')
     
 #     disk_id = 'a1a4b4aa-8239-4ab8-a14b-d0d31a73561c'
 #     print vmdiskapi.attachDiskToVm('test1', disk_id)
