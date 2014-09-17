@@ -1,6 +1,5 @@
 #encoding:utf-8
-from TestAPIs.NetworkAPIs import NetworkAPIs
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
+
 
 __authors__ = ['"keke wei" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -20,6 +19,7 @@ from BaseAPIs import BaseAPIs
 from NetworkAPIs import NetworkAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
 class ClusterAPIs(BaseAPIs):
     '''
@@ -71,22 +71,23 @@ class ClusterAPIs(BaseAPIs):
         api_url = self.base_url
         method = "GET"
         r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     def getClusterInfo(self, cluster_name=None, cluster_id=None):
         '''
-        @summary: 根据集群名称或集群名称，获取集群详细信息
+        @summary: 根据集群名称或集群id，获取集群详细信息
         @param cluster_name: 集群名称
         @param cluster_id: 集群id
         @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的数据中心信息
         '''
         if not cluster_id and cluster_name:
             cluster_id = self.getClusterIdByName(cluster_name)
-        if cluster_id:
-            api_url = '%s/%s' % (self.base_url, cluster_id)
-            method = 'GET'
-            r = HttpClient.sendRequest(method=method, api_url=api_url)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        api_url = '%s/%s' % (self.base_url, cluster_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def createCluster(self, cluster_info):
         '''
@@ -97,7 +98,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=cluster_info)
-        print r.text
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     def updateCluster(self, cluster_name, update_info):
@@ -108,13 +109,12 @@ class ClusterAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         cluster_id = self.getClusterIdByName(cluster_name)
-        if cluster_id:
-            api_url = '%s/%s' % (self.base_url, cluster_id)
-            method = 'PUT'
-            r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        else:
-            return None
+        api_url = '%s/%s' % (self.base_url, cluster_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
         
     def delCluster(self, cluster_name, async=None):
         '''
@@ -127,6 +127,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, cluster_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def getClusterNetworkList(self,cluster_name):
@@ -140,6 +141,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s/networks' % (self.base_url, cluster_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def getClusterNetworkInfo(self,cluster_name,network_name):
@@ -165,6 +167,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s/networks' % (self.base_url, self.getClusterIdByName(cluster_name))
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=nw_info)
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def detachNetworkFromCluster(self, cluster_name, nw_name, async=None):
@@ -178,12 +181,11 @@ class ClusterAPIs(BaseAPIs):
         cluster_id = self.getClusterIdByName(cluster_name)
         dc_id = self.getClusterInfo(cluster_name)['result']['cluster']['data_center']['@id']
         dc_name = DataCenterAPIs().getDataCenterNameById(dc_id)
-        print dc_name
         nw_id = NetworkAPIs().getNetworkIdByName(nw_name, dc_name)
-        print nw_id
         method = 'DELETE'
         api_url = '%s/%s/networks/%s' % (self.base_url, cluster_id, nw_id)
         r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def updateNetworkOfCluster(self, cluster_name, nw_name,data=None):
@@ -201,6 +203,7 @@ class ClusterAPIs(BaseAPIs):
         method = 'PUT'
         api_url = '%s/%s/networks/%s' % (self.base_url, cluster_id, nw_id)
         r = HttpClient.sendRequest(method=method, api_url=api_url,data=data)
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
 if __name__=='__main__':

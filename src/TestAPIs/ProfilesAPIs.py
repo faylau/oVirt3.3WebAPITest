@@ -1,8 +1,5 @@
 #encoding:utf-8
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
-from TestAPIs.NetworkAPIs import NetworkAPIs
-
-__authors__ = ['']
+__authors__ = ['keke.wei@cs2c.com.cn']
 __version__ = "V0.1"
 
 '''
@@ -15,6 +12,7 @@ __version__ = "V0.1"
 '''
 
 import xmltodict
+
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
@@ -39,7 +37,7 @@ class ProfilesAPIs(BaseAPIs):
     
     def getProfileIdByName(self, profile_name,nw_id):
         '''
-        @summary: 根据配置集名称获得其id
+        @summary: 根据配置集名称获得其id（同一网络内配置集名称唯一）
         @param profile_name: 配置集名称
         @param nw_id:网络id
         @return: 配置集id
@@ -64,7 +62,7 @@ class ProfilesAPIs(BaseAPIs):
         api_url = self.base_url
         method = "GET"
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        print r.text
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
     
     def getProfileInfo(self, profile_name=None,profile_id=None,nw_id=None):
@@ -76,13 +74,12 @@ class ProfilesAPIs(BaseAPIs):
         '''
         if not profile_id and profile_name and nw_id:
             profile_id = self.getProfileIdByName(profile_name, nw_id)
-        if profile_id:
-            api_url = '%s/%s' % (self.base_url, profile_id)
-            method = 'GET'
-            r = HttpClient.sendRequest(method=method, api_url=api_url)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        else:
-            return None
+        api_url = '%s/%s' % (self.base_url, profile_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
             
     def createProfiles(self, profile_info):
         '''
@@ -93,7 +90,7 @@ class ProfilesAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=profile_info)
-        print r.text
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}      
     
     def updateProfile(self, profile_name, nw_id,update_info):
@@ -105,13 +102,12 @@ class ProfilesAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         profile_id = self.getProfileIdByName(profile_name, nw_id)
-        if profile_id:
-            api_url = '%s/%s' % (self.base_url, profile_id)
-            method = 'PUT'
-            r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
-        else:
-            return None
+        api_url = '%s/%s' % (self.base_url, profile_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
+        
         
     def delProfile(self, profile_name, nw_id,async=None):
         '''
@@ -122,13 +118,12 @@ class ProfilesAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         profile_id = self.getProfileIdByName(profile_name, nw_id)
-        if profile_id:
-            api_url = '%s/%s' % (self.base_url, profile_id)
-            method = 'DELETE'
-            r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        else:
-            return None
+        api_url = '%s/%s' % (self.base_url, profile_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
 
 
             

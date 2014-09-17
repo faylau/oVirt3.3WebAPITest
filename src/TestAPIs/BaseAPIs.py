@@ -26,9 +26,9 @@ class BaseAPIs(object):
         @return: 字典，（1）返回状态码；（2）Dict类型搜索结果
         '''
         url = '%s/%s?search=name%s%s' % (WebBaseApiUrl, obj_type, urllib.quote('='), search_str)
-#         print url
         method = 'GET'
         r = HttpClient.sendRequest(method, url)
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
 if __name__=='__main__':

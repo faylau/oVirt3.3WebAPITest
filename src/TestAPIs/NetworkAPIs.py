@@ -1,7 +1,7 @@
 #encoding:utf-8
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
-__authors__ = ['']
+
+__authors__ = ['keke.wei@cs2c.com.cn']
 __version__ = "V0.1"
 
 '''
@@ -9,14 +9,16 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # Version        Date            Desc                            Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/09/01      初始版
+# V0.1           2014/09/03      初始版                                                                     wei keke
 #---------------------------------------------------------------------------------
 '''
 
 import xmltodict
+
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
 class NetworkAPIs(BaseAPIs):
     '''
@@ -63,7 +65,7 @@ class NetworkAPIs(BaseAPIs):
         api_url = self.base_url
         method = "GET"
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        print r.text
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
     
     def getNetworkInfo(self, nw_name=None, nw_id=None,dc_name=None):
@@ -75,13 +77,12 @@ class NetworkAPIs(BaseAPIs):
         '''
         if not nw_id and nw_name and dc_name:
             nw_id = self.getNetworkIdByName(nw_name,dc_name)
-        if nw_id:
-            api_url = '%s/%s' % (self.base_url, nw_id)
-            method = 'GET'
-            r = HttpClient.sendRequest(method=method, api_url=api_url)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        else:
-            print '不存在该网络'
+        api_url = '%s/%s' % (self.base_url, nw_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
             
     def createNetwork(self, nw_info):
         '''
@@ -92,7 +93,7 @@ class NetworkAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=nw_info)
-        print r.text
+        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}      
     
     def updateNetwork(self, nw_name, dc_name,update_info):
@@ -104,13 +105,12 @@ class NetworkAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         nw_id = self.getNetworkIdByName(nw_name, dc_name)
-        if nw_id:
-            api_url = '%s/%s' % (self.base_url, nw_id)
-            method = 'PUT'
-            r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
-        else:
-            return None
+        api_url = '%s/%s' % (self.base_url, nw_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
+        
         
     def delNetwork(self, nw_name, dc_name,async=None):
         '''
@@ -121,13 +121,12 @@ class NetworkAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         nw_id = self.getNetworkIdByName(nw_name, dc_name)
-        if nw_id:
-            api_url = '%s/%s' % (self.base_url, nw_id)
-            method = 'DELETE'
-            r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        else:
-            return None
+        api_url = '%s/%s' % (self.base_url, nw_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
 
 class NetworkProfilesAPIs(NetworkAPIs):
     '''
@@ -146,13 +145,12 @@ class NetworkProfilesAPIs(NetworkAPIs):
         @param nw_id: 网络id
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
-        if nw_id:
-            api_url = '%s/%s/vnicprofiles' % (self.base_url, nw_id)
-            method = 'GET'
-            r = HttpClient.sendRequest(method=method, api_url=api_url)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        else:
-            return None
+        api_url = '%s/%s/vnicprofiles' % (self.base_url, nw_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
     
     def getProfileIdbyName(self,nw_id,profile_name):
         '''
@@ -171,6 +169,7 @@ class NetworkProfilesAPIs(NetworkAPIs):
             for profile in profile_list:
                 if profile['name'] == profile_name:
                     return profile['@id']
+            return None
         
     def getNetworkProfileInfo(self,nw_name,profile_name,dc_name):
         '''
@@ -180,15 +179,13 @@ class NetworkProfilesAPIs(NetworkAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         nw_id = self.getNetworkIdByName(nw_name, dc_name)
-        if nw_id:
-            profile_id = self.getProfileIdbyName(nw_id, profile_name)
-            api_url = '%s/%s/vnicprofiles/%s' % (self.base_url, nw_id,profile_id)
-            method = 'GET'
-            r = HttpClient.sendRequest(method=method, api_url=api_url)
-            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        else:
-            return None
-            
+        profile_id = self.getProfileIdbyName(nw_id, profile_name)
+        api_url = '%s/%s/vnicprofiles/%s' % (self.base_url, nw_id,profile_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        r.raise_for_status()
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
 if __name__=='__main__':
     nwapi = NetworkAPIs()
     #print nwapi.searchNetworkByName('network111')
