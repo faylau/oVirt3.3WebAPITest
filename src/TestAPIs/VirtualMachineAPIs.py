@@ -794,7 +794,7 @@ class VmCdromAPIs(VirtualMachineAPIs):
         '''
         @summary: 获取虚拟机CDROMs列表
         @param vm_name: 虚拟机名称
-        @return: 
+        @return: （1）status_code：请求返回码；（2）result：dict形式的虚拟机CD列表。
         '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_cdroms)
@@ -822,8 +822,89 @@ class VmCdromAPIs(VirtualMachineAPIs):
         @param file_id: CDROM文件ID（与名称一致）
         @param cdrom_id: 虚拟机CDROM的ID
         @return: 
+        @todo: 未完成（接口本身可能存在问题）
         '''
         pass
+    
+    def changeCdromFile(self):
+        '''
+        @summary: 为虚拟机添加CDROM文件
+        @param vm_name: 虚拟机名称
+        @param file_id: CDROM文件ID（与名称一致）
+        @param cdrom_id: 虚拟机CDROM的ID
+        @return: 
+        @todo: 未完成（接口本身可能存在问题）
+        '''
+        pass
+    
+class VmSnapshotAPIs(VirtualMachineAPIs):
+    '''
+    @summary: VM的CDROM管理子接口类，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义VM Nic相关API的base_url，如'https://10.1.167.2/api/vms'
+        '''
+        self.base_url = '%s/vms' % WebBaseApiUrl
+        self.sub_url_snapshots = 'snapshots'
+        
+    def getVmSnapshotsList(self, vm_name):
+        '''
+        @summary: 查看虚拟机全部Snapshot列表
+        @param vm_name: 虚拟机名称
+        @return: （1）status_code：请求返回码；（2）result：dict形式的虚拟机快照列表。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getVmSnapshotInfo(self, vm_name, snapshot_id):
+        '''
+        @summary: 根据snapshot id获取虚拟机Snapshot信息
+        @param vm_name: 虚拟机名称
+        @param snapshot_id: 快照ID
+        @return: （1）status_code：请求返回码；（2）result：dict形式的快照信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def createVmSnapshot(self, vm_name, xml_snapshot_info):
+        '''
+        @summary: 创建虚拟机快照（包括在线快照、离线快照、带内存快照等）
+        @param vm_name: 虚拟机名称
+        @param xml_snapshot_info: 要创建的快照信息，如：
+        (1) 根据persist_memorystate参数来指定是否创建带内存的快照；
+        (2) 当创建离线快照时，persist_memorystate参数无效；
+            <snapshot>
+                <description>snapshot3</description>
+                <persist_memorystate>false</persist_memorystate>
+            </snapshot>
+        @return: （1）status_code：请求返回码；（2）result：dict形式的新建快照信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_snapshot_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def restoreVmSnapshot(self, vm_name, snapshot_id, xml_restore_option='<action/>'):
+        '''
+        @summary: 恢复虚拟机快照
+        @param vm_name: 虚拟机名称
+        @param snapshot_id: 虚拟机快照ID
+        @param xml_restore_option: 恢复虚拟机快照的操作选项同，缺省值为<action/>
+        @return: 
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s/restore' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_restore_option)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
 
     
 if __name__=='__main__':
@@ -831,8 +912,20 @@ if __name__=='__main__':
     vmdiskapi = VmDiskAPIs()
     vmnicapi = VmNicAPIs()
     vmcdromapi = VmCdromAPIs()
+    vmsnapshotapi = VmSnapshotAPIs()
     
-    print vmcdromapi.getVmCdromsList('test1')
+    xml_snapshot_info = '''
+    <snapshot>
+        <description>snapshot3</description>
+        <persist_memorystate>false</persist_memorystate>
+    </snapshot>
+    '''
+#     print vmsnapshotapi.createVmSnapshot('test1', xml_snapshot_info)
+    
+#     print vmsnapshotapi.getVmSnapshotInfo('test1', '5806b12f-a9e9-4666-933b-86ca9dc395fd')
+#     print vmsnapshotapi.getVmSnapshotsList('test1')
+    
+#     print vmcdromapi.getVmCdromsList('test1')
 #     print vmcdromapi.getVmCdromInfo('test1')
 #     print vmnicapi.deactivateVmNic('test1', 'nic1')
 #     print vmnicapi.activateVmNic('test1', 'nic1')
