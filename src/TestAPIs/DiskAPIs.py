@@ -62,6 +62,10 @@ class DiskAPIs(BaseAPIs):
         '''
         @summary: 创建磁盘
         @param disk_info: XML形式的集群信息，调用接口时需要传递此xml数据
+                   名称（name或alias只需一个）、存储域、interface、format参数是必需的
+                  异常情况说明：
+         1）存储域不存在：404
+         2）缺少参数或参数错误：400
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式）
         '''
         api_url = self.base_url
@@ -78,6 +82,9 @@ class DiskAPIs(BaseAPIs):
         @param disk_id: 磁盘id
         @param async: 是否异步
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
+        1）磁盘附加到模板：删除失败，抛出400
+        2）磁盘附加到虚拟机，虚拟机关机，删除成功
+        3）磁盘附加到虚拟机，虚拟机运行，删除失败，抛出409
         '''
         api_url = '%s/%s' % (self.base_url, disk_id)
         method = 'DELETE'
@@ -91,6 +98,7 @@ class DiskAPIs(BaseAPIs):
         @param disk_id: 磁盘id
         @param action: 导出配置
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
+        @bug: 执行失败
         '''
         api_url = '%s/%s/export' % (self.base_url, disk_id)
         method = 'POST'
@@ -104,7 +112,7 @@ class DiskAPIs(BaseAPIs):
         @param disk_id: 磁盘id
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
-        api_url = '%s/%s' % (self.base_url, disk_id)
+        api_url = '%s/%s/statistics' % (self.base_url, disk_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         r.raise_for_status()
@@ -115,10 +123,7 @@ if __name__=='__main__':
     diskapi = DiskAPIs()
     #print diskapi.getDisksList()
     '''
-          名称（name或alias只需一个）、存储域、interface、format参数是必需的
-         异常情况说明：
-         1）存储域不存在：404
-         2）缺少参数或参数错误：400
+          
     '''
     disk_info='''
     <disk>
@@ -143,9 +148,7 @@ if __name__=='__main__':
    
     #print diskapi.getDiskInfo()
     '''
-    1）磁盘附加到模板：删除失败，抛出400
-    2）磁盘附加到虚拟机，虚拟机关机，删除成功
-    3）磁盘附加到虚拟机，虚拟机运行，删除失败，抛出409
+    
     '''
     #print diskapi.deleteDisk('1cc9077d-e166-4aec-ac31-fc8a621e4098',False)
     #print diskapi.getStaticsofDisk('0cf6c057-c60a-4904-bc80-92747e93b558')

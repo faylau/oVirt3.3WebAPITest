@@ -93,6 +93,31 @@ class ClusterAPIs(BaseAPIs):
         '''
         @summary: 创建集群
         @param cluster_info: XML形式的集群信息，调用接口时需要传递此xml数据
+        创建集群时集群名称、cpuid和数据中心为必需，其余为可选；
+    1)内存优化
+    <memory_policy>
+        <overcommit percent="150"/>  ；100，150，200，默认为200
+        <transparent_hugepages>
+            <enabled>true</enabled>  ；默认false
+        </transparent_hugepages>
+    </memory_policy>  
+    2）cpu线程
+    <threads_as_cores>false</threads_as_cores> ；默认为false
+    3）弹性策略
+    <error_handling>
+        <on_error>migrate_highly_available</on_error>；包括migrate，migrate_highly_available，do_not_migrate，默认为migrate
+    </error_handling>
+    4）集群策略
+    <scheduling_policy>
+         <policy>power_saving</policy>   ；包括none（默认），power_saving，evenly_distributed三种，其中none无需输入，evenly_distributed需要输入high和duration两个参数
+         <thresholds low="20" high="80" duration="120"/>
+    </scheduling_policy>
+    5）其他
+    <virt_service>true</virt_service>
+    <gluster_service>false</gluster_service>
+    <tunnel_migration>false</tunnel_migration>
+    <trusted_service>false</trusted_service> ；若设置true，前提是配置服务，否则创建失败
+    <ballooning_enabled>false</ballooning_enabled>
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式）
         '''
         api_url = self.base_url
@@ -215,31 +240,7 @@ if __name__=='__main__':
     #print clusterapi.getClusterInfo('Default1')
     #print clusterapi.getClusterInfo(cluster_id='46951ef6-5bdb-4da3-89e0-092782b35487')
     '''
-    创建集群时集群名称、cpuid和数据中心为必需，其余为可选；
-    1)内存优化
-    <memory_policy>
-        <overcommit percent="150"/>  ；100，150，200，默认为200
-        <transparent_hugepages>
-            <enabled>true</enabled>  ；默认false
-        </transparent_hugepages>
-    </memory_policy>  
-    2）cpu线程
-    <threads_as_cores>false</threads_as_cores> ；默认为false
-    3）弹性策略
-    <error_handling>
-        <on_error>migrate_highly_available</on_error>；包括migrate，migrate_highly_available，do_not_migrate，默认为migrate
-    </error_handling>
-    4）集群策略
-    <scheduling_policy>
-         <policy>power_saving</policy>   ；包括none（默认），power_saving，evenly_distributed三种，其中none无需输入，evenly_distributed需要输入high和duration两个参数
-         <thresholds low="20" high="80" duration="120"/>
-    </scheduling_policy>
-    5）其他
-    <virt_service>true</virt_service>
-    <gluster_service>false</gluster_service>
-    <tunnel_migration>false</tunnel_migration>
-    <trusted_service>false</trusted_service> ；若设置true，前提是配置服务，否则创建失败
-    <ballooning_enabled>false</ballooning_enabled>
+    
     '''
     
     data = '''

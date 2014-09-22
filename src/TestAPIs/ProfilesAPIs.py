@@ -139,7 +139,7 @@ if __name__=='__main__':
     <description>shelled</description>
     <network id="76c060f3-4b0c-43e5-bba5-012d5e16b26e"/>
     <port_mirroring>false</port_mirroring>
-</vnic_profile>
+    </vnic_profile>
     '''
     print profileapi.createProfiles(profile_info)  
     print profileapi.delProfile('peanuts', '76c060f3-4b0c-43e5-bba5-012d5e16b26e')     

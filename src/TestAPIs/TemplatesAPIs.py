@@ -89,6 +89,24 @@ class TemplatesAPIs(BaseAPIs):
         '''
         @summary: 创建模板
         @param temp_info: XML形式的集群信息，调用接口时需要传递此xml数据
+                   创建模板的测试数据说明：
+         1)测试数据最小集: 模板名称和虚拟机id,且模板名称唯一且虚拟机状态为down,创建成功并返回代码202(异步)
+         2)通过虚拟机名称表示虚拟机对象,创建失败并返回代码400
+         3)虚拟机状态非down,创建失败并返回代码409
+         4)其他参数:
+           <permissions>
+              <clone>true</clone>   ;是否复制虚拟机权限
+           </permissions>
+           *************************************************
+           <vm id="91fab0d3-5ee0-4d81-9e4e-342327d0e362">
+              <disks>
+                 <disk id="7aa205f0-f292-415b-8bf4-91c009e573d1">
+                    <storage_domains>
+                       <storage_domain id="ae2d5d54-38d5-41a2-835b-1c966c199855"/>  
+                    </storage_domains>
+                 </disk>
+              </disks>
+           </vm> ;为虚拟机的某个磁盘指定存放的存储域
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式）
         '''
         api_url = self.base_url
@@ -133,6 +151,7 @@ class TemplatesAPIs(BaseAPIs):
         @param temp_name: 模板名称
         @param action : 导出配置
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
+                   设置同步，返回200；设置异步，返回202
         '''
         temp_id = self.getTemplateIdByName(temp_name)
         api_url = '%s/%s/export' % (self.base_url, temp_id)
@@ -220,7 +239,8 @@ class TemplateDisksAPIs(TemplatesAPIs):
         @summary: 导出某个模板的某个磁盘
         @param temp_name:模板名称
         @param disk_name:磁盘名称 
-        @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容  
+        @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容 
+        @bug: 执行失败 
         '''
         temp_id = self.getTemplateIdByName(temp_name)
         disk_id = self.getDiskIdByName(temp_name, disk_name)
@@ -236,6 +256,7 @@ class TemplateDisksAPIs(TemplatesAPIs):
         @param temp_name:模板名称
         @param disk_name:磁盘名称 
         @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容  
+        @bug: 执行失败
         '''
         temp_id = self.getTemplateIdByName(temp_name)
         disk_id = self.getDiskIdByName(temp_name, disk_name)
@@ -307,7 +328,14 @@ class TemplateNicsAPIs(TemplatesAPIs):
         '''
         @summary：为模板创建网络接口
         @param temp_name:模板名称
-        @param nic_data:网络接口配置信息 
+        @param nic_data:网络接口配置信息
+                   网络接口输入说明：
+          1）接口名称是必须的，其余是可选的
+          2）配置集必须设置id
+                  异常情况说明：
+          1）接口名称重复（409）
+          2）id设置错误（400）
+          3）对象不存在（404） 
         @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容  
         '''
         temp_id = self.getTemplateIdByName(temp_name)
@@ -356,24 +384,7 @@ if __name__=='__main__':
     #print tempapi.getTemplatesList()
     print tempapi.getTemplateInfo('temp3')
     '''
-          创建模板的测试数据说明：
-         1)测试数据最小集: 模板名称和虚拟机id,且模板名称唯一且虚拟机状态为down,创建成功并返回代码202(异步)
-         2)通过虚拟机名称表示虚拟机对象,创建失败并返回代码400
-         3)虚拟机状态非down,创建失败并返回代码409
-         4)其他参数:
-           <permissions>
-              <clone>true</clone>   ;是否复制虚拟机权限
-           </permissions>
-           *************************************************
-           <vm id="91fab0d3-5ee0-4d81-9e4e-342327d0e362">
-              <disks>
-                 <disk id="7aa205f0-f292-415b-8bf4-91c009e573d1">
-                    <storage_domains>
-                       <storage_domain id="ae2d5d54-38d5-41a2-835b-1c966c199855"/>  
-                    </storage_domains>
-                 </disk>
-              </disks>
-           </vm> ;为虚拟机的某个磁盘指定存放的存储域
+          
     '''
     temp_info1 = '''
     <template>
@@ -400,9 +411,7 @@ if __name__=='__main__':
     '''
     #print tempapi.createTemplate(temp_info2)
     #print tempapi.delTemplate("aaaq")
-    '''
-    模板导出操作的action说明：
-    '''
+    
     action1='''
     <action>
     <storage_domain>
@@ -449,16 +458,7 @@ if __name__=='__main__':
     #print tempdiskapi.exportTemplateDisk('ov', 'osvtest_Disk1', export_data) (fail)
     #print tempdiskapi.deleteTemplateDisk('temp', 'VM1_Disk1',delete_data)    (fail) 
     tempnicapi = TemplateNicsAPIs()
-    '''
-          网络接口输入说明：
-          1）接口名称是必须的，其余是可选的
-          2）配置集必须设置id
-         异常情况说明：
-          1）接口名称重复（409）
-          2）id设置错误（400）
-          3）对象不存在（404）
     
-    '''
     nic_data='''
     <nic>
     <name>nic4</name>
