@@ -123,7 +123,7 @@ class DataCenterAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         dc_id = self.getDataCenterIdByName(dc_name)
-        print dc_id
+#         print dc_id
         api_url = '%s/%s' % (self.base_url, dc_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=data)
