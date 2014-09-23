@@ -12,17 +12,22 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
+import os
 import logging
 
 class LogPrint():
     '''
     @summary: 日志打印及管理类
     '''
+#     src_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+#     log_file_path = src_dir + os.path.sep + 'Results'
+    
     def __init__(self, log_file="log.txt", log_level=logging.DEBUG):
+        pass
         logging.basicConfig(level=log_level,
                             format='%(asctime)s %(levelname)s\t| %(filename)s[line:%(lineno)d]\t| %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S',
-                            filename=log_file,
+#                             filename=log_file,
                             filemode="a")
     
     def set_log_level(self, log_level):

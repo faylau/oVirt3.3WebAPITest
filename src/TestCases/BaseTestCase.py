@@ -1,21 +1,23 @@
-#coding:utf-8
+#encoding:utf-8
+
 '''
-Created on 2012-10-16
+Created on 2014-09-23
 @summary: The base class for all test case classes.
-@author: fei.liu@cs2c.com.cn, huicong.ding@cs2c.com.cn
-@version: v0.4
+@author: fei.liu@cs2c.com.cn
+@version: v0.1
 '''
 
 '''
 # ChangeLog:
 # Version    Date            Desc                Author
 # --------------------------------------------------------
-# V0.1       09/19/2014      初始版本                                Liu Fei
+# V0.1       09/23/2014      初始版本                                Liu Fei
 # --------------------------------------------------------
 '''
 
 import os
 import unittest
+import importlib
 
 from Utils.PrintLog import LogPrint
 
@@ -24,48 +26,25 @@ class BaseTestCase(unittest.TestCase):
     @summary: 所有TestCase的父类
     '''
     def setUp(self):
-        # 加载全局配置文件中的数据
-        dict_data = load_global_config()
-        
+        return self.initData()
         
     def initData(self):
         '''
-        @summary: 为用例初始化测试数据集；
+        @summary: 为测试用例初始化数据集；
         @param : 无
-        @return: 返回一个测试数据集data；
+        @return: 返回一个测试数据集data（存放测试数据的.py模块名称，通过这个模块名可以读取.py文件中的测试数据）
         '''
         curPath = os.path.abspath(os.path.dirname(__file__))
-        # module_name = os.path.realpath(sys.argv[0]).split(os.path.sep)[-1][:-3]
-        module_name = str(self.__module__).split(".")[-1]
+        module_name = str(self.__module__)
         test_case = str(self.__class__.__name__)
-        dataPath = os.path.dirname(curPath) + os.path.sep + "Data" + os.path.sep + module_name
-        dataFilePath = dataPath + os.path.sep + test_case + ".xml"
-
+        dataPath = os.path.dirname(curPath) + os.path.sep + "TestData" + os.path.sep + module_name
+        dataFilePath = dataPath + os.path.sep + test_case + ".py"
         if os.path.exists(dataFilePath):
-            dl = dataload(dataFilePath)
-            private_dict_data = dl.load()
+            data_module = 'TestData.%s.%s' % (module_name, test_case)
+            return importlib.import_module(data_module)
         else:
-            printLog("The TestCase <" + test_case + "> has no data file.", "warn")
-            private_dict_data = {}
-            
-        # 读取模块通用测试数据文件
-        module_data = dataPath + '.xml'
-        if os.path.exists(module_data):
-            module_dict_data = dataload(module_data).load()
-        else:
-            printLog("The TestCase <%s> has no module data file." % test_case, "Warn")
-            module_dict_data = {}
-        
-        # 加载全局配置文件
-        global_dict_data = load_global_config()
-        dict_data = dict(dict(private_dict_data, **module_dict_data), **global_dict_data)
-        
-        # 从全局配置文件中获取待测应用系统IP地址
-#         ip = load_global_config()['globalconf']['ip']['value']
-#         host_name = execSshCmd(ip, ['hostname'], dict_data["globalconf"]['ssh_username']['value'], dict_data['globalconf']['ssh_password']['value'])
-#         dict_data['globalconf']['hostname']['value'] = host_name
-        
-        return dict_data
+            LogPrint().warning("The TestCase <" + test_case + "> has no data file.")
+            return None
 
     def tearDown(self):
         '''
@@ -73,38 +52,15 @@ class BaseTestCase(unittest.TestCase):
         '''
         pass
     
-    def setTestResult(self, result='pass', message='No more message.'):
-        if result.lower() == 'pass':
-            printLog("Test case has been executed successfully, here is the message: %s" % message, 'pass')
-            # self.assertTrue(True, "True")
-        elif result.lower() == 'fail':
-            printLog(message)
-            raise self.failureException("Test case execute failed, here is the message: %s" % message)
-        else:
-            printLog("The test result should be 'pass' or 'fail', your input is not supported.", "error")
-            return False
-        
-    def setResultFasle(self, message):
-        return self.setTestResult('fail', message)
-
-    def drive_data(self):
-        '''
-        @summary: 数据驱动用例使用的装饰器
-        @param:
-            f: function
-        @bug: 还未找到装饰器调用函数时，传递给函数参数的方法
-        '''
-        def _call(f):
-            def __call():
-                dict_data = self.initData()
-                for key in dict_data['case']['datadrive']:
-                    if key != 'value':
-                        data = dict_data['case']['datadrive'][key]
-                        return_ = f(data)
-                return return_
-            return __call
-        return _call
-            
 if __name__ == "__main__":
     
-    unittest.main()
+    # 建立测试套件 testSuite，并添加多个测试用例
+    test_cases = ["BaseTestCase.BaseTestCase"]
+  
+    testSuite = unittest.TestSuite()
+    loader = unittest.TestLoader()
+    tests = loader.loadTestsFromNames(test_cases)
+    testSuite.addTests(tests)
+ 
+    unittest.TextTestRunner(verbosity=2).run(testSuite)
+
