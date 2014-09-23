@@ -100,7 +100,7 @@ class HostAPIs(BaseAPIs):
     def createHost(self, xml_host_info):
         '''
         @summary: 创建虚拟化主机
-        @param xml_host_info: XML形式的虚拟化主机信息，用于创建主机
+        @param xml_host_info: XML形式的虚拟化主机信息，用于创建主机：
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式的新建主机信息）
         '''
         api_url = self.base_url

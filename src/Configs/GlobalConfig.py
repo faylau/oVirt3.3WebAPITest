@@ -6,7 +6,8 @@
 Hosts = {'engine' : {'ip':'10.1.167.2', 'password':'qwer1234'},
          'node1' : {'ip':'10.1.167.1', 'password':'qwer1234'},
          'node3' : {'ip':'10.1.167.3', 'password':'qwer1234'},
-         'node4' : {'ip':'10.1.167.4', 'password':'qwer1234'}
+         'node4' : {'ip':'10.1.167.4', 'password':'qwer1234', 
+                    'IMM':{'ip':'10.1.167.14', 'user':'USERID', 'password':'userid', 'type':'ipmi'}}
          }
 
 '''-----------------------------------------------------------------------------------------

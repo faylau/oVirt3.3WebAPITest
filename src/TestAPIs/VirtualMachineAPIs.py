@@ -370,7 +370,6 @@ class VirtualMachineAPIs(BaseAPIs):
         api_url = '%s/%s/export' % (self.base_url, vm_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_export_vm_option)
-        print r.status_code, r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def ticketVm(self, vm_name, xml_ticket_option):
@@ -379,6 +378,19 @@ class VirtualMachineAPIs(BaseAPIs):
         @todo: 未实现
         '''
         pass
+    
+    def statisticsVm(self, vm_name):
+        '''
+        @summary: 统计虚拟机信息
+        @param vm_name: 虚拟机名称
+        @return: 字典：（1）status_code：请求返回码（200）；（2）result：dict形式的VM统计信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/statistics' % (self.base_url, vm_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
     
 class VmDiskAPIs(VirtualMachineAPIs):
     '''
@@ -839,11 +851,11 @@ class VmCdromAPIs(VirtualMachineAPIs):
     
 class VmSnapshotAPIs(VirtualMachineAPIs):
     '''
-    @summary: VM的CDROM管理子接口类，通过HttpClient调用相应的REST接口实现。
+    @summary: VM的Snapshot管理子接口类，通过HttpClient调用相应的REST接口实现。
     '''
     def __init__(self):
         '''
-        @summary: 初始化函数，定义VM Nic相关API的base_url，如'https://10.1.167.2/api/vms'
+        @summary: 初始化函数，定义VM Snapshot相关API的base_url，如'https://10.1.167.2/api/vms'
         '''
         self.base_url = '%s/vms' % WebBaseApiUrl
         self.sub_url_snapshots = 'snapshots'
@@ -865,13 +877,17 @@ class VmSnapshotAPIs(VirtualMachineAPIs):
         @summary: 根据snapshot id获取虚拟机Snapshot信息
         @param vm_name: 虚拟机名称
         @param snapshot_id: 快照ID
-        @return: （1）status_code：请求返回码；（2）result：dict形式的快照信息。
+        @return: （1）None（snapshot不存在） ；（2）status_code：请求返回码；result：dict形式的快照信息。
         '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        if r.status_code == 404:
+            print "The snapshot not exist. Details: %s, %s" % (r.status_code, r.text)
+            return None
+        else:
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def createVmSnapshot(self, vm_name, xml_snapshot_info):
         '''
@@ -898,13 +914,169 @@ class VmSnapshotAPIs(VirtualMachineAPIs):
         @param vm_name: 虚拟机名称
         @param snapshot_id: 虚拟机快照ID
         @param xml_restore_option: 恢复虚拟机快照的操作选项同，缺省值为<action/>
-        @return: 
+        @return: （1）status_code：请求返回码；（2）result：dict形式的操作结果。
         '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s/%s/restore' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_restore_option)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def cloneVmFromSnapshot(self, xml_clone_vm_option):
+        '''
+        @summary: 从快照克隆虚拟机（实际上调用的是创建虚拟机的API：VirtualMachineAPIs.createVm）
+        @param xml_clone_vm_option: XML格式的克隆设置项：
+        (1) 最基本的形式如下：只设定vm名称、cluster以及snapshot id，就可以完成直接从快照克隆虚拟机
+            <vm>
+                <name>vmSnapshot</name>
+                <cluster>
+                    <name>Cluster-ISCSI</name>
+                </cluster>
+                <snapshots>
+                    <snapshot id="xxxxxxxxxx"/>
+                </snapshots>
+            </vm>
+        (2) 在指定snapshot id的同时，也可以对VM的常规设置项进行配置，具体可参见createVm的接口参数。
+        @return: （1）status_code：请求返回码（202）；（2）result：dict形式的新建VM信息。
+        '''
+        return self.createVm(xml_clone_vm_option)
+    
+    def delVmSnapshot(self, vm_name, snapshot_id):
+        '''
+        @summary: 删除虚拟机快照
+        @param vm_name: 虚拟机名称
+        @param 快照id: 
+        @return: （1）status_code：请求返回码（202）；（2）result：dict形式的操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+
+class VmWatchdogAPIs(VirtualMachineAPIs):
+    '''
+    @summary: VM的Watchdog管理子接口类，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义VM Watchdog相关API的base_url，如'https://10.1.167.2/api/vms'
+        '''
+        self.base_url = '%s/vms' % WebBaseApiUrl
+        self.sub_url_watchdogs = 'watchdogs'
+        
+    def getVmWatchdogsList(self, vm_name):
+        '''
+        @summary: 获取虚拟机的watchdog设备列表
+        @param vm_name: 虚拟机名称
+        @return: （1）status_code：请求返回码（200）；（2）result：None或Watchdog列表。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getVmWatchdogInfo(self, vm_name, watchdog_id='00000000-0000-0000-0000-000000000000'):
+        '''
+        @summary: 获取虚拟机Watchdog信息（目前每个VM只能有一个Watchdog，所以Watchdog是唯一的）
+        @param vm_name: 虚拟机名称
+        @param watchdog_id: 虚拟机watchdog的id，缺省为00000000-0000-0000-0000-000000000000
+        @return: （1）None：watchdog不存在；或：（2）Dict格式，包括状态码和返回的watchdog信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_watchdogs, watchdog_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        if r.status_code == 404:
+            print 'There is no watchdog with %s. Details: %s, %s' % (vm_name, r.status_code, r.text)
+        else:
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
+    def createVmWatchdog(self, vm_name, xml_watchdog_info):
+        '''
+        @summary: 为虚拟机增加watchdog设备
+        @param vm_name: 虚拟机名称
+        @param xml_watchdog_info: watchdog设备信息，如：
+            <watchdog>
+                <model>i6300esb</model>
+                <action>reset</action>
+            </watchdog>
+        @return: （1）status_code：请求返回码（201）；（2）result：XML格式的，创建的watchdog信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_watchdogs)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_watchdog_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def updateVmWatchdog(self, vm_name, xml_watchdog_update_info, watchdog_id='00000000-0000-0000-0000-000000000000'):
+        '''
+        @summary: 更新虚拟机watchdog信息
+        @param vm_name: 虚拟机名称
+        @param xml_watchdog_update_info: 更新的watchdog配置信息:
+            <watchdog>
+                <model>i6300esb</model>
+                <action>dump</action>
+            </watchdog> 
+        @param watchdog_id: 虚拟机watchdog设备id，有缺省值
+        @return: （1）status_code：请求返回码（200）；（2）result：（XML格式）更新后的watchdog信息。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_watchdogs, watchdog_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_watchdog_update_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def delVmWatchdog(self, vm_name, wathchdog_id='00000000-0000-0000-0000-000000000000', xml_del_optoin=None):
+        '''
+        @summary: 删除虚拟机watchdog
+        @param vm_name: 虚拟机名称
+        @param watchdog_id: 虚拟机watchdog的id
+        @return:  （1）status_code：请求返回码；（2）result：（XML格式）删除操作结果。
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_watchdogs, wathchdog_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        if r.status_code == 404:
+            print "No watchdog for vm '%s'. Details: %s, %s" % (vm_id, r.status_code, r.text)
+            return None
+        else:
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+
+class VmAppAPIs(VirtualMachineAPIs):
+    '''
+    @summary: VM的Applicatoins管理子接口类，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义VM Watchdog相关API的base_url，如'https://10.1.167.2/api/vms'
+        '''
+        self.base_url = '%s/vms' % WebBaseApiUrl
+        self.sub_url_applications = 'applications'
+        
+    def getVmAppsList(self, vm_name):
+        '''
+        @summary: 获取虚拟机Applications列表
+        @param vm_name: 虚拟机名称
+        @return: 
+        @note: 该接口可能存在bug，当application为空时，接口抛出异常，返回500状态码
+        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_applications)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        print r.status_code, r.text
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getVmAppInfo(self, vm_name, app_id):
+        '''
+        @summary: 获取Application的具体信息
+        @param vm_name: 虚拟机名称
+        @todo: 未完成，Application信息较少等需要使用该方法的时候再进行补充。
+        '''
+        pass
 
     
 if __name__=='__main__':
@@ -913,6 +1085,49 @@ if __name__=='__main__':
     vmnicapi = VmNicAPIs()
     vmcdromapi = VmCdromAPIs()
     vmsnapshotapi = VmSnapshotAPIs()
+    vmwatchdogapi = VmWatchdogAPIs()
+    vmappapi = VmAppAPIs()
+    
+    print vmappapi.getVmAppsList('test1')
+    
+#     print vmwatchdogapi.delVmWatchdog('test1')
+    
+    xml_watchdog_update_info = '''
+    <watchdog>
+        <model>i6300esb</model>
+        <action>None</action>
+    </watchdog>
+    '''
+#     print vmwatchdogapi.updateVmWatchdog('test1', xml_watchdog_update_info)
+    
+    xml_watchdog_info = '''
+    <watchdog>
+        <model>i6300esb</model>
+        <action>reset</action>
+    </watchdog>
+    '''
+#     print vmwatchdogapi.createVmWatchdog('test1', xml_watchdog_info)
+    
+#     print vmwatchdogapi.getVmWatchdogInfo('ns6.0')
+#     print vmwatchdogapi.getVmWatchdogsList('ns6.0')
+    
+#     print vmapi.statisticsVm('test1')
+#     print vmsnapshotapi.delVmSnapshot('test1', '6bc34709-f21c-4832-a703-437888d65767')
+    
+    xml_clone_vm_option = '''
+    <vm>
+        <name>vmSnapshot</name>
+        <cluster>
+            <name>Default</name>
+        </cluster>
+        <snapshots>
+            <snapshot id="5806b12f-a9e9-4666-933b-86ca9dc395fd"/>
+        </snapshots>
+    </vm>
+    '''
+#     print vmsnapshotapi.cloneVmFromSnapshot(xml_clone_vm_option)
+    
+#     print vmsnapshotapi.restoreVmSnapshot('test1', '5806b12f-a9e9-4666-933b-86ca9dc395fd')
     
     xml_snapshot_info = '''
     <snapshot>
