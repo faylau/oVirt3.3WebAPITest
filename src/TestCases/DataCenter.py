@@ -18,10 +18,11 @@ import unittest
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 from Utils.PrintLog import LogPrint
+from Utils.Util import DictCompare
 
-class ITC0101_GetDataCentersList(BaseTestCase):
+class ITC010101_GetDataCentersList(BaseTestCase):
     '''
-    Summary:
+    @summary: ITC-01数据中心管理-01数据中心操作-01获取数据中心列表
     '''
     def test_GetDataCentersList(self):
         dcapi = DataCenterAPIs()
@@ -34,8 +35,9 @@ class ITC0101_GetDataCentersList(BaseTestCase):
             self.flag = False
         self.assertTrue(self.flag)
         
-class ITC010201_GetDataCenterInfo(BaseTestCase):
+class ITC010102_GetDataCenterInfo(BaseTestCase):
     '''
+    @summary: ITC-01数据中心管理-01数据中心操作-02获取指定数据中心信息
     '''
     def setUp(self):
         # 调用父类方法，获取该用例所对应的测试数据模块
@@ -50,12 +52,15 @@ class ITC010201_GetDataCenterInfo(BaseTestCase):
         r = self.dcapi.getDataCenterInfo(self.dm.dc_name)
         if r['status_code']==200:
             dict_actual = r['result']
-            print dict_actual
             dict_expected = xmltodict.parse(self.dm.dc_info)
-            print dict_expected
-            self.assertDictContainsSubset(dict_expected, dict_actual)
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(dict_expected, dict_actual):
+                LogPrint().info("Get DataCenter '%s' info SUCCESS." % self.dm.dc_name)
+            else:
+                LogPrint().error("Get DataCenter '%s' info INCORRECT.")
+                return False
         else:
-            LogPrint().error("Create DataCenter '%s' FAILED. " % self.dm.dc_name)
+            LogPrint().error("Get/Create DataCenter '%s' FAILED. " % self.dm.dc_name)
     
     def tearDown(self):
         # 资源回收：删除所创建的数据中心
@@ -68,7 +73,7 @@ class ITC010201_GetDataCenterInfo(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["DataCenter.ITC010201_GetDataCenterInfo"]
+    test_cases = ["DataCenter.ITC010102_GetDataCenterInfo"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
