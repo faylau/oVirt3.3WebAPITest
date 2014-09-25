@@ -68,9 +68,9 @@ class DictCompare(object):
                 self.keys_list.append(i)
                 list_len = len(item[i])
                 for n in range(list_len):
-                    self.keys_list.append(n)
+#                     self.keys_list.append(n)
                     self.getItemsList(item[i][n])
-                    self.keys_list.pop()    # 若list中存在多个同级元素，保存其下标后，需要将下标pop，以便保存下一个同级元素的下标
+#                     self.keys_list.pop()    # 若list中存在多个同级元素，保存其下标后，需要将下标pop，以便保存下一个同级元素的下标
             # 如果该元素是叶子节点，则保存当前的key
             else:
                 self.keys_list.append(i)
