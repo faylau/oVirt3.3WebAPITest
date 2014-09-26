@@ -1,5 +1,4 @@
 #encoding:utf-8
-import xmltodict
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -15,10 +14,13 @@ __version__ = "V0.1"
 
 import unittest
 
+import xmltodict
+
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
+from Utils.HTMLTestRunner import HTMLTestRunner
 
 class ITC010101_GetDataCentersList(BaseTestCase):
     '''
@@ -62,12 +64,13 @@ class ITC010102_GetDataCenterInfo(BaseTestCase):
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
                 LogPrint().info("Get DataCenter '%s' info SUCCESS." % self.dm.dc_name)
-#                 return True
             else:
                 LogPrint().error("Get DataCenter '%s' info INCORRECT.")
-#                 return False
+                self.flag = False
         else:
             LogPrint().error("Get/Create DataCenter '%s' FAILED. " % self.dm.dc_name)
+            self.flag = False
+        self.assertTrue(self.flag)
     
     def tearDown(self):
         '''
@@ -89,4 +92,9 @@ if __name__ == "__main__":
     tests = loader.loadTestsFromNames(test_cases)
     testSuite.addTests(tests)
  
-    unittest.TextTestRunner(verbosity=2).run(testSuite)
+#     unittest.TextTestRunner(verbosity=2).run(testSuite)
+
+    fileName = r"d:\result.html"
+    fp = file(fileName, 'wb')
+    runner = HTMLTestRunner(stream=fp, title=u"测试结果", description=u"测试报告")
+    runner.run(testSuite)
