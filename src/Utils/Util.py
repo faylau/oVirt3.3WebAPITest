@@ -93,6 +93,8 @@ class DictCompare(object):
             # 当flag标志位为False（dict为特殊类型）且keys_list不为空（说明递归可以继续）时，将keys_list最后元素出栈，并保存。
             if not self.flag and self.keys_list:
                 self.temp = self.keys_list.pop()
+            elif self.flag and self.keys_list:
+                self.keys_list.pop()
         
         # 如果当前item是list，进行遍历，并且对list中的元素进行递归，将上面出栈的元素重新进栈。
         elif isinstance(item, list):
