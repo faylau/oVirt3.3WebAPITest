@@ -26,6 +26,7 @@ class BaseTestCase(unittest.TestCase):
     @summary: 所有TestCase的父类
     '''
     def setUp(self):
+        self.flag = False
         return self.initData()
         
     def initData(self):

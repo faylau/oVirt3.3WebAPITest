@@ -40,6 +40,9 @@ class ITC010102_GetDataCenterInfo(BaseTestCase):
     @summary: ITC-01数据中心管理-01数据中心操作-02获取指定数据中心信息
     '''
     def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
         
@@ -48,6 +51,9 @@ class ITC010102_GetDataCenterInfo(BaseTestCase):
         self.dcapi.createDataCenter(self.dm.dc_info)
         
     def test_GetDataCenterInfo(self):
+        '''
+        @summary: 测试用例执行步骤
+        '''
         # 测试1：获取数据中心的信息，并与期望结果进行对比
         r = self.dcapi.getDataCenterInfo(self.dm.dc_name)
         if r['status_code']==200:
@@ -56,14 +62,17 @@ class ITC010102_GetDataCenterInfo(BaseTestCase):
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
                 LogPrint().info("Get DataCenter '%s' info SUCCESS." % self.dm.dc_name)
+#                 return True
             else:
                 LogPrint().error("Get DataCenter '%s' info INCORRECT.")
-                return False
+#                 return False
         else:
             LogPrint().error("Get/Create DataCenter '%s' FAILED. " % self.dm.dc_name)
     
     def tearDown(self):
-        # 资源回收：删除所创建的数据中心
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
         if self.dcapi.searchDataCenterByName(self.dm.dc_name):
             self.dcapi.delDataCenter(self.dm.dc_name)
 
