@@ -45,7 +45,10 @@ class DataCenterAPIs(BaseAPIs):
         @return: 数据中心id
         '''
         dc_list = self.searchDataCenterByName(dc_name)
-        return dc_list['result']['data_centers']['data_center']['@id']
+        if dc_list['result']['data_centers']:
+            return dc_list['result']['data_centers']['data_center']['@id']
+        else:
+            return None
     
     def getDataCenterNameById(self, dc_id):
         '''
@@ -78,10 +81,13 @@ class DataCenterAPIs(BaseAPIs):
         '''
         if not dc_id and dc_name:
             dc_id = self.getDataCenterIdByName(dc_name)
-        api_url = '%s/%s' % (self.base_url, dc_id)
-        method = 'GET'
-        r = HttpClient.sendRequest(method=method, api_url=api_url)
-        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        if dc_id:
+            api_url = '%s/%s' % (self.base_url, dc_id)
+            method = 'GET'
+            r = HttpClient.sendRequest(method=method, api_url=api_url)
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        else:
+            return None
     
     def getDataCenterStatus(self, dc_name):
         '''

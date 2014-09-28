@@ -68,7 +68,7 @@ class BaseTestCase(unittest.TestCase):
                         for data in data_list:
                             od = OrderedDict()
                             od[key] = data
-                            print od
+#                             print od
                             return_ = f(xmltodict.unparse(od))
                 return return_
             return __call
