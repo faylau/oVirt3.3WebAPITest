@@ -71,7 +71,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = self.base_url
         method = "GET"
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     def getClusterInfo(self, cluster_name=None, cluster_id=None):
@@ -86,7 +86,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, cluster_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def createCluster(self, cluster_info):
@@ -123,7 +123,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=cluster_info)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     def updateCluster(self, cluster_name, update_info):
@@ -137,7 +137,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, cluster_id)
         method = 'PUT'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=update_info)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
         
@@ -152,7 +152,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, cluster_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def getClusterNetworkList(self,cluster_name):
@@ -166,7 +166,7 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s/networks' % (self.base_url, cluster_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def getClusterNetworkInfo(self,cluster_name,network_name):
@@ -179,10 +179,10 @@ class ClusterAPIs(BaseAPIs):
         network_list = self.getClusterNetworkList(cluster_name)['result']['networks']['network']
         for network in network_list:
             if network['name']==network_name:
-                return network
+                return {'network':network}
             
            
-    def attachNetworkToCluster(self, cluster_name, nw_info=None):
+    def attachNetworkToCluster(self, cluster_name=None, nw_info=None):
         '''
         @summary: 将网络附加到集群
         @param cluster_name: 集群名称
@@ -192,10 +192,10 @@ class ClusterAPIs(BaseAPIs):
         api_url = '%s/%s/networks' % (self.base_url, self.getClusterIdByName(cluster_name))
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=nw_info)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def detachNetworkFromCluster(self, cluster_name, nw_name, async=None):
+    def detachNetworkFromCluster(self, cluster_name=None, nw_name=None, async=None):
         '''
         @summary: 将附加到集群的网络进行分离
         @param cluster_name: 集群名称
@@ -210,10 +210,10 @@ class ClusterAPIs(BaseAPIs):
         method = 'DELETE'
         api_url = '%s/%s/networks/%s' % (self.base_url, cluster_id, nw_id)
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def updateNetworkOfCluster(self, cluster_name, nw_name,data=None):
+    def updateNetworkOfCluster(self, cluster_name=None, nw_name=None,data=None):
         '''
         @summary: 更新附加到集群的网络信息
         @param cluster_name: 集群名称
@@ -228,12 +228,12 @@ class ClusterAPIs(BaseAPIs):
         method = 'PUT'
         api_url = '%s/%s/networks/%s' % (self.base_url, cluster_id, nw_id)
         r = HttpClient.sendRequest(method=method, api_url=api_url,data=data)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
 if __name__=='__main__':
     clusterapi = ClusterAPIs()
-    #print clusterapi.searchClusterByName('Default')
+    #print clusterapi.searchClusterByName('Default11')
     #print clusterapi.getClusterIdByName('Default1')
     #print clusterapi.getClusterNameById('46951ef6-5bdb-4da3-89e0-092782b35487')
     #print clusterapi.getClustersList()
@@ -245,40 +245,42 @@ if __name__=='__main__':
     
     data = '''
     <cluster>
-        <name>NewCluster111</name>
-        <cpu id="Intel Nehalem Family"/>
-        <data_center href="/api/datacenters/8cfa5137-e11f-445b-bbd5-c5611338d8eb" id="8cfa5137-e11f-445b-bbd5-c5611338d8eb"/>
+        <name>aaa</name>
+        <cpu id="Intel Penryn Family"/>
+        <data_center href="/api/datacenters/8cfa5137-e11f-445b-bbd5-c5611338d8eb41" id="8cfa5137-e11f-445b-bbd5-c5611338d8eb"/>
         <virt_service>true</virt_service>
         <gluster_service>true</gluster_service>
         <tunnel_migration>ture</tunnel_migration>
         <trusted_service>false</trusted_service> 
-        <ballooning_enabled>true</ballooning_enabled>
+        <ballooning_enabled>true</ballooning_enabled>  
+        
     
     </cluster>
     '''
-    print clusterapi.createCluster(data)
-    #print clusterapi.updateCluster('NewCluster',data)
+    #print clusterapi.createCluster(data)
+    #print clusterapi.updateCluster('NewCluster22',data)
     data1 = '''
     <action>
         <async>false</async>
+        
     </action>
     '''
     #print clusterapi.delCluster('NewCluster1',data1)
     #print clusterapi.getClusterNetworkList('Default')
-    #print clusterapi.getClusterNetworkInfo('Default','aaa')
+    print clusterapi.getClusterNetworkInfo('Default','aaa')
     data2 = '''
     <network id="ef00d7c4-7d9a-4c3b-934c-b1ac7298eaf1">    
     </network>
     '''
     data3 = '''
     <network>
-       <name>network11</name>
+       <name>test1</name>
     </network>
     '''
    
-    #print clusterapi.attachNetworkToCluster('Default', data2)
-    #print clusterapi.attachNetworkToCluster('Default', data3)
-    #print clusterapi.detachNetworkFromCluster('Default','network11')
+    print clusterapi.attachNetworkToCluster('Default',data3)
+    #print clusterapi.attachNetworkToCluster(cluster_name='Default')
+    #print clusterapi.detachNetworkFromCluster(nw_name='aaa')
     data4 = '''
     <network>
     <display>false</display>
@@ -286,9 +288,9 @@ if __name__=='__main__':
         <usage>VM</usage>
         <usage>DISPLAY</usage>
     </usages>
-    </network>
+   
     '''
-    #print clusterapi.updateNetworkOfCluster('Default', 'aaa', data4)
+    #print clusterapi.updateNetworkOfCluster('Default','network11',data4)
     #print clusterapi.updateNetworkOfCluster('Default', 'aaa', data4)
 #test
    

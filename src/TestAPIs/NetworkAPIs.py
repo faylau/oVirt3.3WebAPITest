@@ -93,7 +93,7 @@ class NetworkAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=nw_info)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}      
     
     def updateNetwork(self, nw_name, dc_name,update_info):
@@ -124,7 +124,7 @@ class NetworkAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, nw_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
-        r.raise_for_status()
+        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
 
@@ -189,19 +189,15 @@ class NetworkProfilesAPIs(NetworkAPIs):
 if __name__=='__main__':
     nwapi = NetworkAPIs()
     #print nwapi.searchNetworkByName('network111')
-    nw_id = nwapi.getNetworkIdByName('network11', 'Default')
     #print nwapi.getNetworkIdByName('aaa', 'Default')
     #print nwapi.getNetworksList()
     #print nwapi.getNetworkInfo(nw_id='8fa8a1db-65bc-43e2-bfba-1ac523b556bb')
     #print nwapi.getNetworkInfo(nw_name='network11', dc_name='Default')
     nw_info='''
     <network>
-    <name>network1</name>
+    <name>network1234567</name>
     <description>lalala</description>
-    <data_center>
-        <name>Default</name>
-    </data_center>
-    <vlan id="2"/>
+    <data_center id= "5849b030-626e-47cb-ad90-3ce782d831b3"/>    
     <ip address="192.168.0.1" netmask="255.255.255.0" gateway="192.168.0.254"/>
     <stp>false</stp>
     <mtu>1500</mtu>
@@ -211,13 +207,13 @@ if __name__=='__main__':
     </usages>
 </network>
     '''
-    #nwapi.createNetwork(nw_info)
-    #print nwapi.updateNetwork('aaaa', 'Default', nw_info)
-    #print nwapi.delNetwork('ovirtmgmt', 'Default')
+    print nwapi.createNetwork(nw_info)
+    #print nwapi.updateNetwork('network123', 'Default', nw_info)
+    print nwapi.delNetwork('network1e1','Default')
     nwprofile=NetworkProfilesAPIs()
     #print nwprofile.getNetworkProfileInfo('aaa', 'aaa', 'Default')
     #print nwprofile.getNetworkProfileList(nw_id)
-    print nwprofile.getProfileIdbyName(nw_id, 'a')
+    #print nwprofile.getProfileIdbyName(nw_id, 'a')
             
             
 
