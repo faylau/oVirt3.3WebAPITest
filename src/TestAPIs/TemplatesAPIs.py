@@ -119,7 +119,7 @@ class TemplatesAPIs(BaseAPIs):
         '''
         @summary: 编辑模板信息
         @param temp_name: 模板名称
-        @param update_info: 更新的内容
+        @param update_info: 更新的内容，xml文件
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         temp_id = self.getTemplateIdByName(temp_name)
@@ -134,7 +134,10 @@ class TemplatesAPIs(BaseAPIs):
         '''
         @summary: 删除模板
         @param temp_name: 模板名称
-        @param async: 是否异步
+        @param async: 是否异步，xml文件
+        <action>
+            <async>false</async>
+        </action>
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         temp_id = self.getTemplateIdByName(temp_name)
@@ -149,7 +152,14 @@ class TemplatesAPIs(BaseAPIs):
         '''
         @summary: 导出模板
         @param temp_name: 模板名称
-        @param action : 导出配置
+        @param action : 导出配置，xml文件
+        <action>
+            <storage_domain>
+                <name>export</name>
+            </storage_domain>
+            <exclusive>false</exclusive>
+            <async>false</async>
+        </action>
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
                    设置同步，返回200；设置异步，返回202
         '''
@@ -224,6 +234,13 @@ class TemplateDisksAPIs(TemplatesAPIs):
         @summary: 复制某个模板的某个磁盘
         @param temp_name:模板名称
         @param disk_name:磁盘名称 
+        @param copy_data:复制配置，xml文件
+        <action>
+            <storage_domain>
+                <name>Data2-ISCSI</name>
+            </storage_domain>
+            <async>false</async>
+        </action> 
         @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容  
         '''
         temp_id = self.getTemplateIdByName(temp_name)
@@ -231,7 +248,6 @@ class TemplateDisksAPIs(TemplatesAPIs):
         api_url = '%s/%s/disks/%s/copy' % (self.base_url, temp_id,disk_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url,data=copy_data)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
              
     def exportTemplateDisk(self,temp_name,disk_name,export_data):
@@ -239,6 +255,13 @@ class TemplateDisksAPIs(TemplatesAPIs):
         @summary: 导出某个模板的某个磁盘
         @param temp_name:模板名称
         @param disk_name:磁盘名称 
+        @param export_data:导出配置，xml文件
+        <action>
+            <storage_domain>
+                <name>Data2-ISCSI</name>
+            </storage_domain>
+            <async>false</async>
+        </action> 
         @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容 
         @bug: 执行失败 
         '''
@@ -255,6 +278,14 @@ class TemplateDisksAPIs(TemplatesAPIs):
         @summary: 删除某个模板的某个磁盘
         @param temp_name:模板名称
         @param disk_name:磁盘名称 
+        @param delete_data:删除配置，xml 
+        <action>
+            <storage_domain>
+                <id>631cd328-55a5-4e70-9e5d-d86471de8ce7</id>
+            </storage_domain>
+            <async>false</async>
+            <force>true</force>
+        </action>
         @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容  
         @bug: 执行失败
         '''
@@ -328,7 +359,10 @@ class TemplateNicsAPIs(TemplatesAPIs):
         '''
         @summary：为模板创建网络接口
         @param temp_name:模板名称
-        @param nic_data:网络接口配置信息
+        @param nic_data:网络接口配置信息，xml文件
+        <nic>
+            <name>nic4</name>
+        </nic>
                    网络接口输入说明：
           1）接口名称是必须的，其余是可选的
           2）配置集必须设置id
@@ -350,7 +384,10 @@ class TemplateNicsAPIs(TemplatesAPIs):
         @summary：编辑某个模板的网络接口
         @param temp_name:模板名称
         @param nic_name:网络接口名称 
-        @param update_data:网络接口配置信息 
+        @param update_data:网络接口配置信息 ，xml
+        <nic>
+            <name>nic4</name>
+        </nic>
         @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容  
         '''
         temp_id = self.getTemplateIdByName(temp_name)
