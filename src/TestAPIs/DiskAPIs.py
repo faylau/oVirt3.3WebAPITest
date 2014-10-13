@@ -80,7 +80,10 @@ class DiskAPIs(BaseAPIs):
         '''
         @summary: 删除磁盘
         @param disk_id: 磁盘id
-        @param async: 是否异步
+        @param async: 是否异步，xml文件
+        <action>
+            <async>false</async>
+        </action>
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         1）磁盘附加到模板：删除失败，抛出400
         2）磁盘附加到虚拟机，虚拟机关机，删除成功
@@ -89,14 +92,16 @@ class DiskAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, disk_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def exportDisk(self, disk_id,action):
         '''
         @summary: 导出磁盘
         @param disk_id: 磁盘id
-        @param action: 导出配置
+        @param action: 导出配置，xml文件
+        <action>
+            <storage_domain id="2170acd2-6fd0-4e88-a566-293a20fca97a"/>
+        </action>
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         @bug: 执行失败
         '''

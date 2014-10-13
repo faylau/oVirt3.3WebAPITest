@@ -73,7 +73,7 @@ class ITC020102_GetClusterInfo(BaseTestCase):
                 LogPrint().error("Get Cluster '%s' info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("Get/Create Cluster '%s' FAILED. " % self.dm.cluster_name)
+            LogPrint().error("Get Cluster '%s' info FAILED. " % self.dm.cluster_name)
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -157,6 +157,47 @@ class ITC02010302_CreateCluster_Dup(BaseTestCase):
         '''
         if self.clusterapi.searchClusterByName(self.dm.cluster_name):
             self.clusterapi.delCluster(self.dm.cluster_name)
+
+class ITC02010303_CreateClusterNoRequired(BaseTestCase):
+    '''
+    @summary: ITC-02集群管理-01集群操作-03创建一个集群-03缺少必填参数
+    @note: 集群名称、所在数据中心和cpu类型是必填项，验证接口返回码和提示信息
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        self.clusterapi = ClusterAPIs()
+        
+    def test_CreateClusterNoRequired(self):
+        self.expected_result_index = 0
+        # 使用数据驱动，根据测试数据文件循环创建多个数据中心
+        @BaseTestCase.drive_data(self, self.dm.cluster_info)
+        def do_test(xml_info):
+            self.flag = True
+            r = self.clusterapi.createCluster(xml_info)
+            if r['status_code']==self.dm.expected_status_code:
+                dictCompare = DictCompare()
+                if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.expected_result_index]), r['result']):
+                    LogPrint().info("PASS: The returned status code and messages are CORRECT.")
+                else:
+                    LogPrint().error("FAIL: The returned messages are INCORRECT.")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: The returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
+                self.flag = False
+            self.assertTrue(self.flag)
+            self.expected_result_index += 1
+            
+        do_test()
+        
+    def tearDown(self):
+        '''
+        @summary: 无需清理
+        '''
+        
 
 class ITC020104_UpdateCluster(BaseTestCase):
     '''
@@ -344,9 +385,104 @@ class ITC020203_attachNetworktoCluster(BaseTestCase):
         if self.clusterapi.searchClusterByName(self.dm.cluster_name):
             self.clusterapi.delCluster(self.dm.cluster_name)       
 
+class ITC020204_detachNetworkFromCluster(BaseTestCase):
+    '''
+    @summary: ITC-02集群管理-02集群网络操作-04将网络从集群分离
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        
+        # step1：创建一个逻辑网络,属于Default数据中心
+        self.nwapi = NetworkAPIs()
+        self.nwapi.createNetwork(self.dm.nw_info)
+        # step2:创建一个集群，属于Default数据中心
+        self.clusterapi = ClusterAPIs()
+        self.clusterapi.createCluster(self.dm.cluster_info)
+        
+        # step3：将网络附加到集群
+        self.clusterapi.attachNetworkToCluster(self.dm.cluster_name, self.dm.nw_info)
+        
+    def test_detachNetworkFromCluster(self):
+        '''
+        @summary: 测试用例执行步骤
+        '''
+        r = self.clusterapi.detachNetworkFromCluster(self.dm.cluster_name, self.dm.network_name)
+        if r['status_code'] ==self.dm.status_code:
+            #检查集群中网络是否存在
+            if not self.clusterapi.getClusterNetworkInfo(self.dm.cluster_name, self.dm.network_name):
+                LogPrint().info("detachNetworkFromCluster SUCCESS." )
+            else:
+                LogPrint().info("detachNetworkFromCluster INCORRECT." ) 
+        else:
+            LogPrint().info("detachNetworkFromCluster FAILED." )
+              
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        if self.nwapi.searchNetworkByName(self.dm.network_name):
+            self.nwapi.delNetwork(self.dm.network_name, 'Default')
+        if self.clusterapi.searchClusterByName(self.dm.cluster_name):
+            self.clusterapi.delCluster(self.dm.cluster_name)
+
+class ITC020205_UpdateNetworkofCluster(BaseTestCase):
+    '''
+    @summary: ITC-02集群管理-02集群网络操作-05更新集群网络信息
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        
+        # step1：创建一个逻辑网络,属于Default数据中心
+        self.nwapi = NetworkAPIs()
+        self.nwapi.createNetwork(self.dm.nw_info)
+        # step2:创建一个集群，属于Default数据中心
+        self.clusterapi = ClusterAPIs()
+        self.clusterapi.createCluster(self.dm.cluster_info)
+        
+        # step3：将网络附加到集群
+        self.clusterapi.attachNetworkToCluster(self.dm.cluster_name, self.dm.nw_info)
+        
+    def test_UpdateNetworkofCluster(self):
+        '''
+        @summary: 测试用例执行步骤
+        '''
+        r = self.clusterapi.updateNetworkOfCluster(self.dm.cluster_name, self.dm.network_name, self.dm.nw_info_new)
+        if r['status_code'] ==self.dm.status_code:
+            dict_actual = self.clusterapi.getClusterNetworkInfo(self.dm.cluster_name, self.dm.network_name)
+            #dict_expected = {'network':xmltodict.parse(self.dm.nw_info_new)['network']}
+            dict_expected = xmltodict.parse(self.dm.nw_info_new)
+            print dict_actual
+            print dict_expected
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(dict_expected, dict_actual):
+                LogPrint().info("UpdateNetworkofCluster SUCCESS." )
+            else:
+                LogPrint().info("UpdateNetworkofCluster INCORRECT." ) 
+        else:
+            LogPrint().info("UpdateNetworkofCluster FAILED." )
+              
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        if self.nwapi.searchNetworkByName(self.dm.network_name):
+            self.nwapi.delNetwork(self.dm.network_name, 'Default')
+        if self.clusterapi.searchClusterByName(self.dm.cluster_name):
+            self.clusterapi.delCluster(self.dm.cluster_name)
+
+
+
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Cluster.ITC020203_attachNetworktoCluster"]
+    test_cases = ["Cluster.ITC02010303_CreateClusterNoRequired"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
