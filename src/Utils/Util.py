@@ -17,6 +17,8 @@ __version__ = "V0.1"
 # V0.3           2014/09/25     存在问题，修改了getItemsList成员函数，      Liu Fei
 #                               解决了dict中存在list的问题，以及特殊类型
 #                               dict的问题（全部key均包含#或@字符）。
+# v0.4           2014/10/10     存在问题，将第1个参数修改为函数名，可以在    Liu Fei
+#                               每一个while中均动态获得结果。
 #---------------------------------------------------------------------------------
 '''
 
@@ -25,7 +27,7 @@ import time
 from copy import deepcopy
 
 
-def wait_until(condition, duration_time, interval_time=2):
+def wait_until(func, duration_time, interval_time=2):
     '''
     @summary: 在指定时间内判断某个条件是否符合要求
     @param duration_time: 持续检查的时间（秒）
@@ -37,11 +39,11 @@ def wait_until(condition, duration_time, interval_time=2):
         raise Exception("The duration time should greater than interval time.")
     end_time = datetime.now() + timedelta(seconds=duration_time)
     while (datetime.now() < end_time):
-        if condition:
-            return condition
+        if func():
+            return True
         else:
             time.sleep(interval_time)
-    return condition
+    return False
 
 class DictCompare(object):
     '''
@@ -154,12 +156,12 @@ if __name__=='__main__':
     </host>
     '''
     
-    import xmltodict
-    dict1 = xmltodict.parse(xml1)
-    dict2 = xmltodict.parse(xml2)
-        
-    dc = DictCompare()
-    dc.getItemsList(dict2)
+#     import xmltodict
+#     dict1 = xmltodict.parse(xml1)
+#     dict2 = xmltodict.parse(xml2)
+#         
+#     dc = DictCompare()
+#     dc.getItemsList(dict2)
 #     print dc.items_path_list
-    print dc.isSubsetDict(dict1, dict2)
+#     print dc.isSubsetDict(dict1, dict2)
             

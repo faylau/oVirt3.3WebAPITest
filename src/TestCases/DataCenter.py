@@ -18,9 +18,10 @@ import xmltodict
 
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
+from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-from Utils.HTMLTestRunner import HTMLTestRunner
+
 
 class ITC010101_GetDCList(BaseTestCase):
     '''
@@ -80,7 +81,7 @@ class ITC010102_GetDCInfo(BaseTestCase):
 
 class ITC01010301_CreateDC(BaseTestCase):
     '''
-    @summary: ITC-01数据中心管理-01数据中心操作-03创建数据中心-01正常创建
+    @summary: ITC-01数据中心管理-01数据中心操作-03创建-01正常创建
     @note: 包括3种类型数据中心（NFS、ISCSI和FC）
     @note: 包括3种兼容版本（3.1、3.2、3.3）
     '''
@@ -126,7 +127,7 @@ class ITC01010301_CreateDC(BaseTestCase):
                 
 class ITC01010302_CreateExistDC(BaseTestCase):
     '''
-    @summary: ITC-01数据中心管理-01数据中心操作-03创建数据中心-02重复创建
+    @summary: ITC-01数据中心管理-01数据中心操作-03创建-02重复创建
     @note: 创建重名的数据中心（与Default重名）
     @precondition: 存在缺省的数据中心Default
     '''
@@ -163,7 +164,7 @@ class ITC01010302_CreateExistDC(BaseTestCase):
         
 class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
     '''
-    @summary: ITC-01数据中心管理-01数据中心操作-03创建数据中心-03参数验证-01缺少必填参数
+    @summary: ITC-01数据中心管理-01数据中心操作-03创建-03参数验证-01缺少必填参数
     @note: 创建数据中心，缺少必需要的参数（数据中心有3个必需参数：名称、存储域、兼容版本），验证接口返回状态码及提示信息是否符合预期。
     '''
     def setUp(self):
@@ -208,7 +209,7 @@ class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
         
 class ITC0101030302_CreateDC_VerifyName(BaseTestCase):
     '''
-    @summary: ITC-01数据中心管理-01数据中心操作-03创建数据中心-03参数验证-02名称有效性验证
+    @summary: ITC-01数据中心管理-01数据中心操作-03创建-03参数验证-02名称有效性验证
     @note: 
     '''
     def setUp(self):
@@ -253,7 +254,7 @@ class ITC0101030302_CreateDC_VerifyName(BaseTestCase):
 
 class ITC01010401_UpdateUninitializedDC(BaseTestCase):
     '''
-    @summary: ITC-01数据中心管理-01数据中心操作-04编辑数据中心-01编辑Uninitialized状态数据中心
+    @summary: ITC-01数据中心管理-01数据中心操作-04编辑-01编辑Uninitialized状态数据中心
     @note: Uninitialized数据中心的每一项均可编辑，这里重点测试name、description、type以及version等4项
     '''
     def setUp(self):
@@ -300,7 +301,7 @@ class ITC01010401_UpdateUninitializedDC(BaseTestCase):
             
 class ITC01010403_UpdateDC_DupName(BaseTestCase):
     '''
-    @summary: ITC-01数据中心管理-01数据中心操作-04编辑数据中心-03数据中心重名
+    @summary: ITC-01数据中心管理-01数据中心操作-04编辑-03数据中心重名
     '''
     def setUp(self):
         '''
@@ -328,7 +329,7 @@ class ITC01010403_UpdateDC_DupName(BaseTestCase):
         if r['status_code']==self.dm.expected_status_code:
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(r['result'], xmltodict.parse(self.dm.expected_info)):
-                LogPrint().info("PASS: Returned status code and messages are CORRECT when Update DC with a Dup name .")
+                LogPrint().info("PASS: Returned status code and messages are CORRECT when Update DC with a Dup name.")
             else:
                 LogPrint().error("FAIL: Returned messages are INCORRECT.")
                 self.flag = False
@@ -345,11 +346,156 @@ class ITC01010403_UpdateDC_DupName(BaseTestCase):
             if self.dcapi.searchDataCenterByName(dc_name)['result']['data_centers']:
                 LogPrint().info("Post-Test: Delete the created/updated DataCenter '%s'." % dc_name)
                 self.dcapi.delDataCenter(dc_name)
+                
+class ITC01010404_UpdateDCVersion_HighToLow(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-01数据中心操作-04编辑-04兼容版本由高到低
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        self.dcapi = DataCenterAPIs()
+        LogPrint().info("Pre-Test: Create a DataCenter '%s' with high version.")
+        self.dcapi.createDataCenter(self.dm.pre_dc_info)
+
+    def test_UpdateDCVersion_HighToLow(self):
+        '''
+        @summary: 测试用例执行步骤
+        STEP 1：将一个低版本的数据中心修改为高版本
+        STEP 2：操作失败，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
+        '''     
+        self.flag = True
+        r = self.dcapi.updateDataCenter(self.dm.dc_name, self.dm.update_dc_info)
+        if r['status_code']==self.dm.expected_status_code:
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(r['result'], xmltodict.parse(self.dm.expected_info)):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT when Update DC to lower version.")
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Operation FAIL. The returned status code is INCORRECT.")
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        if self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers']:
+            LogPrint().info("Post-Test: Delete the created/updated DataCenter '%s'." % self.dm.dc_name)
+            self.dcapi.delDataCenter(self.dm.dc_name)
+            
+class ITC01010501_DelDC_Uninitialized(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-01数据中心操作-05删除-01常规删除
+    @note: 删除Uninitialized状态的数据中心
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        self.dcapi = DataCenterAPIs()
+        LogPrint().info("Pre-Test: Create a DataCenter '%s'." % self.dm.dc_name)
+        # PreStep-01：创建一个数据中心，其状态为Uninitialized
+        self.dcapi.createDataCenter(self.dm.pre_dc_info)
+        
+    def test_DelDC_Uninitialized(self):
+        '''
+        @summary: 测试用例执行步骤
+        STEP 1：删除一个Uninitialized状态的数据中心
+        STEP 2：操作成功，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
+        '''     
+        self.flag = True
+        r = self.dcapi.delDataCenter(self.dm.dc_name)
+        if r['status_code']==self.dm.expected_status_code:
+            if self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers'] is None:
+                LogPrint().info("PASS: Returned status code is CORRECT and Delete DC SUCCESS.")
+            else:
+                LogPrint().error("FAIL: Delete DC FAILED, the DC still exists.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Operation FAIL. The returned status code is INCORRECT.")
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        if self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers']:
+            LogPrint().info("Post-Test: Delete the created/updated DataCenter '%s'." % self.dm.dc_name)
+            self.dcapi.delDataCenter(self.dm.dc_name)
+      
+class ITC01010502_DelDC_Force(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-01数据中心操作-05删除-02强制删除
+    @note: 强制删除Uninitialized状态的数据中心
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        self.dcapi = DataCenterAPIs()
+        LogPrint().info("Pre-Test: Create a DataCenter '%s'." % self.dm.dc_name)
+        # PreStep-01：创建一个数据中心，其状态为Uninitialized
+        self.dcapi.createDataCenter(self.dm.pre_dc_info)
+        
+    def test_DelDC_Uninitialized(self):
+        '''
+        @summary: 测试用例执行步骤
+        STEP 1：强制删除一个Uninitialized状态的数据中心
+        STEP 2：操作成功，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
+        '''     
+        self.flag = True
+        r = self.dcapi.delDataCenter(self.dm.dc_name, self.dm.del_dc_option)
+        if r['status_code']==self.dm.expected_status_code:
+            if not self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers']:
+                LogPrint().info("PASS: Force-Delete DC SUCCESS. Returned status code is CORRECT.")
+            else:
+                LogPrint().error("FAIL: Force-Delete DC FAILED, the DC still exists.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Operation FAIL. The returned status code is INCORRECT.")
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        if self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers']:
+            LogPrint().info("Post-Test: Delete the created/updated DataCenter '%s'." % self.dm.dc_name)
+            self.dcapi.delDataCenter(self.dm.dc_name)
+
+class ITC010201_GetSDListOfDC(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-01查看存储域列表
+    @todo: 未完成
+    '''
+    def setUp(self):
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        self.dcapi = DataCenterAPIs()
+        self.sdapi = StorageDomainAPIs()
+        LogPrint().info("Pre-Test: Create a DataCenter '%s'." % self.dm.dc_name)
+        # PreStep-01：创建一个数据中心，其状态为Uninitialized
+        self.dcapi.createDataCenter()
+        
+
+
 
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["DataCenter.ITC01010403_UpdateDC_DupName"]
+    test_cases = ["DataCenter.ITC01010502_DelDC_Force"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

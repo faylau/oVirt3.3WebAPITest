@@ -39,6 +39,6 @@ expected_status_code = 409
 expected_info = '''
 <fault>
     <reason>Operation Failed</reason>
-    <detail>[Cannot create Data Center. The Data Center name is already in use.]</detail>
+    <detail>[Cannot edit Data Center. The Data Center name is already in use.]</detail>
 </fault>
 '''

@@ -31,7 +31,7 @@ class BaseTestCase(unittest.TestCase):
         self.flag = True
         return self.initData()
         
-    def initData(self):
+    def initData(self, test_case=None):
         '''
         @summary: 为测试用例初始化数据集；
         @param : 无
@@ -39,7 +39,8 @@ class BaseTestCase(unittest.TestCase):
         '''
         curPath = os.path.abspath(os.path.dirname(__file__))
         module_name = str(self.__module__)
-        test_case = str(self.__class__.__name__)
+        if test_case is None:
+            test_case = str(self.__class__.__name__)
         dataPath = os.path.dirname(curPath) + os.path.sep + "TestData" + os.path.sep + module_name
         dataFilePath = dataPath + os.path.sep + test_case + ".py"
         if os.path.exists(dataFilePath):
