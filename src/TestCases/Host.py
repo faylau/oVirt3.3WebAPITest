@@ -552,7 +552,6 @@ class ITC0301040102_EditHost_Up_VerifyUneditableOptions(BaseTestCase):
                 LogPrint().info("Post-Test: Delete host '%s' from cluster." % self.dm.host_name)
                 r = self.host_api.delHost(self.dm.host_name, self.dm.xml_host_del_option)
                 self.assertTrue(r['status_code']==self.dm.expected_status_code_del_host)
-                
 
 class ITC0301040201_EditHost_Maintenance_VerifyEditableOptions(BaseTestCase):
     '''
@@ -597,6 +596,18 @@ class ITC0301040201_EditHost_Maintenance_VerifyEditableOptions(BaseTestCase):
             self.flag = False
         self.assertTrue(self.flag)
         
+        # 将主机设置为Maintenance状态
+        r = self.host_api.deactiveHost(self.dm.init_host_name)
+        def is_host_maintenance():
+                return self.host_api.getHostStatus(self.dm.init_host_name)=='maintenance'
+        LogPrint().info("Pre-Test-Step3: Deactive host '%s'." % self.dm.init_host_name)
+        if wait_until(is_host_maintenance, 120, 5):
+            LogPrint().info("Pre-Test3-PASS: Deactive host '%s'SUCCESS." % self.dm.init_host_name)
+        else:
+            LogPrint().info("Pre-Test3-FAIL: Deactive host '%s'FAILED." % self.dm.init_host_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+        
     def test_EditHost_Maintenance_VerifyEditableOptions(self):
         '''
         @summary: 测试步骤
@@ -604,13 +615,12 @@ class ITC0301040201_EditHost_Maintenance_VerifyEditableOptions(BaseTestCase):
         @note: （2）验证接口返回状态码、编辑后的信息是否正确。
         '''
         self.flag = True
-        print self.dm.xml_host_update_info
         r = self.host_api.updateHost(self.dm.init_host_name, self.dm.xml_host_update_info)
-        print r['status_code']
-        print r['result']
         # 判断接口返回状态码是否正确
         if r['status_code'] == self.dm.expected_status_code_edit_host:
             dictCompare = DictCompare()
+            # 在r['result']['cluster']下加入['name']，以方便与数据文件中的期望结果进行对比。
+            r['result']['host']['cluster']['name'] = self.cluster_api.getClusterNameById(r['result']['host']['cluster']['@id'])
             # 判断接口返回的编辑后主机信息与修改的信息是否一致
             if dictCompare.isSubsetDict(xmltodict.parse(self.dm.xml_host_update_info), r['result']):
                 LogPrint().info("PASS: Edit host's name/comment/cluster SUCCESS in Maintenance state.")
@@ -632,7 +642,11 @@ class ITC0301040201_EditHost_Maintenance_VerifyEditableOptions(BaseTestCase):
         for host_name in [self.dm.new_name, self.dm.init_host_name]:
             def is_host_maintenance():
                 return self.host_api.getHostStatus(host_name)=='maintenance'
-            if self.host_api.searchHostByName(host_name)['result']['hosts']:
+            if self.host_api.searchHostByName(host_name)['result']['hosts'] and self.host_api.getHostStatus(host_name)=='maintenance':
+                LogPrint().info("Post-Test: Delete host '%s' from cluster." % host_name)
+                r = self.host_api.delHost(host_name, self.dm.xml_host_del_option)
+                self.assertTrue(r['status_code']==self.dm.expected_status_code_del_host)
+            elif self.host_api.searchHostByName(host_name)['result']['hosts'] and self.host_api.getHostStatus(host_name)=='up':
                 LogPrint().info("Post-Test: Deactive host '%s' from up to maintenance state." % host_name)
                 r = self.host_api.deactiveHost(host_name)
                 self.assertTrue(r['status_code']==self.dm.expected_status_code_deactive_host)
@@ -640,16 +654,350 @@ class ITC0301040201_EditHost_Maintenance_VerifyEditableOptions(BaseTestCase):
                     LogPrint().info("Post-Test: Delete host '%s' from cluster." % host_name)
                     r = self.host_api.delHost(host_name, self.dm.xml_host_del_option)
                     self.assertTrue(r['status_code']==self.dm.expected_status_code_del_host)
+        
         # 删除本用例中新建的Cluster
         if self.cluster_api.searchClusterByName(self.dm.cluster1_name)['result']['clusters']:
             LogPrint().info("Post-Test: Delete the created Cluster '%s' in this TestCase." % self.dm.cluster1_name)
             r = self.cluster_api.delCluster(self.dm.cluster1_name, self.dm.xml_cluster_del_option)
             self.assertTrue(r['status_code']==self.dm.expected_status_code_del_cluster)
+
+class ITC0301040202_EditHost_Maintenance_VerifyUneditableOptions(BaseTestCase):
+    '''
+    @summary: ITC-03主机管理-01主机操作-04编辑-02Maintenance状态-02验证不可编辑项
+    '''
+    def setUp(self):
+        '''
+        @summary: 准备测试环境
+        @note: （1）创建一个主机，等待其变为Up状态；
+        '''
+        # 获取测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 创建一个主机，并等待其状态为Up。
+        self.host_api = HostAPIs()
+        self.flag = True
+        LogPrint().info('Pre-Test-Step1: Create Host "%s" in Cluster "%s".' % (self.dm.host_name, ModuleData.cluster_name))
+        r = self.host_api.createHost(self.dm.xml_host_info)
+        def is_host_up():
+            return self.host_api.getHostStatus(self.dm.host_name)=='up'
+        if wait_until(is_host_up, 200, 5):
+            if r['status_code']==self.dm.expected_status_code_create_host:
+                LogPrint().info("Pre-Test1-PASS: Create host '%s' SUCCESS." % self.dm.host_name)
+            else:
+                LogPrint().error("Pre-Test1-FAIL: Returned status code '%s' is INCORRECT when create host '%s'." % (r['status_code'], self.dm.host_name))
+                self.flag = False
+        else:
+            self.flag = False
+            LogPrint().error("Pre-Test1-FAIL: Create host '%s' FAILED. The state of host is '%s'." % (self.dm.host_name, self.host_api.getHostStatus(self.dm.init_name)))
+        self.assertTrue(self.flag)
+        
+        # 将主机设置为Maintenance状态
+        r = self.host_api.deactiveHost(self.dm.host_name)
+        def is_host_maintenance():
+                return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
+        LogPrint().info("Pre-Test-Step2: Deactive host '%s'." % self.dm.host_name)
+        if wait_until(is_host_maintenance, 120, 5):
+            LogPrint().info("Pre-Test2-PASS: Deactive host '%s'SUCCESS." % self.dm.host_name)
+        else:
+            LogPrint().info("Pre-Test2-FAIL: Deactive host '%s'FAILED." % self.dm.host_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def test_EditHost_Maintenance_VerifyUneditableOptions(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）在Maintenance状态下修改不可编辑的项：IP、密码等；
+        @note: （2）验证操作失败后，接口返回状态码、编辑后的信息是否正确。
+        '''
+        self.flag = True
+        r = self.host_api.updateHost(self.dm.host_name, self.dm.xml_host_update_info)
+        # 判断接口返回状态码是否正确
+        if r['status_code'] == self.dm.expected_status_code_edit_host_fail:
+            dictCompare = DictCompare()
+            # 判断接口返回的编辑后主机信息与修改的信息是否一致
+            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_edit_host), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT when modified the uneditable option the host in MAINTENANCE state.")
+            else:
+                LogPrint().info("FAIL: Returned messages are INCORRECT when modify the host's parameters with MAINTENANCE state.")
+                self.flag = False
+        else:
+            LogPrint().info("FAIL: Returned status code '%s' by update option is INCORRECT, it should be '%s'." % (r['status_code'], self.dm.expected_status_code_edit_host_fail))
+            self.flag = False
+        self.assertTrue(self.flag)
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: 删除创建的主机
+        '''
+        def is_host_maintenance():
+            return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
+        if self.host_api.searchHostByName(self.dm.host_name)['result']['hosts'] and self.host_api.getHostStatus(self.dm.host_name)=='maintenance':
+            LogPrint().info("Post-Test: Delete host '%s' from cluster." % self.dm.host_name)
+            r = self.host_api.delHost(self.dm.host_name, self.dm.xml_host_del_option)
+            self.assertTrue(r['status_code']==self.dm.expected_status_code_del_host)
+        elif self.host_api.searchHostByName(self.dm.host_name)['result']['hosts'] and self.host_api.getHostStatus(self.dm.host_name)=='up':
+            LogPrint().info("Post-Test: Deactive host '%s' from up to maintenance state." % self.dm.host_name)
+            r = self.host_api.deactiveHost(self.dm.host_name)
+            self.assertTrue(r['status_code']==self.dm.expected_status_code_deactive_host)
+            if wait_until(is_host_maintenance, 120, 5):
+                LogPrint().info("Post-Test: Delete host '%s' from cluster." % self.dm.host_name)
+                r = self.host_api.delHost(self.dm.host_name, self.dm.xml_host_del_option)
+                self.assertTrue(r['status_code']==self.dm.expected_status_code_del_host)
+                
+class ITC03010403_EditHost_DupName(BaseTestCase):
+    '''
+    @summary: ITC-03主机管理-01主机操作-04编辑-03重名
+    '''
+    def setUp(self):
+        '''
+        @summary: 前提条件
+        @note: 创建两个主机，等待其变为UP状态。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提：创建两个主机host1和host2，并等待其变为UP状态
+        self.host_api = HostAPIs()
+        self.hosts_info = [self.dm.xml_host1_info, self.dm.xml_host2_info]
+        LogPrint().info("Pre-Test: Create 2 hosts for this test.")
+        for host_info in self.hosts_info:
+            self.flag = True
+            r = self.host_api.createHost(host_info)
+            def is_host_up():
+                return self.host_api.getHostStatus(xmltodict.parse(host_info)['host']['name'])=='up'
+            if wait_until(is_host_up, 200, 5):
+                if r['status_code'] == self.dm.expected_status_code_create_host:
+                    LogPrint().info("Pre-Test-PASS: Create host '%s' SUCCESS." % xmltodict.parse(host_info)['host']['name'])
+                else:
+                    LogPrint().error("Pre-Test-FAIL: Create host '%s' FAILED." % xmltodict.parse(host_info)['host']['name'])
+                    self.flag = False
+            else:
+                LogPrint().error("Pre-Test_FAIL: Create host '%s' FAILED." % xmltodict.parse(host_info)['host']['name'])
+                self.flag = False
+            self.assertTrue(self.flag)
+        
+    def test_EditHost_DupName(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）编辑其中一个主机，将名称 更改为另一主机的名称（重名）；
+        @note: （2）编辑失败，验证接口返回状态码、提示信息是否正确。
+        '''
+        self.flag = True
+        r = self.host_api.updateHost(self.dm.host2_name, self.dm.xml_host2_update_info)
+        if r['status_code'] == self.dm.expected_status_code_edit_host_fail:
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_edit_host_dup_name), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are COORECT when edit host with Dup Name.")
+            else:
+                LogPrint().error("FAIL: Returned status code and messages are INCOORECT when edit host with Dup Name.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is INCOORECT when edit host with Dup Name." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
     
+    def tearDown(self):
+        '''
+        @summary: 资源清理，删除setUp中创建的两个host
+        @note: （1）将host设置为maintenance模式；
+        @note: （2）删除host。
+        '''        
+        hosts_list = [self.dm.host1_name, self.dm.host2_name]
+        for host in hosts_list:
+            def is_host_maintenance():
+                return self.host_api.getHostStatus(host)=='maintenance'
+            if self.host_api.searchHostByName(host)['result']['hosts']:
+                LogPrint().info("Post-Test: Deactive the host '%s' to maintenance state." % host)
+                self.host_api.deactiveHost(host)
+                if wait_until(is_host_maintenance, 120, 5):
+                    LogPrint().info("Post-Test: Delete the host '%s'." % host)
+                    self.host_api.delHost(host, self.dm.xml_host_del_option)
+                    
+class ITC03010501_DelHost_Normal(BaseTestCase):
+    '''
+    @summary: ITC-03主机管理-01主机操作-05删除-01普通删除
+    @note: 将主机设置为Maintenanece状态后，通过接口发送delete请求，不附带任何删除选项。
+    '''
+    def setUp(self):
+        '''
+        @summary: 准备测试环境，初始化测试数据，创建一个Host。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 创建一个主机
+        self.host_api = HostAPIs()
+        LogPrint().info("Pre-Test: Create 1 host for this test.")
+        self.flag = True
+        r = self.host_api.createHost(self.dm.xml_host_info)
+        def is_host_up():
+            return self.host_api.getHostStatus(self.dm.host_name)=='up'
+        if wait_until(is_host_up, 200, 5):
+            if r['status_code'] == self.dm.expected_status_code_create_host:
+                LogPrint().info("Pre-Test-PASS: Create host '%s' SUCCESS." % self.dm.host_name)
+            else:
+                LogPrint().error("Pre-Test-FAIL: Create host '%s' FAILED." % self.dm.host_name)
+                self.flag = False
+        self.assertTrue(self.flag)
+        
+    def test_DelHost_Normal(self):
+        '''
+        @summary:  测试步骤
+        @note: （1）将主机设置为Maintenance状态；
+        @note: （2）删除主机（普通删除：delete请求不带任何选项参数）
+        @note: （3）删除成功，验证接口返回状态码、实际结果是否正确。
+        '''
+        def is_host_maintenance():
+            return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
+        
+        self.flag = True
+        LogPrint().info("Test-Step1: Deactive the host '%s' to maintenance state." % self.dm.host_name)
+        self.host_api.deactiveHost(self.dm.host_name)
+        if wait_until(is_host_maintenance, 120, 5):
+            LogPrint().info("Post-Test: Delete the host '%s' from cluster." % self.dm.host_name)
+            r = self.host_api.delHost(self.dm.host_name)
+            if r['status_code'] == self.dm.expected_status_code_del_host_normal and self.host_api.searchHostByName(self.dm.host_name):
+                LogPrint().info("PASS: Delete host '%s' SUCCESS." % self.dm.host_name)
+            else:
+                LogPrint().error("FAIL: Delete host '%s' FAILED. Maybe the returned status code is not '%s', or the host was not deleted." % (self.dm.host_name, self.dm.expected_status_code_del_host_normal))
+                self.flag = False
+        else:
+            LogPrint().error("Test-Step1-FAIL: Set host '%s' to 'Maintenance' FAILED." % self.host_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+            
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
+
+class ITC03010502_DelHost_Force(BaseTestCase):
+    '''
+    @summary: ITC-03主机管理-01主机操作-05删除-02强制删除
+    @note: 将主机设置为Maintenanece状态后，通过接口发送delete请求，带force参数。
+    '''
+    def setUp(self):
+        '''
+        @summary: 准备测试环境，初始化测试数据，创建一个Host。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 创建一个主机
+        self.host_api = HostAPIs()
+        LogPrint().info("Pre-Test: Create 1 host for this test.")
+        self.flag = True
+        r = self.host_api.createHost(self.dm.xml_host_info)
+        def is_host_up():
+            return self.host_api.getHostStatus(self.dm.host_name)=='up'
+        if wait_until(is_host_up, 200, 5):
+            if r['status_code'] == self.dm.expected_status_code_create_host:
+                LogPrint().info("Pre-Test-PASS: Create host '%s' SUCCESS." % self.dm.host_name)
+            else:
+                LogPrint().error("Pre-Test-FAIL: Create host '%s' FAILED." % self.dm.host_name)
+                self.flag = False
+        self.assertTrue(self.flag)
+        
+    def test_DelHost_Force(self):
+        '''
+        @summary:  测试步骤
+        @note: （1）将主机设置为Maintenance状态；
+        @note: （2）删除主机（普通删除：delete请求带force参数）
+        @note: （3）删除成功，验证接口返回状态码、实际结果是否正确。
+        '''
+        def is_host_maintenance():
+            return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
+        
+        self.flag = True
+        LogPrint().info("Test-Step1: Deactive the host '%s' to maintenance state." % self.dm.host_name)
+        self.host_api.deactiveHost(self.dm.host_name)
+        if wait_until(is_host_maintenance, 120, 5):
+            LogPrint().info("Post-Test: Delete the host '%s' from cluster." % self.dm.host_name)
+            r = self.host_api.delHost(self.dm.host_name, self.dm.xml_del_host_option)
+            if r['status_code'] == self.dm.expected_status_code_del_host_force and self.host_api.searchHostByName(self.dm.host_name):
+                LogPrint().info("PASS: Delete host '%s' SUCCESS." % self.dm.host_name)
+            else:
+                LogPrint().error("FAIL: Delete host '%s' FAILED. Maybe the returned status code is not '%s', or the host was not deleted." % (self.dm.host_name, self.dm.expected_status_code_del_host_normal))
+                self.flag = False
+        else:
+            LogPrint().error("Test-Step1-FAIL: Set host '%s' to 'Maintenance' FAILED." % self.host_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+            
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass    
+
+class ITC03010503_DelHost_Up(BaseTestCase):
+    '''
+    @summary: ITC-03主机管理-01主机操作-05删除-03无法删除UP状态主机
+    '''
+    def setUp(self):
+        '''
+        @summary: 准备测试环境，初始化测试数据，创建一个Host。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 创建一个主机
+        self.host_api = HostAPIs()
+        LogPrint().info("Pre-Test: Create 1 host for this test.")
+        self.flag = True
+        r = self.host_api.createHost(self.dm.xml_host_info)
+        def is_host_up():
+            return self.host_api.getHostStatus(self.dm.host_name)=='up'
+        if wait_until(is_host_up, 200, 5):
+            if r['status_code'] == self.dm.expected_status_code_create_host:
+                LogPrint().info("Pre-Test-PASS: Create host '%s' SUCCESS." % self.dm.host_name)
+            else:
+                LogPrint().error("Pre-Test-FAIL: Create host '%s' FAILED." % self.dm.host_name)
+                self.flag = False
+        else:
+            LogPrint().error("Pre-Test-FAIL: Created host '%s' is not in UP state." % self.dm.host_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def test_DelHost_Normal(self):
+        '''
+        @summary:  测试步骤
+        @note: （1）对UP状态主机进行删除操作
+        @note: （2）操作失败，验证接口返回状态码、实际结果是否正确。
+        '''
+        self.flag = True
+        LogPrint().info("Test: Delete host '%s' with UP state." % self.dm.host_name)
+        r = self.host_api.delHost(self.dm.host_name)
+        print r['status_code']
+        print xmltodict.unparse(r['result'], pretty=True)
+        if r['status_code'] == self.dm.expected_status_code_del_host_up:
+            LogPrint().info("PASS: Delete host '%s' SUCCESS." % self.dm.host_name)
+        else:
+            LogPrint().error("FAIL: Delete host '%s' FAILED. Maybe the returned status code is not '%s', or the host was not deleted." % (self.dm.host_name, self.dm.expected_status_code_del_host_up))
+            self.flag = False
+
+        self.assertTrue(self.flag)
+            
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        def is_host_maintenance():
+            return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
+        if self.host_api.searchHostByName(self.dm.host_name)['result']['hosts']:
+            LogPrint().info("Post-Test: Deactive host '%s' from up to maintenance state." % self.dm.host_name)
+            r = self.host_api.deactiveHost(self.dm.host_name)
+            self.assertTrue(r['status_code']==self.dm.expected_status_code_deactive_host)
+            if wait_until(is_host_maintenance, 120, 5):
+                LogPrint().info("Post-Test: Delete host '%s' from cluster." % self.dm.host_name)
+                r = self.host_api.delHost(self.dm.host_name)
+                self.assertTrue(r['status_code']==self.dm.expected_status_code_del_host)  
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Host.ITC0301040201_EditHost_Maintenance_VerifyEditableOptions"]
+    test_cases = ["Host.ITC03010503_DelHost_Up"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

@@ -42,9 +42,11 @@ xml_host_update_info = '''
 <host>
     <name>%s</name>
     <comment>%s</comment>
-    <cluster id="%s"/>
+    <cluster>
+        <name>%s</name>
+    </cluster>
 </host>
-''' % (new_name, new_desc, ClusterAPIs().getClusterIdByName(cluster1_name))
+''' % (new_name, new_desc, cluster1_name)
 
 '''
 @note: Post-TestData
