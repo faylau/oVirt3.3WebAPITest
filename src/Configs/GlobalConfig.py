@@ -21,8 +21,8 @@ DataStorages = {'nfs' : {
                             'data1-iscsi' : {
                                                 'ip':'10.1.161.61',
                                                 'port':'3260',
-                                                'target':'xxxx',
-                                                'lun_id':'xxxx'
+                                                'target':'iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.mari',
+                                                'lun_id':'35005907f72e55e1b'
                                             }
                            }
                 }
