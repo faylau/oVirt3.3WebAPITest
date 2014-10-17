@@ -1,5 +1,16 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 from Configs import GlobalConfig
 from TestAPIs.ClusterAPIs import ClusterAPIs
@@ -8,6 +19,7 @@ import ITC03_SetUp as DM
 '''
 @note: Pre-TestData
 '''
+host = GlobalConfig.Hosts['node1']
 init_host_name = 'node-ITC0301040201'
 cluster1_name = 'cluster-ITC0301040201'
 # 前提1：创建一个主机
@@ -20,7 +32,7 @@ xml_host_info = '''
         <name>%s</name>
     </cluster>
 </host>
-''' % (init_host_name, GlobalConfig.Hosts['node4']['ip'], GlobalConfig.Hosts['node4']['password'], DM.cluster_name)
+''' % (init_host_name, host['ip'], host['password'], DM.cluster_name)
 # 前提2：创建一个新的Cluster，用于修改主机的所属Cluster
 xml_cluster1_info = '''
 <cluster>

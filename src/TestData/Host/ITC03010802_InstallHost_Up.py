@@ -1,5 +1,16 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 from Configs import GlobalConfig
 import ITC03_SetUp as DataModule
@@ -7,6 +18,7 @@ import ITC03_SetUp as DataModule
 '''
 @note: Pre-TestData
 '''
+host = GlobalConfig.Hosts['node1']
 host_name = 'node-ITC030108'
 # 前提1：创建一个主机
 xml_host_info = '''
@@ -18,7 +30,7 @@ xml_host_info = '''
         <name>%s</name>
     </cluster>
 </host>
-''' % (host_name, GlobalConfig.Hosts['node4']['ip'], GlobalConfig.Hosts['node4']['password'], DataModule.cluster_name)
+''' % (host_name, host['ip'], host['password'], DataModule.cluster_name)
 
 '''
 @note: Test-Data
@@ -27,7 +39,7 @@ xml_install_option = '''
 <action>
     <root_password>%s</root_password>
 </action>
-''' % GlobalConfig.Hosts['node4']['password']
+''' % host['password']
 
 '''
 @note: Post-TestData

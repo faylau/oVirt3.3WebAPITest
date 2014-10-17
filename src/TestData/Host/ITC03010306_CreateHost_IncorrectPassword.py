@@ -1,11 +1,23 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 '''
 @note: Pre-TestData
 '''
 from Configs import GlobalConfig
 
+host = GlobalConfig.Hosts['node1']
 
 '''
 @note: Test-Data
@@ -18,7 +30,7 @@ xml_host_info = '''
     <address>%s</address>
     <root_password>%s</root_password>
 </host>
-''' % (GlobalConfig.Hosts['node4']['ip'], password)
+''' % (host['ip'], password)
 
 '''
 @note: Post-TestData

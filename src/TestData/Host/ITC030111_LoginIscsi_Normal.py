@@ -1,5 +1,16 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 from Configs import GlobalConfig
 import ITC03_SetUp as DM
@@ -26,8 +37,7 @@ xml_host_info = '''
 '''
 @note: Test-Data
 '''
-iscsi_target_address = GlobalConfig.DataStorages['iscsi']['data1-iscsi']['ip']
-iscsi_target_name = GlobalConfig.DataStorages['iscsi']['data1-iscsi']['target']
+iscsi_target = GlobalConfig.DataStorages['iscsi']['data1-iscsi']
 # 没有用户名和密码的iscsi target
 xml_target_info = '''
 <action>
@@ -36,7 +46,7 @@ xml_target_info = '''
         <target>%s</target>
     </iscsi>
 </action>
-''' % (iscsi_target_address, iscsi_target_name)
+''' % (iscsi_target['ip'], iscsi_target['target'])
 
 '''
 @note: Post-TestData

@@ -1,5 +1,16 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 from Configs import GlobalConfig
 import ITC03_SetUp as DM
@@ -7,6 +18,8 @@ import ITC03_SetUp as DM
 '''
 @note: Pre-TestData
 '''
+host1 = GlobalConfig.Hosts['node1']
+host2 = GlobalConfig.Hosts['node4']
 host1_name = 'node-ITC03010403-1'
 host2_name = 'node-ITC03010403-2'
 xml_host1_info = '''
@@ -18,7 +31,7 @@ xml_host1_info = '''
         <name>%s</name>
     </cluster>
 </host>
-''' % (host1_name, GlobalConfig.Hosts['node1']['ip'], GlobalConfig.Hosts['node1']['password'], DM.cluster_name)
+''' % (host1_name, host1['ip'], host1['password'], DM.cluster_name)
 xml_host2_info = '''
 <host>
     <name>%s</name>
@@ -28,7 +41,7 @@ xml_host2_info = '''
         <name>%s</name>
     </cluster>
 </host>
-''' % (host2_name, GlobalConfig.Hosts['node4']['ip'], GlobalConfig.Hosts['node4']['password'], DM.cluster_name)
+''' % (host2_name, host2['ip'], host2['password'], DM.cluster_name)
 
 '''
 @note: Test-Data

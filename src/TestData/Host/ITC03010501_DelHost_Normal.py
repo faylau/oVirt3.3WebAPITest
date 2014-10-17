@@ -1,11 +1,24 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
+
 from Configs.GlobalConfig import Hosts
 import ITC03_SetUp as ModuleData
 
 '''
 @note: Pre-TestData
 '''
+host = Hosts['node1']
 host_name = 'node-ITC03010501'
 xml_host_info = '''
 <host>
@@ -16,7 +29,7 @@ xml_host_info = '''
     <address>%s</address>
     <root_password>%s</root_password>
 </host>
-''' % (ModuleData.cluster_name, host_name, Hosts['node4']['ip'], Hosts['node4']['password'])
+''' % (ModuleData.cluster_name, host_name, host['ip'], host['password'])
 
 '''
 @note: Test-Data
@@ -26,7 +39,13 @@ xml_host_info = '''
 '''
 @note: Post-TestData
 '''
-
+# 资源清理时删除host所用的选项（强制删除/同步）
+xml_host_del_option = '''
+<action>
+    <force>true</force>
+    <async>false</async>
+</action>
+'''
 
 '''
 @note: ExpectedResult

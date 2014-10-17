@@ -1,5 +1,16 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 from Configs import GlobalConfig
 import ITC03_SetUp as DM
@@ -26,8 +37,7 @@ xml_host_info = '''
 '''
 @note: Test-Data
 '''
-iscsi_server_ip = GlobalConfig.DataStorages['iscsi']['data1-iscsi']['ip']
-iscsi_server_port = GlobalConfig.DataStorages['iscsi']['data1-iscsi']['port']
+iscsi_server = GlobalConfig.DataStorages['iscsi']['data1-iscsi']
 xml_iscsi_info_list = '''
 <data_driver>
     <action>
@@ -43,7 +53,7 @@ xml_iscsi_info_list = '''
         </iscsi>
     </action>
 </data_driver>
-''' % (iscsi_server_ip, iscsi_server_port)
+''' % (iscsi_server['ip'], iscsi_server['port'])
 
 '''
 @note: Post-TestData

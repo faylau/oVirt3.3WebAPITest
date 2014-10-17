@@ -1,5 +1,16 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 '''
 @note: Pre-TestData
@@ -42,7 +53,7 @@ expected_info_list = [
 '''
 <fault>
     <reason>Operation Failed</reason>
-    <detail>[Host name must be formed of alphanumeric characters, numbers or &quot;-_.&quot;, size must be between 1 and 255]</detail>
+    <detail>[size must be between 1 and 255, Host name must be formed of alphanumeric characters, numbers or "-_."]</detail>
 </fault>
 ''',
 '''

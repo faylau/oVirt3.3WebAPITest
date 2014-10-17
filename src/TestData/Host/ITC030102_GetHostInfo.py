@@ -1,5 +1,17 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
+
 from Configs.GlobalConfig import Hosts
 from TestData.Host import ITC03_SetUp as ModuleData
 from TestAPIs.ClusterAPIs import ClusterAPIs
@@ -7,6 +19,7 @@ from TestAPIs.ClusterAPIs import ClusterAPIs
 '''
 @note: Pre-TestData
 '''
+host = Hosts['node1']
 host_name = 'node-ITC030102'
 xml_host_info = '''
 <host>
@@ -15,7 +28,7 @@ xml_host_info = '''
     <address>%s</address>
     <root_password>%s</root_password>
 </host>
-''' % (ClusterAPIs().getClusterIdByName(ModuleData.cluster_name), host_name, Hosts['node4']['ip'], Hosts['node4']['password'])
+''' % (ClusterAPIs().getClusterIdByName(ModuleData.cluster_name), host_name, host['ip'], host['password'])
 
 '''
 @note: Post-TestData

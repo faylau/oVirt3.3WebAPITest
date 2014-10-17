@@ -1,5 +1,16 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 from Configs import GlobalConfig
 import ITC03_SetUp as DM
@@ -7,7 +18,6 @@ import ITC03_SetUp as DM
 '''
 @note: Pre-TestData
 '''
-# 配置电源管理选项的host的相关信息
 host = GlobalConfig.Hosts['node1']
 host_name = 'node-ITC03011001'
 xml_host_info = '''
@@ -19,15 +29,12 @@ xml_host_info = '''
         <name>%s</name>
     </cluster>
 </host>
-''' % (host_name, host['ip'], \
-       host['password'], \
-       DM.cluster_name)
+''' % (host_name, host['ip'], host['password'], DM.cluster_name)
 
 '''
 @note: Test-Data
 '''
-iscsi_server_ip = GlobalConfig.DataStorages['iscsi']['data1-iscsi']['ip']
-iscsi_server_port = GlobalConfig.DataStorages['iscsi']['data1-iscsi']['port']
+iscsi_server = GlobalConfig.DataStorages['iscsi']['data1-iscsi']
 xml_iscsi_info = '''
 <action>
     <iscsi>
@@ -35,7 +42,7 @@ xml_iscsi_info = '''
         <port>%s</port>
     </iscsi>
 </action>
-''' % (iscsi_server_ip, iscsi_server_port)
+''' % (iscsi_server['ip'], iscsi_server['port'])
 
 '''
 @note: Post-TestData

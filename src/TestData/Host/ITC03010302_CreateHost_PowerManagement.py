@@ -1,9 +1,23 @@
 #encoding:utf-8
 
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+'''
 
 from Configs import GlobalConfig
 from TestAPIs.ClusterAPIs import ClusterAPIs
 import ITC03_SetUp as DM
+
+host1 = GlobalConfig.Hosts['node1']
+host2 = GlobalConfig.Hosts['node4']
 
 '''
 @note: Pre-TestData
@@ -16,9 +30,7 @@ xml_host1_info = '''
     <root_password>%s</root_password>
     <cluster id="%s"/>
 </host>
-''' % (host1_name, GlobalConfig.Hosts['node1']['ip'], \
-       GlobalConfig.Hosts['node1']['password'], \
-       ClusterAPIs().getClusterIdByName(DM.cluster_name))
+''' % (host1_name, host1['ip'], host1['password'], ClusterAPIs().getClusterIdByName(DM.cluster_name))
 
 
 '''
@@ -40,13 +52,13 @@ xml_host2_info = '''
     </power_management>
 </host>
 ''' % (host2_name, \
-       GlobalConfig.Hosts['node4']['ip'], \
-       GlobalConfig.Hosts['node4']['password'], \
+       host2['ip'], \
+       host2['password'], \
        ClusterAPIs().getClusterIdByName(DM.cluster_name), \
-       GlobalConfig.Hosts['node4']['IMM']['type'], \
-       GlobalConfig.Hosts['node4']['IMM']['ip'], \
-       GlobalConfig.Hosts['node4']['IMM']['user'], \
-       GlobalConfig.Hosts['node4']['IMM']['password']
+       host2['IMM']['type'], \
+       host2['IMM']['ip'], \
+       host2['IMM']['user'], \
+       host2['IMM']['password']
        )
 
 '''
