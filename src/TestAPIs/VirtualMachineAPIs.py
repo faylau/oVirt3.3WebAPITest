@@ -431,6 +431,31 @@ class VmDiskAPIs(VirtualMachineAPIs):
         else:
             if vm_disks['alias']==disk_alias:
                 return vm_disks['@id']
+    
+    def getVmDiskInfo(self, vm_name, disk_alias=None, disk_id=None):
+        '''
+        @summary: 根据虚拟机名称、磁盘别名获取虚拟机磁盘信息
+        @param vm_name: 虚拟机名称
+        @param disk_alias: 磁盘别名
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的VM磁盘信息。
+        '''
+        if disk_alias and not disk_id:
+            disk_id = self.getVmDiskIdByName(vm_name, disk_alias)
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getVmDiskStatus(self, vm_name, disk_alias=None, disk_id=None):
+        '''
+        @summary: 获取虚拟机磁盘的状态
+        @param vm_name: 虚拟机名称
+        @param disk_alias: 虚拟机磁盘别名
+        @return: 磁盘状态（illegal、locked、ok）
+        '''
+        disk_info = self.getVmDiskInfo(vm_name, disk_alias, disk_id)
+        return disk_info['result']['disk']['status']['state']
         
     def createVmDisk(self, vm_name, xml_disk_info):
         '''
@@ -1088,7 +1113,10 @@ if __name__=='__main__':
     vmwatchdogapi = VmWatchdogAPIs()
     vmappapi = VmAppAPIs()
     
-    print vmappapi.getVmAppsList('test1')
+#     print vmdiskapi.getVmDiskInfo('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')
+#     print vmdiskapi.getVmDiskStatus('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')
+    
+#     print vmappapi.getVmAppsList('test1')
     
 #     print vmwatchdogapi.delVmWatchdog('test1')
     
