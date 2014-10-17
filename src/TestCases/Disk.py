@@ -12,11 +12,10 @@ from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
 from Utils.HTMLTestRunner import HTMLTestRunner
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs
-
+from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs
 
 import xmltodict
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs, VmDiskAPIs
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs
+
 
 class ITC0801_GetDiskList(BaseTestCase):
     '''
@@ -444,15 +443,20 @@ class ITC080403_DeleteDisk_AttachtoRunVm(BaseTestCase):
             self.assertTrue(False)
         #激活磁盘
         r = self.vmdiskapi.activateVmDisk(self.vm_name, self.disk_id)
+        def is_vmdisk_ok():
+            return self.vmdiskapi.getVmDiskStatus(self.vm_name, disk_id=self.disk_id)=='ok'
         if r['status_code'] == 200:
-            LogPrint().info("Activate vm disk success.")
+            if wait_until(is_vmdisk_ok,100,5):
+                LogPrint().info("Activate vm disk success.")
+            else:
+                LogPrint().error("Activate vm disk overtime.")
+                self.assertTrue(False)
         else:
             LogPrint().error("Activate vm disk fail.")
             self.assertTrue(False)
         
     def test_DeleteDisk_AttachtoRunVm(self): 
         self.flag = True
-        
         r = self.diskapi.deleteDisk(self.disk_id)
         print r
         if r['status_code'] == self.dm.expected_status_code:
@@ -476,12 +480,13 @@ class ITC080403_DeleteDisk_AttachtoRunVm(BaseTestCase):
                 LogPrint().info("Stop vm success.")
             else:
                 LogPrint().error("Stop vm overtime.")
-                self.flag = False 
         else:
             LogPrint().error("Stop vm fail.Status-code is wrong.")
-            self.flag = False
-        self.assertTrue(self.flag)
-        self.vmapi.delVm(self.vm_name)
+        r = self.vmapi.delVm(self.vm_name)
+        if r['status_code'] == 200:
+            LogPrint().info("Delete vm success.")
+        else:
+            LogPrint().error("Delete vm success")
 
 class ITC080404_DeleteDisk_AttachtoDownVm(BaseTestCase):
     '''
