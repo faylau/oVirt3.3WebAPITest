@@ -85,10 +85,21 @@ class TemplatesAPIs(BaseAPIs):
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
             
-    def createTemplate(self, temp_info):
+    def createTemplate(self, temp_info,vm_id=None):
         '''
         @summary: 创建模板
         @param temp_info: XML形式的集群信息，调用接口时需要传递此xml数据
+        @note: 有两种使用情况
+        1）vm_id可以通过外部传参，此时xml文件中vm id为变量
+        <template>
+            <name>template-osvtest1</name>
+            <vm id="%s"/>
+        </template>
+        2）nw_id为空，此时xml文件中需为vm id赋值
+        <template>
+            <name>template-osvtest1</name>
+            <vm id="4fbca0c3-e2b7-4cf0-a680-ea43d5a0e778"/>
+        </template>
                    创建模板的测试数据说明：
          1)测试数据最小集: 模板名称和虚拟机id,且模板名称唯一且虚拟机状态为down,创建成功并返回代码202(异步)
          2)通过虚拟机名称表示虚拟机对象,创建失败并返回代码400
@@ -111,8 +122,10 @@ class TemplatesAPIs(BaseAPIs):
         '''
         api_url = self.base_url
         method = 'POST'
-        r = HttpClient.sendRequest(method=method, api_url=api_url, data=temp_info)
-        r.raise_for_status()
+        if not vm_id:
+            r = HttpClient.sendRequest(method=method, api_url=api_url, data=temp_info)
+        else:
+            r = HttpClient.sendRequest(method=method, api_url=api_url, data=(temp_info %vm_id))
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}      
     
     def updateTemplate(self, temp_name,update_info):
@@ -226,7 +239,6 @@ class TemplateDisksAPIs(TemplatesAPIs):
         api_url = '%s/%s/disks/%s' % (self.base_url, temp_id,disk_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
             
     def copyTemplateDisk(self,temp_name,disk_name,copy_data):

@@ -87,6 +87,7 @@ encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
 encoding//src/TestCases/BaseTestCase.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
+encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/Host.py=utf-8
 encoding//src/TestData/Host/ITC030102_GetHostInfo.py=utf-8
 encoding//src/TestData/Host/ITC03010301_CreateHost_Normal.py=utf-8
