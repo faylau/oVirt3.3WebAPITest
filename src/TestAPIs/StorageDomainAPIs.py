@@ -649,7 +649,7 @@ if __name__ == "__main__":
     isoapi = ISOStorageAPIs()
     exportapi = ExportStorageAPIs()
     
-    print exportapi.getTemplateDiskInfoFromExportStorage('export1', 'template-haproxy-osv', 'haproxy-qcow2_Disk1')
+#     print exportapi.getTemplateDiskInfoFromExportStorage('export1', 'template-haproxy-osv', 'haproxy-qcow2_Disk1')
 #     print exportapi.getTemplateDiskIdByNameFromExportStorage('export1', 'template-haproxy-osv', 'haproxy-qcow2_Disk1')
 #     print exportapi.getTemplateDisksListFromExportStorage('export1', 'template-haproxy-osv')
 #     print exportapi.getVmDiskInfoFromExportStorage('export', 'test1', 'test1_Disk1')
@@ -847,7 +847,7 @@ if __name__ == "__main__":
         </storage>
     </storage_domain>
     '''
-#     print sdapi.createStorageDomain(xml_iscsi_sd_info_2)
+#     print sdapi.createStorageDomain(xml_nfs_sd_info)
     
 #     print sdapi.getStorageDomainInfo('data1')
 #     print xmltodict.unparse(sdapi.getStorageDomainInfo('data1')['result'], pretty=True)

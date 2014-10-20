@@ -14,8 +14,9 @@ Hosts = {'engine' : {'ip':'10.1.167.2', 'password':'qwer1234'},
 @summary: Data存储域名称、地址等信息，包括NFS、ISCSI和FC三类
 '''
 DataStorages = {'nfs' : {
-                            'data1' : '10.1.167.2:/storage/data1',
-                            'data2' : '10.1.167.2:/storage/data2'
+                            'data1' : {'ip':'10.1.167.2', 'path':'/storage/data1'},
+                            'data2' : {'ip':'10.1.167.2', 'path':'/storage/data2'},
+                            'data3' : {'ip':'10.1.167.2', 'path':'/storage/data3'}
                         },
                 'iscsi' : {
                             'data1-iscsi' : {
