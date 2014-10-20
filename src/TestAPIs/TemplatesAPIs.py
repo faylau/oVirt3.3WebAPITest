@@ -85,11 +85,11 @@ class TemplatesAPIs(BaseAPIs):
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
             
-    def createTemplate(self, temp_info,vm_id=None):
+    def createTemplate(self, temp_info,vm_id=None,disk_id=None,sd_id=None):
         '''
         @summary: 创建模板
         @param temp_info: XML形式的集群信息，调用接口时需要传递此xml数据
-        @note: 有两种使用情况
+        @note: 有三种使用情况
         1）vm_id可以通过外部传参，此时xml文件中vm id为变量
         <template>
             <name>template-osvtest1</name>
@@ -99,6 +99,19 @@ class TemplatesAPIs(BaseAPIs):
         <template>
             <name>template-osvtest1</name>
             <vm id="4fbca0c3-e2b7-4cf0-a680-ea43d5a0e778"/>
+        </template>
+        3)vm_id、disk_id、sd_id均通过外部传参
+        <template>
+            <name>template-osvtest1</name>
+            <vm id="%s">
+                <disks>
+                    <disk id="%s">
+                        <storage_domains>
+                           <storage_domain id="%s"/>  
+                        </storage_domains>
+                     </disk>
+                  </disks>
+            </vm>
         </template>
                    创建模板的测试数据说明：
          1)测试数据最小集: 模板名称和虚拟机id,且模板名称唯一且虚拟机状态为down,创建成功并返回代码202(异步)
@@ -122,10 +135,12 @@ class TemplatesAPIs(BaseAPIs):
         '''
         api_url = self.base_url
         method = 'POST'
-        if not vm_id:
+        if not vm_id and not disk_id and not sd_id:
             r = HttpClient.sendRequest(method=method, api_url=api_url, data=temp_info)
-        else:
+        if vm_id and not disk_id and not sd_id:
             r = HttpClient.sendRequest(method=method, api_url=api_url, data=(temp_info %vm_id))
+        if vm_id and disk_id and sd_id:
+            r=HttpClient.sendRequest(method=method, api_url=api_url, data=(temp_info %(vm_id,disk_id,sd_id)))
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}      
     
     def updateTemplate(self, temp_name,update_info):
@@ -431,7 +446,7 @@ if __name__=='__main__':
     #print tempapi.getTemplateIdByName('temp')
     #print tempapi.getTemplateNameById(tempapi.getTemplateIdByName('temp'))
     #print tempapi.getTemplatesList()
-    print tempapi.getTemplateInfo('temp3')
+    #print tempapi.getTemplateInfo('temp3')
     '''
           
     '''
@@ -445,12 +460,12 @@ if __name__=='__main__':
     
     temp_info2 = '''
     <template>
-    <name>template-osvtest6</name>
-    <vm id="91fab0d3-5ee0-4d81-9e4e-342327d0e362">
+    <name>template00</name>
+    <vm id="%s">
               <disks>
-                 <disk id="7aa205f0-f292-415b-8bf4-91c009e573d1">
+                 <disk id="%s">
                     <storage_domains>
-                       <storage_domain id="ae2d5d54-38d5-41a2-835b-1c966c199855"/>  
+                       <storage_domain id="%s"/>  
                     </storage_domains>
                  </disk>
               </disks>
@@ -458,7 +473,11 @@ if __name__=='__main__':
            
     </template>
     '''
-    #print tempapi.createTemplate(temp_info2)
+    vm_id = '3bf9130a-b9ed-4345-a282-9487663b1a8a'
+    disk_id = '2e12ac4f-9344-4f95-b943-86e1de7a2c27'
+    sd_id = '2170acd2-6fd0-4e88-a566-293a20fca97a'
+    
+    print tempapi.createTemplate(temp_info2,vm_id,disk_id,sd_id)
     #print tempapi.delTemplate("aaaq")
     
     action1='''
