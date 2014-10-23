@@ -12,7 +12,7 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import DataStorages, IsoStorages, ExportStorages
+from Configs.GlobalConfig import DataStorages
 from TestData.StorageDomain import ITC04_SetUp as ModuleData
 from TestAPIs.HostAPIs import HostAPIs
 
@@ -21,61 +21,34 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-data1 = DataStorages['nfs']['data1']
-iso2 = IsoStorages['ISO-Storage2']
-export2 = ExportStorages['Export-Storage2']
-data1_ip = data1['ip']
-data1_path = data1['path']
-iso2_ip = iso2['ip']
-iso2_path = iso2['path']
-export2_ip = export2['ip']
-export2_path = export2['path']
-
-
-
+data = DataStorages['nfs']['data1']
+data_ip = data['ip']
+data_path = data['path']
+host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)
+data_name = 'data1-nfs-ITC0401040101'
+xml_data_info = '''
+<storage_domain>
+    <name>%s</name>
+    <type>data</type>
+    <host id="%s"/>
+    <storage>
+        <type>nfs</type>
+        <address>%s</address>
+        <path>%s</path>
+    </storage>
+</storage_domain>
+''' % (data_name, host_id, data_ip, data_path)
 '''
 -------------------------------------------------------------------------------------------------
 @note: Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)
-data1_name = ['data1-nfs-ITC0401030101', 'iso1-ITC0401030101', 'export1-ITC0401030101']
-data1_info_xml = '''
-<data_driver>
-    <storage_domain>
-        <name>%s</name>
-        <type>data</type>
-        <host id="%s"/>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>iso</type>
-        <host id="%s"/>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>export</type>
-        <host id="%s"/>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-</data_driver>
-''' % (data1_name[0], host_id, data1_ip, data1_path,
-       data1_name[1], host_id, iso2_ip, iso2_path, 
-       data1_name[2], host_id, export2_ip, export2_path)
+data_name_new = 'data1-iscsi-ITC0401040101-new'
+xml_data_info_new = '''
+<storage_domain>
+    <name>%s</name>
+</storage_domain>
+''' % data_name_new
 
 '''
 -------------------------------------------------------------------------------------------------
@@ -99,4 +72,12 @@ xml_del_sd_option = '''
 -------------------------------------------------------------------------------------------------
 '''
 expected_status_code_create_sd = 201
+expected_status_code_edit_sd_unattached = 409
+expected_info_edit_sd_unattached = '''
+<fault>
+    <reason>Operation Failed</reason>
+    <detail>[Cannot edit Storage. The relevant Storage Domain is inaccessible.
+-Please handle Storage Domain issues and retry the operation.]</detail>
+</fault>
+'''
 expected_status_code_del_sd = 200

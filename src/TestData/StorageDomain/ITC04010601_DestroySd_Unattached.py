@@ -12,7 +12,7 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import DataStorages, IsoStorages, ExportStorages
+from Configs.GlobalConfig import IsoStorages
 from TestData.StorageDomain import ITC04_SetUp as ModuleData
 from TestAPIs.HostAPIs import HostAPIs
 
@@ -21,37 +21,12 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-data1 = DataStorages['nfs']['data1']
-iso2 = IsoStorages['ISO-Storage2']
-export2 = ExportStorages['Export-Storage2']
-data1_ip = data1['ip']
-data1_path = data1['path']
-iso2_ip = iso2['ip']
-iso2_path = iso2['path']
-export2_ip = export2['ip']
-export2_path = export2['path']
-
-
-
-'''
--------------------------------------------------------------------------------------------------
-@note: Test-Data
--------------------------------------------------------------------------------------------------
-'''
+iso = IsoStorages['ISO-Storage1']
+iso_ip = iso['ip']
+iso_path = iso['path']
 host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)
-data1_name = ['data1-nfs-ITC0401030101', 'iso1-ITC0401030101', 'export1-ITC0401030101']
-data1_info_xml = '''
-<data_driver>
-    <storage_domain>
-        <name>%s</name>
-        <type>data</type>
-        <host id="%s"/>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
+iso_name = 'iso1-ITC04010601'
+xml_iso_info = '''
     <storage_domain>
         <name>%s</name>
         <type>iso</type>
@@ -62,36 +37,47 @@ data1_info_xml = '''
             <path>%s</path>
         </storage>
     </storage_domain>
-    <storage_domain>
+''' % (iso_name, host_id, iso_ip, iso_path)
+'''
+-------------------------------------------------------------------------------------------------
+@note: Test-Data
+-------------------------------------------------------------------------------------------------
+'''
+xml_destroy_iso_option = '''
+<storage_domain>
+    <host>
         <name>%s</name>
-        <type>export</type>
-        <host id="%s"/>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-</data_driver>
-''' % (data1_name[0], host_id, data1_ip, data1_path,
-       data1_name[1], host_id, iso2_ip, iso2_path, 
-       data1_name[2], host_id, export2_ip, export2_path)
+    </host>
+    <destroy>true</destroy>
+    <async>false</async>
+</storage_domain>
+''' % ModuleData.host1_name
 
 '''
 -------------------------------------------------------------------------------------------------
 @note: Post-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-xml_del_sd_option = '''
-<storage_domain>
-    <host>
-        <name>%s</name>
-    </host>
-    <format>true</format>
-    <destroy>false</destroy>
-    <async>true</async>
-</storage_domain>
-''' % ModuleData.host1_name
+xml_import_iso_info = '''
+    <storage_domain>
+        <type>iso</type>
+        <storage>
+            <type>nfs</type>
+            <address>%s</address>
+            <path>%s</path>
+        </storage>
+        <host id="%s"/>
+    </storage_domain>
+''' % (iso_ip, iso_path, host_id)
+
+xml_del_iso_option = '''
+    <storage_domain>
+        <host id="%s"/>
+        <format>true</format>
+        <async>false</async>
+    </storage_domain>
+''' % host_id
+
 
 '''
 -------------------------------------------------------------------------------------------------
@@ -99,4 +85,6 @@ xml_del_sd_option = '''
 -------------------------------------------------------------------------------------------------
 '''
 expected_status_code_create_sd = 201
+expected_status_code_destroy_sd = 200
+expected_status_code_import_sd = 201
 expected_status_code_del_sd = 200

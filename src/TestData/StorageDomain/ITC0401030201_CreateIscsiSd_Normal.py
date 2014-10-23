@@ -21,17 +21,11 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-data1 = DataStorages['nfs']['data1']
-iso2 = IsoStorages['ISO-Storage2']
-export2 = ExportStorages['Export-Storage2']
+data1 = DataStorages['iscsi']['data1-iscsi']
 data1_ip = data1['ip']
-data1_path = data1['path']
-iso2_ip = iso2['ip']
-iso2_path = iso2['path']
-export2_ip = export2['ip']
-export2_path = export2['path']
-
-
+data1_port = data1['port']
+data1_target = data1['target']
+data1_lun_id = data1['lun_id']
 
 '''
 -------------------------------------------------------------------------------------------------
@@ -39,43 +33,27 @@ export2_path = export2['path']
 -------------------------------------------------------------------------------------------------
 '''
 host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)
-data1_name = ['data1-nfs-ITC0401030101', 'iso1-ITC0401030101', 'export1-ITC0401030101']
+data1_name = 'data1-iscsi-ITC0401030201'
 data1_info_xml = '''
-<data_driver>
     <storage_domain>
         <name>%s</name>
         <type>data</type>
         <host id="%s"/>
         <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
+            <type>iscsi</type>
+            <logical_unit id="%s">
+                <address>%s</address>
+                <port>%s</port>
+                <target>%s</target>
+                <serial>SLENOVO_LIFELINE-DISK</serial>
+                <vendor_id>LENOVO</vendor_id>
+                <product_id>LIFELINE-DISK</product_id>
+                <lun_mapping>0</lun_mapping>
+            </logical_unit>
+            <override_luns>true</override_luns>
         </storage>
     </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>iso</type>
-        <host id="%s"/>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>export</type>
-        <host id="%s"/>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-</data_driver>
-''' % (data1_name[0], host_id, data1_ip, data1_path,
-       data1_name[1], host_id, iso2_ip, iso2_path, 
-       data1_name[2], host_id, export2_ip, export2_path)
+''' % (data1_name, host_id, data1_lun_id, data1_ip, data1_port, data1_target)
 
 '''
 -------------------------------------------------------------------------------------------------
