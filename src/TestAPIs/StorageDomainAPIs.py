@@ -285,25 +285,30 @@ class DataStorageAPIs(StorageDomainAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def getDiskInfoFromDataStorage(self, ds_name, disk_name=None, disk_id=None):
+    def getDiskInfoFromDataStorage(self, ds_name, disk_id, disk_name=None):
         '''
         @summary: 获取指定的虚拟磁盘详细信息
         @param ds_name: Data存储域名称
         @param disk_name: 虚拟磁盘名称
         @param disk_id: 虚拟磁盘ID
-        @return: 
-        @todo: 未完成，由于同一存储域中的disk名称可以重复，无法根据disk name进行定位。
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（存储域中磁盘信息）。
         '''
-        # todo
-        pass
+        ds_id = self.getStorageDomainIdByName(ds_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, ds_id, self.sub_url, disk_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
     def delDiskFromDataStorage(self, ds_name, disk_name=None, disk_id=None):
         '''
         @summary: 从Data存储域中删除指定的磁盘
         @todo: 问题同上
         '''
-        # todo
-        pass
+        ds_id = self.getStorageDomainIdByName(ds_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, ds_id, self.sub_url, disk_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
 class ISOStorageAPIs(StorageDomainAPIs):
     '''
