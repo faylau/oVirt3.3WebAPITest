@@ -77,6 +77,21 @@ class StorageDomainAPIs(BaseAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
+    def getStorageDomainStatus(self, sd_name=None, sd_id=None):
+        '''
+        @summary: 获取未附加到任何数据中心的存储域状态（附加后的存储域状态只能通过DataCenter的API去查询）
+        @param sd_name: 存储域名称
+        @param sd_id: 存储域ID
+        @note: 两个参数至少需要提供一个，否则抛出异常。
+        @return: 存储域状态（unattached）
+        '''
+        if not sd_id and sd_name:
+            sd_id = self.getStorageDomainIdByName(sd_name)
+        api_url = '%s/%s' % (self.base_url, sd_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return xmltodict.parse(r.text)['storage_domain']['status']['state']
+    
     def createStorageDomain(self, xml_sd_info):
         '''
         @summary: 创建存储域（游离状态，未附加到任何数据中心）
@@ -196,10 +211,11 @@ class StorageDomainAPIs(BaseAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_update_info)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def delStorageDomain(self, sd_name, xml_del_option):
+    def delStorageDomain(self, sd_name, xml_del_option, host_name=None):
         '''
         @summary: 删除存储域（包括删除、销毁）
         @param sd_name: 存储域名称
+        @param host_name: 关联的主机名称（如果不提供，则必须在xml_del_option中指定）
         @param xml_del_option: XML格式的删除选项信息；如下：
         <storage_domain>
             <host>
@@ -218,6 +234,8 @@ class StorageDomainAPIs(BaseAPIs):
         sd_id = self.getStorageDomainIdByName(sd_name)
         api_url = '%s/%s' % (self.base_url, sd_id)
         method = 'DELETE'
+        if host_name:
+            xml_del_option = xml_del_option % host_name
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_del_option)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
 
