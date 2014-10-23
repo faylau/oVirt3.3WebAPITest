@@ -14,11 +14,21 @@ Hosts = {'engine' : {'ip':'10.1.167.2', 'password':'qwer1234'},
 @summary: Data存储域名称、地址等信息，包括NFS、ISCSI和FC三类
 '''
 DataStorages = {'nfs' : {
-                            'data1' : '10.1.167.2:/storage/data1',
-                            'data2' : '10.1.167.2:/storage/data2'
+                            'data1' : {'ip':'10.1.167.2', 'path':'/storage/data1'},
+                            'data2' : {'ip':'10.1.167.2', 'path':'/storage/data2'},
+                            'data3' : {'ip':'10.1.167.2', 'path':'/storage/data3'}
                         },
                 'iscsi' : {
+                            'serial' : 'SLENOVO_LIFELINE-DISK', 
+                            'vendor_id' : 'LENOVO', 
+                            'product_id' : 'LIFELINE-DISK', 
                             'data1-iscsi' : {
+                                                'ip':'10.1.161.61',
+                                                'port':'3260',
+                                                'target':'iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.liufei',
+                                                'lun_id':'35005907f935f9b7f'
+                                            },
+                            'data2-iscsi' : {
                                                 'ip':'10.1.161.61',
                                                 'port':'3260',
                                                 'target':'iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.mari',
@@ -29,15 +39,15 @@ DataStorages = {'nfs' : {
 '''-----------------------------------------------------------------------------------------
 @summary: ISO存储域名称及地址
 '''
-IsoStorages = {'ISO-Storage1':'10.1.167.2:/storage/iso1',
-               'ISO-Storage2':'10.1.167.2:/storage/iso2'
+IsoStorages = {'ISO-Storage1' : {'ip':'10.1.167.2', 'path':'/storage/iso1'},
+               'ISO-Storage2' : {'ip':'10.1.167.2', 'path':'/storage/iso2'}
                }
 
 '''-----------------------------------------------------------------------------------------
 @summary: Export存储域名称及地址
 '''
-ExportStorages = {'Export-Storage1':'10.1.167.2:/storage/export1',
-                  'Export-Storage2':'10.1.167.2:/storage/export2'
+ExportStorages = {'Export-Storage1' : {'ip':'10.1.167.2', 'path':'/storage/export1'},
+                  'Export-Storage2' : {'ip':'10.1.167.2', 'path':'/storage/export2'}
                   }
 
 '''-----------------------------------------------------------------------------------------

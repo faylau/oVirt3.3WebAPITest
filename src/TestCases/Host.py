@@ -475,7 +475,7 @@ class ITC03010307_CreateHost_NoRequiredParams(BaseTestCase):
         self.expected_result_index = 0
         
         # 使用数据驱动，根据测试数据文件循环创建多个缺少必要参数的主机
-        @BaseTestCase.drive_data(self, self.dm.xml_host_info)
+        @BaseTestCase.drive_data(self, self.dm.xml_sd_info_list)
         def do_test(xml_info):
             self.flag = True
             r = self.host_api.createHost(xml_info)
