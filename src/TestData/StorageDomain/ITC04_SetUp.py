@@ -13,7 +13,7 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import Hosts, DataStorages
+from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorages
 
 '''
 ---------------------------------------------------------------------------------------------------
@@ -114,9 +114,9 @@ hosts_info_xml = '''
 ''' % (cluster_nfs_name, host1_name, host1_ip, host1_password,
        cluster_iscsi_name, host4_name, host4_ip, host4_password)
 
-########################################################################
-# 2个Data域信息（分别附加到NFS/ISCSI数据中心）                                                                                                                                    
-########################################################################
+#######################################################################################
+# 4个存储域信息（2个Data域分别附加到NFS/ISCSI数据中心，1个ISO和1个Export域附加到NFS数据中心）                                                                                                                               
+#######################################################################################
 data1_nfs_name = 'data1-nfs-ITC04'
 data1_nfs = DataStorages['nfs']['data1']
 data1_nfs_ip = data1_nfs['ip']
@@ -127,6 +127,14 @@ data1_iscsi_ip = data1_iscsi['ip']
 data1_iscsi_port = data1_iscsi['port']
 data1_iscsi_target = data1_iscsi['target']
 data1_iscsi_lun_id = data1_iscsi['lun_id']
+iso1_name = 'iso1-ITC04'
+iso1 = IsoStorages['ISO-Storage1']
+iso1_ip = iso1['ip']
+iso1_path = iso1['path']
+export1_name = 'export1-ITC04'
+export1 =  ExportStorages['Export-Storage2']
+export1_ip = export1['ip']
+export1_path = export1['path']
 
 xml_datas_info = '''
 <data_driver>
@@ -162,9 +170,35 @@ xml_datas_info = '''
             <override_luns>true</override_luns>
         </storage>
     </storage_domain>
+    <storage_domain>
+        <name>%s</name>
+        <type>iso</type>
+        <host>
+            <name>%s</name>
+        </host>
+        <storage>
+            <type>nfs</type>
+            <address>%s</address>
+            <path>%s</path>
+        </storage>
+    </storage_domain>
+    <storage_domain>
+        <name>%s</name>
+        <type>export</type>
+        <host>
+            <name>%s</name>
+        </host>
+        <storage>
+            <type>nfs</type>
+            <address>%s</address>
+            <path>%s</path>
+        </storage>
+    </storage_domain>
 </data_driver>
 ''' % (data1_nfs_name, host1_name, data1_nfs_ip, data1_nfs_path, 
-       data1_iscsi_name, host4_name, data1_iscsi_lun_id, data1_iscsi_ip, data1_iscsi_port, data1_iscsi_target )
+       data1_iscsi_name, host4_name, data1_iscsi_lun_id, data1_iscsi_ip, data1_iscsi_port, data1_iscsi_target, 
+       iso1_name, host1_name, iso1_ip, iso1_path, 
+       export1_name, host1_name, export1_ip, export1_path )
 
 '''
 ---------------------------------------------------------------------------------------------------
