@@ -157,7 +157,6 @@ class ProfilesAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, profile_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
 
@@ -172,11 +171,12 @@ if __name__=='__main__':
     
     profile_info = '''
     <vnic_profile>
-        <network id="e98b6c1f-4021-4875-b6a8-691c923d0d30"/>
+        <name>pp</name>
+        <network id="0b1de2ef-aa48-47f7-834c-8335ffa7d9a6"/>
         <port_mirroring>false</port_mirroring>
     </vnic_profile>
     '''
-    #print profileapi.createProfiles(profile_info)
+    print profileapi.createProfiles(profile_info)
     #print profileapi.updateProfile('peanuts', 'e98b6c1f-4021-4875-b6a8-691c923d0d30',profile_info)
     #print xmltodict.unparse(profileapi.updateProfile('peanuts', 'e98b6c1f-4021-4875-b6a8-691c923d0d30',profile_info)['result'],pretty=True)
     #print xmltodict.unparse(profileapi.createProfiles(profile_info)['result'],pretty=True) 

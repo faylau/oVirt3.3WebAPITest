@@ -115,7 +115,6 @@ class TemplatesAPIs(BaseAPIs):
         </template>
                    创建模板的测试数据说明：
          1)测试数据最小集: 模板名称和虚拟机id,且模板名称唯一且虚拟机状态为down,创建成功并返回代码202(异步)
-         2)通过虚拟机名称表示虚拟机对象,创建失败并返回代码400
          3)虚拟机状态非down,创建失败并返回代码409
          4)其他参数:
            <permissions>
@@ -172,7 +171,6 @@ class TemplatesAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, temp_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
    
@@ -195,7 +193,6 @@ class TemplatesAPIs(BaseAPIs):
         api_url = '%s/%s/export' % (self.base_url, temp_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=action)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
         
@@ -238,7 +235,6 @@ class TemplateDisksAPIs(TemplatesAPIs):
         api_url = '%s/%s/disks' % (self.base_url, temp_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
     
@@ -255,7 +251,11 @@ class TemplateDisksAPIs(TemplatesAPIs):
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-            
+    
+    def getTemplateDiskStatus(self,temp_name,disk_name):
+        return self.getTemplateDiskInfo(temp_name, disk_name)['result']['disk']['status']['state']
+    def getTemplateDiskSdList(self,temp_name,disk_name):
+        return self.getTemplateDiskInfo(temp_name, disk_name)['result']['disk']['storage_domains']['storage_domain']        
     def copyTemplateDisk(self,temp_name,disk_name,copy_data):
         '''
         @summary: 复制某个模板的某个磁盘
@@ -379,16 +379,24 @@ class TemplateNicsAPIs(TemplatesAPIs):
         api_url = '%s/%s/nics/%s' % (self.base_url, temp_id,nic_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
             
-    def createTemplateNic(self,temp_name,nic_data):
+    def createTemplateNic(self,temp_name,nic_data,proid=None):
         '''
         @summary：为模板创建网络接口
         @param temp_name:模板名称
         @param nic_data:网络接口配置信息，xml文件
+        @param proid:配置集id 
+                   参数传递有两种情况：
+        1）proid为空，即通过xml文件中定义vnic_profile_id值
         <nic>
             <name>nic4</name>
+            <vnic_profile id="6f1bff46-d0aa-49d2-9206-0bc9a4adf6aa"/>
+        </nic>
+        2）proid非空，即通过外部传参设置vnic_profile_id
+        <nic>
+            <name>nic4</name>
+            <vnic_profile id="%s"/>
         </nic>
                    网络接口输入说明：
           1）接口名称是必须的，其余是可选的
@@ -402,18 +410,34 @@ class TemplateNicsAPIs(TemplatesAPIs):
         temp_id = self.getTemplateIdByName(temp_name)
         api_url = '%s/%s/nics' % (self.base_url,temp_id)
         method = 'POST'
-        r = HttpClient.sendRequest(method=method, api_url=api_url,data=nic_data)
-        r.raise_for_status()
+        if proid:
+            r = HttpClient.sendRequest(method=method, api_url=api_url,data=(nic_data %proid))
+        else:
+            r = HttpClient.sendRequest(method=method, api_url=api_url,data=nic_data )
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
-    def updateTemplateNic(self,temp_name,nic_name,update_data):
+    def updateTemplateNic(self,temp_name,nic_name,update_data,proid=None):
         '''
         @summary：编辑某个模板的网络接口
         @param temp_name:模板名称
         @param nic_name:网络接口名称 
         @param update_data:网络接口配置信息 ，xml
+        @param proid: 配置集id
+        1）proid为空，即通过xml文件中定义vnic_profile_id值
         <nic>
-            <name>nic4</name>
+            <name>nic2</name>
+            <vnic_profile id="6f1bff46-d0aa-49d2-9206-0bc9a4adf6aa"/>
+            <interface>VirtIO</interface>
+            <linked>false</linked>
+            <plugged>false</plugged>
+        </nic>
+        2）proid非空，即通过外部传参设置vnic_profile_id
+        <nic>
+            <name>nic2</name>
+            <vnic_profile id="%s"/>
+            <interface>VirtIO</interface>
+            <linked>false</linked>
+            <plugged>false</plugged>
         </nic>
         @return:字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容  
         '''
@@ -421,8 +445,10 @@ class TemplateNicsAPIs(TemplatesAPIs):
         nic_id = self.getNicIdByName(temp_name, nic_name)
         api_url='%s/%s/nics/%s' % (self.base_url,temp_id,nic_id)
         method = 'PUT'
-        r = HttpClient.sendRequest(method=method, api_url=api_url,data=update_data)
-        r.raise_for_status()
+        if proid:
+            r = HttpClient.sendRequest(method=method, api_url=api_url,data=(update_data %proid))
+        else:
+            r = HttpClient.sendRequest(method=method, api_url=api_url,data=update_data)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def deleteTemplateNic(self,temp_name,nic_name):
@@ -442,19 +468,21 @@ class TemplateNicsAPIs(TemplatesAPIs):
             
 if __name__=='__main__':
     tempapi = TemplatesAPIs()
-    #print vmapi.searchVmByName('test11')
+    #print tempapi.searchTemplateByName("kek")
     #print tempapi.getTemplateIdByName('temp')
     #print tempapi.getTemplateNameById(tempapi.getTemplateIdByName('temp'))
     #print tempapi.getTemplatesList()
     #print tempapi.getTemplateInfo('temp3')
+
     '''
-          
+     <vm id="3bf9130a-b9ed-4345-a282-9487663b1a8a"/>     
     '''
     temp_info1 = '''
     <template>
-    <name>template-osvtest1</name>
-    <vm id="4fbca0c3-e2b7-4cf0-a680-ea43d5a0e778"/>
-    <cluster id="46951ef6-5bdb-4da3-89e0-092782b35487"/>
+    <name>temp1</name>
+    <vm>
+        <name>vm3</name>
+    </vm>
     </template>
     '''
     
@@ -477,16 +505,17 @@ if __name__=='__main__':
     disk_id = '2e12ac4f-9344-4f95-b943-86e1de7a2c27'
     sd_id = '2170acd2-6fd0-4e88-a566-293a20fca97a'
     
-    print tempapi.createTemplate(temp_info2,vm_id,disk_id,sd_id)
-    #print tempapi.delTemplate("aaaq")
+    #print xmltodict.unparse(tempapi.createTemplate(temp_info1)['result'],pretty=True)
+    #print tempapi.delTemplate("aa",xml_async)
+    #print tempapi.searchTemplateByName('aa')
     
     action1='''
     <action>
     <storage_domain>
-        <name>export</name>
+        <name>export1</name>
     </storage_domain>
     <exclusive>false</exclusive>
-    <async>false</async>
+    <async>true</async>
     </action>
     '''
     #print tempapi.exportTemplate('aaa', action1)
@@ -495,12 +524,17 @@ if __name__=='__main__':
     
     tempdiskapi = TemplateDisksAPIs()
     #print tempdiskapi.getDiskIdByName('ov', 't')
-    print tempdiskapi.getTemplateDiskInfo('ov', 'osvtest_Disk1')
+    #print tempdiskapi.getTemplateDiskInfo('ov', 'osvtest_Disk1')
+    print tempdiskapi.getTemplateDiskStatus('aaa', 'RHEL7-Liu_Disk2')
+    sd_list = tempdiskapi.getTemplateDiskSdList('aaa', 'RHEL7-Liu_Disk2')
+    '''
+    <storage_domain>
+        <name>Data3_ISCSI</name>
+    </storage_domain>
+    '''
     copy_data = '''
     <action>
-    <storage_domain>
-        <name>Data2-ISCSI</name>
-    </storage_domain>
+    
     <async>false</async>
     </action>
     '''
@@ -522,19 +556,18 @@ if __name__=='__main__':
     <force>true</force>
     </action>
     '''
-    #print tempdiskapi.copyTemplateDisk('ov', 'osvtest_Disk1',copy_data ) 
+    #print xmltodict.unparse(tempdiskapi.copyTemplateDisk('template00', 'osvtest2_Disk2',copy_data )['result'],pretty=True) 
     #print tempdiskapi.exportTemplateDisk('ov', 'osvtest_Disk1', export_data) (fail)
     #print tempdiskapi.deleteTemplateDisk('temp', 'VM1_Disk1',delete_data)    (fail) 
     tempnicapi = TemplateNicsAPIs()
     
     nic_data='''
     <nic>
-    <name>nic4</name>
     </nic>
     '''
     #print tempnicapi.getTemplateNicList('temp')
-    #print tempnicapi.getNicIdByName('temp', 'nic5')
-    #print tempnicapi.createTemplateNic('temp1', nic_data)
+    print tempnicapi.getNicIdByName('aaa', 'nic5')
+    print xmltodict.unparse(tempnicapi.createTemplateNic('aaa', nic_data)['result'],pretty=True)
     #print tempnicapi.updateTemplateNic('temp','nic2', nic_data)
     #print tempnicapi.deleteTemplateNic('temp', 'nic')   
 

@@ -34,6 +34,7 @@ class DiskAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：搜索到的所有集群（dict格式）。
         '''
         return self.searchObject('disks', disk_name)
+    
         
     def getDisksList(self):
         '''
