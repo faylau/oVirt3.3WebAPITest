@@ -12,9 +12,7 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import DataStorages
 from TestData.StorageDomain import ITC04_SetUp as ModuleData
-from TestAPIs.HostAPIs import HostAPIs
 
 '''
 -------------------------------------------------------------------------------------------------
@@ -33,7 +31,7 @@ ip_list = ['256.1.1.1',
 -------------------------------------------------------------------------------------------------
 '''
 host_name = ModuleData.host1_name
-sd_name = 'data1-ITC0401030104'
+sd_name = 'data2-ITC0401030104'
 xml_sd_info_list = '''
 <data_driver>
     <storage_domain>

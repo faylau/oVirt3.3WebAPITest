@@ -12,7 +12,7 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import DataStorages, IsoStorages, ExportStorages
+from Configs.GlobalConfig import DataStorages
 from TestData.StorageDomain import ITC04_SetUp as ModuleData
 from TestAPIs.HostAPIs import HostAPIs
 
@@ -21,7 +21,7 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-data1 = DataStorages['iscsi']['data1-iscsi']
+data1 = DataStorages['iscsi']['data2-iscsi']
 data1_ip = data1['ip']
 data1_port = data1['port']
 data1_target = data1['target']

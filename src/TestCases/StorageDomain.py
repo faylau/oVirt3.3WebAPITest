@@ -26,7 +26,6 @@ from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, DataStorageAPIs
 from TestAPIs.DiskAPIs import DiskAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-from TestData.StorageDomain import ITC04_SetUp as ModuleData
 from TestCases.Host import smart_create_host, smart_del_host
 
 def smart_create_storage_domain(sd_name, xml_sd_info, status_code=201):
@@ -57,7 +56,6 @@ def smart_del_storage_domain(sd_name, xml_del_option, host_name=None, status_cod
     else:
         LogPrint().info("Post-Test: StorageDomain '%s' not exists." % sd_name)
         return True
-
 
 class ITC04_SetUp(BaseTestCase):
     '''
@@ -193,27 +191,22 @@ class ITC040102_GetStorageDomainInfo(BaseTestCase):
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
         self.sd_api = StorageDomainAPIs()
-        
-        # 前提1：创建一个NFS类型存储域（data1，游离）
-        LogPrint().info("Pre-Test: Create a DataStorage '%s' for this test case." % self.dm.data1_name)
-        r = self.sd_api.createStorageDomain(self.dm.data1_info_xml)
-        self.assertTrue(r['status_code']==self.dm.expected_status_code_create_sd)
     
     def test_GetStorageDomainsInfo(self):
         '''
         @summary: 测试步骤
-        @note: （1）调用相应接口，获取存储域信息；
+        @note: （1）调用相应接口，获取模块级测试环境中的存储域信息；
         @note: （2）操作成功，验证接口返回的状态码、存储域信息是否正确。
         '''
-        LogPrint().info("Test: Get info of DataStorage '%s'." % self.dm.data1_name)
-        r = self.sd_api.getStorageDomainInfo(self.dm.data1_name)
+        LogPrint().info("Test: Get info of DataStorage '%s'." % self.dm.data_storage_name)
+        r = self.sd_api.getStorageDomainInfo(self.dm.data_storage_name)
         if r['status_code'] == self.dm.expected_statsu_code_get_sd_info:
             dictCompare = DictCompare()
-            d1 = xmltodict.parse(self.dm.data1_info_xml)
+            d1 = self.dm.xml_data_storage_info
             del d1['storage_domain']['host']
             d2 = r['result']
             if dictCompare.isSubsetDict(d1, d2):
-                LogPrint().info("PASS: Get DataStorage '%s' info SUCCESS." % self.dm.data1_name)
+                LogPrint().info("PASS: Get DataStorage '%s' info SUCCESS." % self.dm.data_storage_name)
                 self.flag = True
             else:
                 LogPrint().error("FAIL: Get StorageDomain's info INCORRECT.")
@@ -226,16 +219,13 @@ class ITC040102_GetStorageDomainInfo(BaseTestCase):
     def tearDown(self):
         '''
         @summary: 资源清理
-        @note: （1）删除创建的游离存储
         '''
-        LogPrint().info("Post-Test: Delete the DataStorage '%s'." % self.dm.data1_name)
-        r = self.sd_api.delStorageDomain(self.dm.data1_name, self.dm.xml_del_storage_domain_option)
-        self.assertTrue(r['status_code']==self.dm.expected_status_code_del_sd)
+        pass
 
 class ITC0401030101_CreateNfsSd_Normal(BaseTestCase):
     '''
     @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-01正常创建
-    @note: 包括Data/ISO/Export三种类型存储域
+    @note: 包括Data/ISO/Export三种类型存储域（Unattached状态，不附加到任何数据中心）
     '''
     def setUp(self):
         '''
@@ -287,15 +277,12 @@ class ITC0401030102_CreateNfsSd_DupName(BaseTestCase):
     def setUp(self):
         '''
         @summary: 初始化测试数据、测试环境。
+        @note: 前提是已经存在一个存储域（在模块级测试环境中已经有一个存储域了）
+        @todo: 涉及到存储连接的问题，此用例暂时不要运行。
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        
-        # 前提1：创建一个存储域sd1
         self.sd_api = StorageDomainAPIs()
-        LogPrint().info("Pre-Test: Create the 1st StorageDomain with name '%s'." % self.dm.data1_name)
-        r = self.sd_api.createStorageDomain(self.dm.data1_info_xml)
-        self.assertTrue(r['status_code'] == self.dm.expected_info_create_sd)
         
     def test_CreateNfsSd_DupName(self):
         '''
@@ -303,8 +290,9 @@ class ITC0401030102_CreateNfsSd_DupName(BaseTestCase):
         @note: （1）创建一个同名的存储域sd2
         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
         '''
-        LogPrint().info("Test: Create 2nd StorageDomain with Dup name '%s'." % self.dm.data1_name)
-        r = self.sd_api.createStorageDomain(self.dm.data2_info_xml)
+        LogPrint().info("Test: Create a StorageDomain with Dup name '%s'." % self.dm.data1_name)
+        r = self.sd_api.createStorageDomain(self.dm.data1_info_xml)
+        print xmltodict.unparse(r['result'], pretty=True)
         if r['status_code'] == self.dm.expected_status_code_create_sd_dup_name:
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_create_sd_dup_name), r['result']):
@@ -323,12 +311,12 @@ class ITC0401030102_CreateNfsSd_DupName(BaseTestCase):
         @summary: 资源清理
         @note: （1）删除创建的存储域
         '''
-        smart_del_storage_domain(self.dm.data1_name, self.dm.xml_del_sd_option, self.dm.expected_status_code_del_sd)
+        pass
 
 class ITC0401030103_CreateNfsSd_NameVerify(BaseTestCase):
     '''
     @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-03名称有效性验证
-    @todo: 未完成
+    @todo: 未完成，涉及到存储连接无法删除的问题。
     '''
     def setUp(self):
         '''
@@ -817,7 +805,7 @@ class ITC040201_GetDisksFromDataStorage(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["StorageDomain.ITC04_TearDown"]
+    test_cases = ["StorageDomain.ITC04010701_ImportSd_Unattached"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

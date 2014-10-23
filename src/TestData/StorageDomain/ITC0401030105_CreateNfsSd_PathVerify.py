@@ -20,11 +20,7 @@ from TestData.StorageDomain import ITC04_SetUp as ModuleData
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-path_list = ['256.1.1.1',
-           'a.1.167.4',
-           '10.1.167',
-           '10.1.167.4#'
-           ]
+
 
 '''
 -------------------------------------------------------------------------------------------------
@@ -33,9 +29,9 @@ path_list = ['256.1.1.1',
 '''
 host_name = ModuleData.host1_name
 sd_name = 'data1-ITC0401030105'
-sd = DataStorages['nfs']['data1']
+sd = DataStorages['nfs']['data2']
 sd_ip = sd['ip']
-sd_path_list = [':/storage/data1', 'storage/data1']
+sd_path_list = [':/storage/data2', 'storage/data2']
 xml_sd_info_list = '''
 <data_driver>
     <storage_domain>

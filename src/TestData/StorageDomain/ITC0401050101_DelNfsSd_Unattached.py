@@ -21,11 +21,11 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-data = DataStorages['nfs']['data1']
+data = DataStorages['nfs']['data2']
 data_ip = data['ip']
 data_path = data['path']
 host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)
-data_name = 'data1-nfs-ITC0401050101'
+data_name = 'data2-nfs-ITC0401050101'
 xml_data_info = '''
 <storage_domain>
     <name>%s</name>

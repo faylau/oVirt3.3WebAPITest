@@ -21,7 +21,7 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-data1 = DataStorages['nfs']['data1']
+data1 = DataStorages['nfs']['data2']
 iso2 = IsoStorages['ISO-Storage2']
 export2 = ExportStorages['Export-Storage2']
 data1_ip = data1['ip']
@@ -39,7 +39,7 @@ export2_path = export2['path']
 -------------------------------------------------------------------------------------------------
 '''
 host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)
-data1_name = ['data1-nfs-ITC0401030101', 'iso1-ITC0401030101', 'export1-ITC0401030101']
+data1_name = ['data2-nfs-ITC0401030101', 'iso1-ITC0401030101', 'export1-ITC0401030101']
 data1_info_xml = '''
 <data_driver>
     <storage_domain>

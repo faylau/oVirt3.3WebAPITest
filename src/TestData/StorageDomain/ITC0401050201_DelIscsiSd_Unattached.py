@@ -21,13 +21,13 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-data = DataStorages['iscsi']['data1-iscsi']
+data = DataStorages['iscsi']['data2-iscsi']
 data_ip = data['ip']
 data_port = data['port']
 data_target = data['target']
 data_lun_id = data['lun_id']
 host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)
-data_name = 'data1-iscsi-ITC0401050201'
+data_name = 'data2-iscsi-ITC0401050201'
 xml_data_info = '''
     <storage_domain>
         <name>%s</name>
