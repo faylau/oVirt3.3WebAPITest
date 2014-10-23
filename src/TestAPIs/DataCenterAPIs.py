@@ -19,6 +19,28 @@ from StorageDomainAPIs import StorageDomainAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 
+def smart_attach_storage_domain(dc_name, sd_name, data=None):
+    '''
+    @summary: 智能附加存储域到数据中心（附加，并判断存储域状态是否最终变为active）
+    @param dc_name: 数据中心名称
+    @param sd_name: 存储域名称
+    @return: True or False
+    '''
+    dc_api = DataCenterAPIs()
+    r = dc_api.attachStorageDomainToDC(dc_name, sd_name, data)
+    return (r['status_code'] == 201 and dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='active')
+
+def smart_deactive_storage_domain(dc_name, sd_name, data=None):
+    '''
+    @summary: 智能取消激活数据中心里的存储域（对active状态存储域进行maintenance操作）
+    @param dc_name: 数据中心名称
+    @param sd_name: 存储域名称
+    @return: True or False
+    '''
+    dc_api = DataCenterAPIs()
+    r = dc_api.deactiveDCStorageDomain(dc_name, sd_name)
+    return (r['status_code'] == 200 and dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='maintenance')
+
 class DataCenterAPIs(BaseAPIs):
     '''
     @summary: 提供数据中心各种常用操作，通过HttpClient调用相应的REST接口实现。
@@ -161,6 +183,22 @@ class DataCenterAPIs(BaseAPIs):
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def getDCStorageDomainStatus(self, dc_name, sd_name):
+        '''
+        @summary: 获取数据中心指定存储域的状态
+        @param dc_name: 数据中心名称
+        @param sd_name: 存储域名称
+        @return: 存储域状态（状态只有）
+        '''
+        # 调用StorageDomainAPIs模块中的getStorageDomainIdByName()方法获得存储域id
+        sdapi = StorageDomainAPIs()
+        sd_id = sdapi.getStorageDomainIdByName(sd_name)
+        dc_id = self.getDataCenterIdByName(dc_name)
+        api_url = '%s/%s/storagedomains/%s' % (self.base_url, dc_id, sd_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return xmltodict.parse(r.text)['storage_domain']['status']['state']
         
     def attachStorageDomainToDC(self, dc_name, sd_name=None, data=None):
         '''
@@ -269,7 +307,10 @@ class DataCenterAPIs(BaseAPIs):
 
 if __name__ == "__main__":
     dcapi = DataCenterAPIs()
-    print dcapi.getDataCenterInfo(dc_id='8cfa5137-e11f-445b-bbd5-c5611338d8eb')
+    
+    print dcapi.getDCStorageDomainStatus('DC-NFS', 'data1-nfs')
+#     r = dcapi.attachStorageDomainToDC('DC-NFS', 'data1-nfs')
+#     print dcapi.getDataCenterInfo(dc_id='8cfa5137-e11f-445b-bbd5-c5611338d8eb')
 #     data = '''
 #     <data_center>
 #         <name>NewDatacenter</name>
