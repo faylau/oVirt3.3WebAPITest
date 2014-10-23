@@ -74,6 +74,8 @@ class DiskAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=disk_info)
+        print r.status_code
+        print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     
@@ -128,9 +130,22 @@ class DiskAPIs(BaseAPIs):
 if __name__=='__main__':
     diskapi = DiskAPIs()
     #print diskapi.getDisksList()
+
+    disk_test_info = '''
+    <disk>
+        <alias>disk-aaaaaaaaa</alias>
+        <storage_domains>
+            <storage_domain>
+                <name>data1-ITC040201</name>
+            </storage_domain>
+        </storage_domains>
+        <size>105906176</size>
+        <interface>virtio</interface>
+        <format>cow</format>
+    </disk>
     '''
-          
-    '''
+    r = diskapi.createDisk(disk_test_info)
+    
     disk_info='''
     <disk>
     <alias>Disk-test</alias>
@@ -178,7 +193,7 @@ if __name__=='__main__':
 </fault>
     ff31f5cb-ef9b-4cf1-8105-e8e6772a7f91 关机虚拟机
     '''
-    print xmltodict.unparse(diskapi.deleteDisk('3d5d2e5f-e161-4651-b157-52215737981e')['result'],pretty=True)
+#     print xmltodict.unparse(diskapi.deleteDisk('3d5d2e5f-e161-4651-b157-52215737981e')['result'],pretty=True)
     #print diskapi.getStaticsofDisk('0cf6c057-c60a-4904-bc80-92747e93b558')
     action = '''
     <action>
