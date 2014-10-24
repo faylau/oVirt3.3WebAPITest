@@ -15,57 +15,6 @@ from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs
 
 import xmltodict
 
-def smart_create_disk(xml_disk_info, disk_alias=None, status_code=202):
-    '''
-    @summary: 智能创建磁盘，并等待其状态为ok；
-    @param disk_alias: 磁盘别名，缺省为空（若在XML中已经提供）
-    @param xml_disk_info: 创建磁盘的XML信息
-    @param status_code: 成功创建磁盘后，接口返回的状态码，缺省为202
-    @return: True or False
-    '''
-    disk_api = DiskAPIs()  
-    r = disk_api.createDisk(xml_disk_info)
-    def is_disk_ok():
-        return disk_api.getDiskStatus(disk_id)=='ok'
-    if r['status_code'] == status_code:
-        disk_id = r['result']['disk']['@id']
-        #如果磁盘状态在给定时间内变为ok状态，则继续验证状态码和磁盘信息
-        if wait_until(is_disk_ok, 500, 5):
-            LogPrint().info("PASS: Create disk '%s' SUCCESS and it's state is 'ok'." % disk_alias)
-            return [True, disk_id]
-        else:
-            LogPrint().error("FAIL: Create Disk FAIED, it's status is not 'ok'." )
-            return False
-    else:
-        LogPrint().error("FAIL: Create Disk FAIED, returned status code '%s' is wrong." % r['status_code'])
-        return False
-    
-def smart_delete_disk(disk_id, xml_del_option='<action><async>false</async></action>', status_code=200):
-    '''
-    @summary: 智能删除磁盘，并等待其状态为ok；
-    @param disk_alias: 磁盘别名，缺省为空（若在XML中已经提供）
-    @param xml_disk_info: 创建磁盘的XML信息
-    @param status_code: 成功创建磁盘后，接口返回的状态码，缺省为200
-    @return: True or False
-    '''
-    disk_api = DiskAPIs()
-    try:
-        disk_api.getDiskInfo(disk_id)
-        if disk_api.getDiskStatus(disk_id) != 'ok':
-            LogPrint().warning("WARN: The disk is not 'ok'. It cannot be deleted.")
-            return False
-        else: 
-            r = disk_api.deleteDisk(disk_id)
-            if r['status_code']==status_code:
-                LogPrint().info("PASS: Delete disk SUCCESS.")
-                return True
-            else:
-                LogPrint().error("FAIL: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
-                return False
-    except:
-        LogPrint().warning("WARN: Disk is not exist.")
-        return True
-
 
 class ITC0801_GetDiskList(BaseTestCase):
     '''

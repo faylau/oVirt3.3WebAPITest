@@ -21,41 +21,13 @@ import xmltodict
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
-from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, DataStorageAPIs
+from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, DataStorageAPIs, ISOStorageAPIs, smart_create_storage_domain, smart_del_storage_domain
 from TestAPIs.DiskAPIs import DiskAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from TestCases.Host import smart_create_host, smart_del_host
 from TestCases.Disk import smart_create_disk, smart_delete_disk
 
-def smart_create_storage_domain(sd_name, xml_sd_info, status_code=201):
-    '''
-    @summary: 智能创建存储域
-    '''
-    sd_api = StorageDomainAPIs()
-    if not sd_api.searchStorageDomainByName(sd_name)['result']['storage_domains']:
-        r = sd_api.createStorageDomain(xml_sd_info)
-        return (r['status_code'] == status_code)
-    else:
-        LogPrint().warning("WARN: Storage Domain '%s' already exists." % sd_name)
-        return False
-
-def smart_del_storage_domain(sd_name, xml_del_option, host_name=None, status_code=200):
-    '''
-    @summary: 智能删除存储域（unattached状态）
-    @param sd_name: 存储域名称
-    @param xml_del_option: XML格式的删除选项
-    @param host_name: 关联主机名称（缺省为None,若不提供，则XML中必须提供host名称）
-    @param status_code: 缺少值为200
-    '''
-    sd_api = StorageDomainAPIs()
-    LogPrint().info("Post-Test: Delete StorageDomain '%s'." % sd_name)
-    if sd_api.searchStorageDomainByName(sd_name)['result']['storage_domains']:
-        r = sd_api.delStorageDomain(sd_name, xml_del_option, host_name)
-        return (r['status_code']==status_code)
-    else:
-        LogPrint().info("Post-Test: StorageDomain '%s' not exists." % sd_name)
-        return True
 
 class ITC04_SetUp(BaseTestCase):
     '''
@@ -907,10 +879,33 @@ class ITC040301_GetFilesFromIsoStorage(BaseTestCase):
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
+        
+    def test_GetFilesFromIsoStorage(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）调用相关接口，获得ISO域中所有文件列表；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        iso_api = ISOStorageAPIs()
+        LogPrint().info("Test: Get files list from ISO Storage '%s'." % self.dm.iso_storage_name)
+        r = iso_api.getFilesListFromISOStorage(self.dm.iso_storage_name)
+        if r['status_code'] == self.dm.expected_status_code_get_files_from_IsoStorage:
+            LogPrint().info("PASS: Get files list SUCCESS from ISO Storage '%s'." % self.dm.iso_storage_name)
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong while gettig files list from ISO Storage '%s'." % (r['status_code'], self.dm.iso_storage_name))
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["StorageDomain.ITC04_SetUp"]
+    test_cases = ["StorageDomain.ITC040301_GetFilesFromIsoStorage"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

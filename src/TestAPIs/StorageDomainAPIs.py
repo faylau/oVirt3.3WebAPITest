@@ -17,6 +17,36 @@ import xmltodict
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
+from Utils.PrintLog import LogPrint
+
+def smart_create_storage_domain(sd_name, xml_sd_info, status_code=201):
+    '''
+    @summary: 智能创建存储域
+    '''
+    sd_api = StorageDomainAPIs()
+    if not sd_api.searchStorageDomainByName(sd_name)['result']['storage_domains']:
+        r = sd_api.createStorageDomain(xml_sd_info)
+        return (r['status_code'] == status_code)
+    else:
+        LogPrint().warning("WARN: Storage Domain '%s' already exists." % sd_name)
+        return False
+
+def smart_del_storage_domain(sd_name, xml_del_option, host_name=None, status_code=200):
+    '''
+    @summary: 智能删除存储域（unattached状态）
+    @param sd_name: 存储域名称
+    @param xml_del_option: XML格式的删除选项
+    @param host_name: 关联主机名称（缺省为None,若不提供，则XML中必须提供host名称）
+    @param status_code: 缺少值为200
+    '''
+    sd_api = StorageDomainAPIs()
+    LogPrint().info("Post-Test: Delete StorageDomain '%s'." % sd_name)
+    if sd_api.searchStorageDomainByName(sd_name)['result']['storage_domains']:
+        r = sd_api.delStorageDomain(sd_name, xml_del_option, host_name)
+        return (r['status_code']==status_code)
+    else:
+        LogPrint().info("Post-Test: StorageDomain '%s' not exists." % sd_name)
+        return True
 
 class StorageDomainAPIs(BaseAPIs):
     '''

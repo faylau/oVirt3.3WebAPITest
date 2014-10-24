@@ -17,11 +17,76 @@ import unittest
 import xmltodict
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
+from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain
+from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+from TestCases.Host import smart_create_host, smart_del_host
+from TestCases.StorageDomain import smart_create_storage_domain, smart_del_storage_domain, smart_deactive_storage_domain
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 
+
+class ITC01_SetUp(BaseTestCase):
+    '''
+    @summary: 数据中心模块级测试用例，初始化模块测试环境；
+    @note: （1）创建一个NFS类型数据中心；
+    @note: （2）创建一个集群；
+    @note: （3）创建一个主机，并等待其变为UP状态；
+    @note: （4）创建3个存储域（data1/data2/ISO/Export）；
+    @note: （5）将 data1 附加到数据中心。
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+
+    def test_CreateModuleTestEnv(self):
+        '''
+        @summary: 创建DataCenter模块测试环境
+        '''
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        
+        # 创建1个数据中心（nfs类型）
+        @BaseTestCase.drive_data(self, self.dm.dc_info)
+        def create_data_centers(xml_dc_info):
+            LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % xmltodict.parse(xml_dc_info)['data_center']['name'])
+            self.assertTrue(dcapi.createDataCenter(xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
+        create_data_centers()
+        
+        # 创建1个集群
+        @BaseTestCase.drive_data(self, self.dm.cluster_info)
+        def create_clusters(xml_cluster_info):
+            LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (xmltodict.parse(xml_cluster_info)['cluster']['name'], xmltodict.parse(xml_cluster_info)['cluster']['data_center']['name']))
+            self.assertTrue(capi.createCluster(xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
+        create_clusters()
+        
+        # 在NFS数据中心中创建一个主机，并等待主机UP。
+        @BaseTestCase.drive_data(self, self.dm.hosts_info_xml)
+        def create_hosts(xml_host_info):
+            LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (xmltodict.parse(xml_host_info)['host']['name'], xmltodict.parse(xml_host_info)['host']['cluster']['name']))
+            self.assertTrue(smart_create_host(xmltodict.parse(xml_host_info)['host']['name'], xml_host_info))
+        create_hosts()
+        
+        # 为NFS数据中心分别创建Data（data1/data2）/ISO/Export域。
+        @BaseTestCase.drive_data(self, self.dm.xml_datas_info)
+        def create_storage_domains(xml_storage_domain_info):
+            sd_name = xmltodict.parse(xml_storage_domain_info)['storage_domain']['name']
+            LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % (sd_name))
+            self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
+        create_storage_domains()
+        
+        # 将创建的的data1附加到NFS/ISCSI数据中心里。
+        LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
 
 class ITC010101_GetDCList(BaseTestCase):
     '''

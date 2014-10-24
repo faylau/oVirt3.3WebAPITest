@@ -19,63 +19,13 @@ import xmltodict
 
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-from TestAPIs.HostAPIs import HostAPIs, HostNicAPIs
+from TestAPIs.HostAPIs import HostAPIs, HostNicAPIs, smart_create_host, smart_del_host
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from Utils.Util import wait_until
 from TestData.Host import ITC03_SetUp as ModuleData
 
-def smart_create_host(host_name, xml_host_info):
-    '''
-    @summary: 创建主机，并等待其变为UP状态。
-    @param host_name: 新创建的主机名称
-    @param xml_host_info: 创建主机的xml格式信息，用于向接口传参数
-    @return: True or False
-    '''
-    host_api = HostAPIs()
-    r = host_api.createHost(xml_host_info)
-    def is_host_up():
-        return host_api.getHostStatus(host_name)=='up'
-    if wait_until(is_host_up, 200, 5):
-        if r['status_code'] == 201:
-            LogPrint().info("PASS: Create host '%s' SUCCESS." % host_name)
-            return True
-        else:
-            LogPrint().error("FAIL: Create host '%s' FAILED. Returned status code is INCORRECT." % host_name)
-            return False
-    else:
-        LogPrint().error("FAIL: Create host '%s' FAILED. It's final state is not 'UP'." % host_name)
-        return False
-
-def smart_del_host(host_name, xml_host_del_option):
-    '''
-    @summary: 在不同的最终状态下删除Host
-    @param host_name: 待删除的主机名称
-    @param xml_host_del_option: 删除主机时所采用的删除配置项
-    @return: True or False
-    '''
-    host_api = HostAPIs()
-    def is_host_maintenance():
-        return host_api.getHostStatus(host_name)=='maintenance'
-    if host_api.searchHostByName(host_name)['result']['hosts']:
-        host_state = host_api.getHostStatus(host_name)
-        # 当主机状态为UP时，先设置为“维护”，然后再删除
-        if host_state=='up' or host_state=='non_responsive':
-            LogPrint().info("Post-Test: Deactive host '%s' from up to maintenance state." % host_name)
-            r = host_api.deactiveHost(host_name)
-            if wait_until(is_host_maintenance, 120, 5):
-                LogPrint().info("Post-Test: Delete host '%s' from cluster." % host_name)
-                r = host_api.delHost(host_name, xml_host_del_option)
-                return r['status_code']==200
-        # 当主机状态为maintenance或install_failed时，直接删除
-        elif host_state=='maintenance' or host_state=='install_failed':
-            LogPrint().info("Post-Test: Delete host '%s' from cluster." % host_name)
-            r = host_api.delHost(host_name, xml_host_del_option)
-            return r['status_code']==200
-    else:
-        LogPrint().info("Post-Test: Host '%s' not exist." % host_name)
-        return True
 
 class ITC03_SetUp(BaseTestCase):
     '''
