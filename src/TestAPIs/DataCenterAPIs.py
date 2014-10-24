@@ -1,4 +1,5 @@
 #coding:utf-8
+from TestAPIs.StorageDomainAPIs import DataStorageAPIs
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -19,6 +20,7 @@ from StorageDomainAPIs import StorageDomainAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 
+
 def smart_attach_storage_domain(dc_name, sd_name, data=None):
     '''
     @summary: 智能附加存储域到数据中心（附加，并判断存储域状态是否最终变为active）
@@ -28,7 +30,18 @@ def smart_attach_storage_domain(dc_name, sd_name, data=None):
     '''
     dc_api = DataCenterAPIs()
     r = dc_api.attachStorageDomainToDC(dc_name, sd_name, data)
+#     print r['status_code']
+#     print dc_api.getDCStorageDomainStatus(dc_name, sd_name)
     return (r['status_code'] == 201 and dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='active')
+
+def smart_detach_storage_domain(dc_name, sd_name, data='<action><async>false</async></action>'):
+    '''
+    @summary: 从数据中心分离存储域（分离，并判断存储域状态是否最终变为unattached）
+    '''
+    dc_api = DataCenterAPIs()
+    ds_api = DataStorageAPIs()
+    r = dc_api.detachStorageDomainFromDC(dc_name, sd_name, data)
+    return (r['status_code'] == 200 and ds_api.getStorageDomainStatus(sd_name)=='unattached')
 
 def smart_deactive_storage_domain(dc_name, sd_name, data=None):
     '''

@@ -35,6 +35,12 @@ class DiskAPIs(BaseAPIs):
         '''
         return self.searchObject('disks', disk_name)
     
+    def getDiskIdByName(self, disk_alias):
+        '''
+        @summary: 根据磁盘名称获取其ID（前提是磁盘名称唯一）
+        '''
+        r = self.searchDiskByName(disk_alias)
+        return r['result']['disks']['disk']['@id']
         
     def getDisksList(self):
         '''
@@ -75,8 +81,8 @@ class DiskAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=disk_info)
-        print r.status_code
-        print r.text
+#         print r.status_code
+#         print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     

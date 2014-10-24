@@ -1,7 +1,6 @@
 #encoding:utf-8
 
 
-
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -20,13 +19,14 @@ from copy import deepcopy
 import xmltodict
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain
+from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, DataStorageAPIs
 from TestAPIs.DiskAPIs import DiskAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from TestCases.Host import smart_create_host, smart_del_host
+from TestCases.Disk import smart_create_disk, smart_delete_disk
 
 def smart_create_storage_domain(sd_name, xml_sd_info, status_code=201):
     '''
@@ -63,8 +63,8 @@ class ITC04_SetUp(BaseTestCase):
     @note: （1）分别创建三个数据中心（NFS/ISCSI/FC）；
     @note: （2）分别创建三个集群；
     @note: （3）在NFS/ISCSI集群中分别创建一个主机；
-    @note: （4）分别创建NFS/ISCSI类型Data存储域；
-    @note: （5）将两个Data存储域分别附加到相应的数据中心。
+    @note: （4）分别创建NFS/ISCSI类型Data存储域，创建一个ISO/Export存储域；
+    @note: （5）将两个Data存储域分别附加到相应的数据中心，将ISO/Export域附加在NFS数据中心。
     '''
     def setUp(self):
         '''
@@ -83,35 +83,38 @@ class ITC04_SetUp(BaseTestCase):
         # 创建3个数据中心（3种类型）
         @BaseTestCase.drive_data(self, self.dm.dc_info)
         def create_data_centers(xml_dc_info):
-            LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % xmltodict.parse(xml_dc_info)['data_center']['name'])
+            LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % xmltodict.parse(xml_dc_info)['data_center']['name'])
             self.assertTrue(dcapi.createDataCenter(xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
         create_data_centers()
         
         # 创建3个集群
         @BaseTestCase.drive_data(self, self.dm.cluster_info)
         def create_clusters(xml_cluster_info):
-            LogPrint().info("Pre-Module-Test: Create Cluster '%s' in DataCenter '%s'." % (xmltodict.parse(xml_cluster_info)['cluster']['name'], xmltodict.parse(xml_cluster_info)['cluster']['data_center']['name']))
+            LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (xmltodict.parse(xml_cluster_info)['cluster']['name'], xmltodict.parse(xml_cluster_info)['cluster']['data_center']['name']))
             self.assertTrue(capi.createCluster(xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
         create_clusters()
         
         # 在NFS/ISCSI数据中心中分别创建一个主机，并等待主机UP。
         @BaseTestCase.drive_data(self, self.dm.hosts_info_xml)
         def create_hosts(xml_host_info):
-            LogPrint().info("Pre-Module-Test: Create Host '%s' in Cluster '%s'." % (xmltodict.parse(xml_host_info)['host']['name'], xmltodict.parse(xml_host_info)['host']['cluster']['name']))
+            LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (xmltodict.parse(xml_host_info)['host']['name'], xmltodict.parse(xml_host_info)['host']['cluster']['name']))
             self.assertTrue(smart_create_host(xmltodict.parse(xml_host_info)['host']['name'], xml_host_info))
         create_hosts()
         
-        # 为NFS/ISCSI数据中心分别创建Data域。
+        # 为NFS/ISCSI数据中心分别创建Data域，为NFS数据中心创建ISO/Export域。
         @BaseTestCase.drive_data(self, self.dm.xml_datas_info)
         def create_storage_domains(xml_storage_domain_info):
             sd_name = xmltodict.parse(xml_storage_domain_info)['storage_domain']['name']
-            LogPrint().info("Pre-Module-Test: Create Data Storage '%s'." % (sd_name))
+            LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % (sd_name))
             self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
         create_storage_domains()
         
         # 将创建的的Data域分别附加到NFS/ISCSI数据中心里。
+        LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_iscsi_name, self.dm.data1_iscsi_name))
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
 
     def tearDown(self):
         '''
@@ -140,30 +143,43 @@ class ITC04_TearDown(BaseTestCase):
         dcapi = DataCenterAPIs()
         capi = ClusterAPIs()
         
-        # 将Data存储域设置为Maintenance状态
-        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s' and '%s'." % (self.dm.dc_nfs_name, self.dm.dc_iscsi_name))
+        # Step1：将ISO域和Export域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate ISO and Export storage domains.")
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        
+        # Step2：将ISO域和Export域从对应的数据中心分离（detach）
+        LogPrint().info("Post-Module-Test-2: Deattch ISO and Export storage domains.")
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        
+        # Step3：将Data存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-3: Deactivate all data storage domains.")
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_iscsi_name, self.dm.data1_iscsi_name))
         
         # 删除3个数据中心（非强制，之后存储域变为Unattached状态）
         for dc in self.dm.dc_name_list:
             if dcapi.searchDataCenterByName(dc)['result']['data_centers']:
-                LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % dc)
+                LogPrint().info("Post-Module-Test-4: Delete DataCenter '%s'." % dc)
                 self.assertTrue(dcapi.delDataCenter(dc)['status_code']==self.dm.expected_status_code_del_dc)
                 
-        # 删除3个Unattached状态的Data存储域（如果没有配置FC，则删除2个）
-        dict_sd_to_host = {self.dm.data1_nfs_name:self.dm.host1_name, self.dm.data1_iscsi_name:self.dm.host4_name}
+        # 删除3个Unattached状态的Data存储域和ISO/Export域（如果没有配置FC，则删除2个）
+        LogPrint().info("Post-Module-Test-5: Delete all storage domains.")
+        dict_sd_to_host = {self.dm.data1_nfs_name:self.dm.host1_name, self.dm.data1_iscsi_name:self.dm.host4_name, 
+                           self.dm.iso1_name:self.dm.host1_name, self.dm.export1_name:self.dm.host1_name}
         for sd in dict_sd_to_host:
             smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=dict_sd_to_host[sd])
         
         # 删除主机（host1和host4）
+        LogPrint().info("Post-Module-Test-6: Delete all hosts.")
         for host_name in [self.dm.host1_name, self.dm.host4_name]:
             self.assertTrue(smart_del_host(host_name, self.dm.xml_del_host_option))
         
         # 删除3个集群
         for cluster in self.dm.cluster_name_list:
             if capi.searchClusterByName(cluster)['result']['clusters']:
-                LogPrint().info("Post-Module-Test: Delete Cluster '%s'." % cluster)
+                LogPrint().info("Post-Module-Test-7: Delete Cluster '%s'." % cluster)
                 self.assertTrue(capi.delCluster(cluster)['status_code']==self.dm.expected_status_code_del_dc)
 
 class ITC040101_GetStorageDomainsList(BaseTestCase):
@@ -761,16 +777,10 @@ class ITC040201_GetDisksFromDataStorage(BaseTestCase):
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
         
-        # 前提1：创建一个Data存储域
-        LogPrint().info("Pre-Test-1: Create a Data Storage '%s'." % self.dm.data1_name)
-        self.assertTrue(smart_create_storage_domain(self.dm.data1_name, self.dm.xml_data_storage_info))
-        
-        # 前提2：在Data存储域中创建一个磁盘
-        self.disk_api = DiskAPIs()
-        LogPrint().info("Pre-Test-2: Create a disk in '%s'." % self.dm.disk_name)
-        r = self.disk_api.createDisk(self.dm.xml_disk_info)
-        self.assertTrue(r['status_code'] == self.dm.expected_status_code_create_disk)
-        self.disk_id = r['result']['disk']['@id']
+        # 前提1：在Data存储域中创建一个磁盘
+        r = smart_create_disk(self.dm.xml_disk_info)
+        self.assertTrue(r[0])
+        self.disk_id = r[1]
         
     def test_GetDisksFromDataStorage(self):
         '''
@@ -779,7 +789,7 @@ class ITC040201_GetDisksFromDataStorage(BaseTestCase):
         @note: （2）操作成功，验证接口返回的状态码、disk列表是否正确。
         '''
         self.data_storage_api = DataStorageAPIs()
-        LogPrint().info("Test: Get the disks list in Data Storage '%s'." % self.dm.data1_name)
+        LogPrint().info("Test: Get disks list of Data Storage '%s'." % self.dm.data1_name)
         r = self.data_storage_api.getDisksListFromDataStorage(self.dm.data1_name)
         if r['status_code'] == self.dm.expected_status_code_get_disk_list_in_data_storage:
             LogPrint().info("PASS: Get the disks list from Data Storage '%s' SUCCESS." % self.dm.data1_name)
@@ -793,19 +803,114 @@ class ITC040201_GetDisksFromDataStorage(BaseTestCase):
         '''
         @summary: 资源清理
         @note: （1）删除创建的磁盘；
-        @note: （2）删除创建的Data存储域。
         '''
-        LogPrint().info("Post-Test-1: Delete disk from data storage.")
-        r = self.disk_api.deleteDisk(self.disk_id, self.dm.xml_del_disk_option)
-        self.assertTrue(r['status_code'] == self.dm.expected_status_code_del_disk)
+        LogPrint().info("Post-Test: Delete disk '%s' from data storage '%s'." % (self.dm.disk_name, self.dm.data1_name))
+        self.assertTrue(smart_delete_disk(self.disk_id, self.dm.xml_del_disk_option))
+
+class ITC040202_GetDiskInfoFromDataStorage(BaseTestCase):
+    '''
+    @summary: ITC-04存储域管理-02Data域磁盘管理-02查看磁盘详细信息
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
         
-        LogPrint().info("Post-Test-2: Delete data storage.")
-        self.assertTrue(smart_del_storage_domain(self.dm.data1_name, self.dm.xml_del_ds_option))
+        # 前提1：在存储域中创建一个磁盘
+        r = smart_create_disk(self.dm.xml_disk_info)
+        self.assertTrue(r[0])
+        self.disk_id = r[1]
+    
+    def test_GetDiskInfoFromDataStorage(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）查询指定存储域中磁盘信息；
+        @note: （2）操作成功，验证接口返回的状态码、磁盘信息是否正确。
+        '''
+        ds_api = DataStorageAPIs()
+        LogPrint().info("Test: Get disk '%s' info from the data storage '%s'." % (self.dm.disk_name, self.dm.data1_name))
+        r = ds_api.getDiskInfoFromDataStorage(self.dm.data1_name, self.disk_id)
+        if r['status_code'] == self.dm.expected_status_code_get_disk_info:
+            d1 = xmltodict.parse(self.dm.xml_disk_info)
+            if DictCompare().isSubsetDict(d1, r['result']):
+                LogPrint().info("PASS: Get disk '%s' info from the data storage '%s' SUCCESS." % (self.dm.disk_name, self.dm.data1_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Get disk info INCORRECT.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' INCORRECT while get disk info from data storage." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的磁盘
+        '''
+        self.assertTrue(smart_delete_disk(self.disk_id, self.dm.xml_del_disk_option))
+
+class ITC04020301_DelDiskFromDataStorage_OK(BaseTestCase):
+    '''
+    @summary: ITC-04存储域管理-02Data域磁盘管理-03删除存储域中的磁盘-01OK状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
         
+        # 前提1：在Active状态的存储域中创建一个磁盘
+        r = smart_create_disk(self.dm.xml_disk_info, disk_alias=self.dm.disk_name)
+        self.assertTrue(r[0])
+        self.disk_id = r[1]
+        
+    def test_DelDiskFromDataStorage_OK(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）调用相应接口，删除创建的磁盘；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        ds_api = DataStorageAPIs()
+        disk_api = DiskAPIs()
+        r = ds_api.delDiskFromDataStorage(self.dm.data1_name, disk_id=self.disk_id)
+        if r['status_code']==self.dm.expected_status_code_del_disk:
+            try:
+                disk_api.getDiskInfo(self.disk_id)
+                LogPrint().error("FAIL: Delete disk FAILED, still exist.")
+                self.flag = False
+            except:
+                LogPrint().info("PASS: Delete disk '%s' from Data Storage '%s' SUCCESS." %(self.dm.disk_name, self.dm.data1_name))
+                self.flag = True
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除磁盘（如果存在的话）
+        '''
+        self.assertTrue(smart_delete_disk(self.disk_id))
+
+class ITC040301_GetFilesFromIsoStorage(BaseTestCase):
+    '''
+    @summary: ITC-04存储域管理-03ISO域文件管理-01查看ISO域文件列表
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["StorageDomain.ITC04010701_ImportSd_Unattached"]
+    test_cases = ["StorageDomain.ITC04_SetUp"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
