@@ -22,11 +22,10 @@ from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, DataStorageAPIs, ISOStorageAPIs, smart_create_storage_domain, smart_del_storage_domain
-from TestAPIs.DiskAPIs import DiskAPIs
+from TestAPIs.DiskAPIs import DiskAPIs, smart_create_disk, smart_delete_disk
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from TestCases.Host import smart_create_host, smart_del_host
-from TestCases.Disk import smart_create_disk, smart_delete_disk
 
 
 class ITC04_SetUp(BaseTestCase):
