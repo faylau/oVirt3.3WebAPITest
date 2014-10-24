@@ -11,80 +11,14 @@ from Utils.Util import DictCompare,wait_until
 from Utils.HTMLTestRunner import HTMLTestRunner
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
-    TemplateNicsAPIs
+    TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
+    smart_delete_tempnic
 
 import xmltodict
 from TestData.Cluster.ITC020202_GetClusterNetworkInfo import network_name
 from TestAPIs.NetworkAPIs import NetworkAPIs
 
-def smart_create_template(temp_name,temp_info):
-    '''
-    @summary: 创建模板，并等待其变为ok状态。
-    @param temp_name: 新创建的模板名称
-    @param temp_info: 创建模板的xml格式信息，用于向接口传参数
-    @return: True or False
-    '''
-    tempapi = TemplatesAPIs()
-    r = tempapi.createTemplate(temp_info)
-    def is_temp_ok():
-        return tempapi.getTemplateInfo(temp_name=temp_name)['result']['template']['status']['state']=='ok'
-    if r['status_code'] == 202:
-        if wait_until(is_temp_ok, 600, 10):
-            LogPrint().info("Create Template %s success"%temp_name)
-            return True
-        else:
-            LogPrint().error("Create Template overtime")
-            return False
-    else:
-        LogPrint().error("Create Template failed.Status-code is wrong.")
-        return False
-    
-def smart_delete_template(temp_name):  
-    '''
-    @summary: 删除模板
-    @param temp_name: 模板名称
-    @return: True or False
-    ''' 
-    tempapi = TemplatesAPIs()    
-    r = tempapi.delTemplate(temp_name)
-    if r['status_code'] == 200:
-        LogPrint().info("Delete template success.")
-        return True
-    else:
-        LogPrint().error("Delete template failed")
-        return False
-    
-def smart_create_tempnic(temp_name,nic_data):
-    '''
-    @summary: 创建模板的网络接口
-    @param temp_name: 模板名称
-    @param nic_data: 网络接口参数
-    @return: True or False
-    '''
-    tempnic_api = TemplateNicsAPIs()
-    r = tempnic_api.createTemplateNic(temp_name,nic_data)
-    if r['status_code'] == 201:
-        LogPrint().info("Create Nic for Template %s success"%temp_name)
-        return True
-    else:
-        LogPrint().error("Create Nic for Template failed.Status-code is wrong.")
-        return False
-    
-def smart_delete_tempnic(temp_name,nic_name):  
-    '''
-    @summary: 删除模板的网络接口
-    @param temp_name: 模板名称
-    @param nic_name:网络接口名称 
-    @return: True or False
-    ''' 
-    tempnic_api = TemplateNicsAPIs()    
-    r = tempnic_api.deleteTemplateNic(temp_name, nic_name)
-    if r['status_code'] == 200:
-        LogPrint().info("Delete template's nic success.")
-        return True
-    else:
-        LogPrint().error("Delete template's nic failed")
-        return False
+
    
 class ITC07_SetUp(BaseTestCase):
     def setUp(self):
@@ -122,14 +56,36 @@ class ITC07_SetUp(BaseTestCase):
 
 class ITC070101_GetTemplateList(BaseTestCase):
 
-
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
     def test_GetTemplateList(self):
-        pass
+        temp_api = TemplatesAPIs()
+        r = temp_api.getTemplatesList()
+        if r['status_code'] == 200:
+            LogPrint().info("Get TemplateList success.")
+            self.assertTrue(True)
+        else:
+            LogPrint().error("Get TemplateList fail.The status_code is wrong.")
+            self.assertTrue(False)
+        
 class ITC070102_GetTemplateInfo(BaseTestCase):
-
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.temp_api = TemplatesAPIs()
+        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
 
     def test_GetTemplateInfo(self):
-        pass
+        self.flag=True
+        r = self.temp_api.getTemplateInfo(self.dm.temp_name)
+        if r['status_code'] == self.dm.expected_status_code:
+            LogPrint().info("Get TemplateInfo success.")
+        else:
+            LogPrint().error("Get TemplateInfo fail.The Template info is wrong.")
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_template(self.dm.temp_name))
+       
 class ITC0701030101_CreateTemplate(BaseTestCase):
     '''
     @summary: 07模板管理-03创建模板-01成功创建-01最小测试集
@@ -142,8 +98,6 @@ class ITC0701030101_CreateTemplate(BaseTestCase):
         @BaseTestCase.drive_data(self, self.dm.temp_info)
         def do_test(xml_info):
             self.flag=True
-            print xml_info
-            print self.expected_result_index
             r = self.tempapi.createTemplate(xml_info)
             def is_temp_ok():
                 return self.tempapi.getTemplateInfo(temp_name=self.dm.temp_name[self.expected_result_index])['result']['template']['status']['state']=='ok'
@@ -751,7 +705,7 @@ class ITC070305_DeleteTemplateNic(BaseTestCase):
                                              
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Template.ITC070305_DeleteTemplateNic"]
+    test_cases = ["Template.ITC070102_GetTemplateInfo"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

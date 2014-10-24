@@ -16,6 +16,93 @@ import xmltodict
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
+from Utils.PrintLog import LogPrint
+from Utils.Util import DictCompare,wait_until
+
+def smart_create_template(temp_name,temp_info):
+    '''
+    @summary: 创建模板，并等待其变为ok状态。
+    @param temp_name: 新创建的模板名称
+    @param temp_info: 创建模板的xml格式信息，用于向接口传参数
+    @return: True or False
+    '''
+    tempapi = TemplatesAPIs()
+    r = tempapi.createTemplate(temp_info)
+    def is_temp_ok():
+        return tempapi.getTemplateInfo(temp_name=temp_name)['result']['template']['status']['state']=='ok'
+    if r['status_code'] == 202:
+        if wait_until(is_temp_ok, 600, 10):
+            LogPrint().info("Create Template %s success"%temp_name)
+            return True
+        else:
+            LogPrint().error("Create Template overtime")
+            return False
+    else:
+        LogPrint().error("Create Template failed.Status-code is wrong.")
+        return False
+    
+def smart_delete_template(temp_name):  
+    '''
+    @summary: 删除模板
+    @param temp_name: 模板名称
+    @return: True or False
+    ''' 
+    
+    tempapi = TemplatesAPIs()
+    try:    
+        tempapi.getTemplateInfo(temp_name)
+        if tempapi.getTemplateStatus(temp_name)!='ok':
+            LogPrint().warning("WARN: The template is not 'ok'. It cannot be deleted.")
+            return False
+        else:
+            r = tempapi.delTemplate(temp_name)
+            if r['status_code'] == 200:
+                LogPrint().info("Delete template success.")
+                return True
+            else:
+                LogPrint().error("Delete template failed")
+                return False
+    except:
+        LogPrint().warning("WARN: Template is not exist.")
+        return True
+    
+    
+def smart_create_tempnic(temp_name,nic_data):
+    '''
+    @summary: 创建模板的网络接口
+    @param temp_name: 模板名称
+    @param nic_data: 网络接口参数
+    @return: True or False
+    '''
+    tempnic_api = TemplateNicsAPIs()
+    r = tempnic_api.createTemplateNic(temp_name,nic_data)
+    if r['status_code'] == 201:
+        LogPrint().info("Create Nic for Template %s success"%temp_name)
+        return True
+    else:
+        LogPrint().error("Create Nic for Template failed.Status-code is wrong.")
+        return False
+    
+def smart_delete_tempnic(temp_name,nic_name):  
+    '''
+    @summary: 删除模板的网络接口
+    @param temp_name: 模板名称
+    @param nic_name:网络接口名称 
+    @return: True or False
+    ''' 
+    tempnic_api = TemplateNicsAPIs()
+    try:
+        tempnic_api.getTemplateNicInfo(temp_name, nic_name)    
+        r = tempnic_api.deleteTemplateNic(temp_name, nic_name)
+        if r['status_code'] == 200:
+            LogPrint().info("Delete template's nic success.")
+            return True
+        else:
+            LogPrint().error("Delete template's nic failed")
+            return False
+    except:
+        LogPrint().warning("WARN: Template_nic is not exist.")
+        return True
 
 class TemplatesAPIs(BaseAPIs):
     '''
@@ -57,6 +144,9 @@ class TemplatesAPIs(BaseAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         if r.status_code==200:
             return xmltodict.parse(r.text)['template']['name']
+        
+    def getTemplateStatus(self,temp_name):
+        return self.getTemplateInfo(temp_name)['result']['template']['status']['state']
                 
     def getTemplatesList(self):
         '''
@@ -81,7 +171,6 @@ class TemplatesAPIs(BaseAPIs):
         api_url = '%s/%s' % (self.base_url, temp_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
             

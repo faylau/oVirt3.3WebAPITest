@@ -7,13 +7,15 @@
 import unittest
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DiskAPIs import DiskAPIs
+from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs
 
 import xmltodict
+
+
 
 
 class ITC0801_GetDiskList(BaseTestCase):
@@ -44,8 +46,10 @@ class ITC0802_GetDiskInfo(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         self.diskapi = DiskAPIs()  
         #首先新建一个磁盘并获取id
-        self.disk_id = self.diskapi.createDisk(self.dm.disk_info)['result']['disk']['@id']
-        
+        #self.disk_id = self.diskapi.createDisk(self.dm.disk_info)['result']['disk']['@id']
+        r = smart_create_disk(self.dm.disk_info,self.dm.disk_name)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
     
     def test_GetDiskInfo(self):
         '''
@@ -55,8 +59,6 @@ class ITC0802_GetDiskInfo(BaseTestCase):
         if r['status_code']==self.dm.expected_status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.disk_info)
-            print dict_actual
-            print dict_expected
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
                 LogPrint().info("Get Disk info SUCCESS." )
@@ -72,7 +74,7 @@ class ITC0802_GetDiskInfo(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
-        self.diskapi.deleteDisk(self.disk_id, self.dm.async)     
+        self.assertTrue(smart_delete_disk(self.disk_id))     
 
 class ITC080301_CreateDisk(BaseTestCase):
     '''
@@ -149,7 +151,7 @@ class ITC080301_CreateDisk(BaseTestCase):
         #print self.disk_id_raw
         #print self.disk_id_cow
 #         self.diskapi.deleteDisk(self.disk_id_raw, self.dm.async)
-        self.diskapi.deleteDisk(self.disk_id, self.dm.async)  
+        self.assertTrue(smart_delete_disk(self.disk_id,self.dm.async))  
         
 
 class ITC080302_CreateDisk_VerifyName(BaseTestCase):
@@ -266,24 +268,14 @@ class ITC080401_DeleteDisk(BaseTestCase):
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
         self.diskapi = DiskAPIs()  
-        r = self.diskapi.createDisk(self.dm.disk_info)
-        def is_disk_ok():
-            return self.diskapi.getDiskStatus(self.disk_id)=='ok'
-        if r['status_code'] ==202:
-            self.disk_id = r['result']['disk']['@id']
-            if wait_until(is_disk_ok, 200, 5):
-                self.assertTrue(True)
-            else:
-                LogPrint.error("Create Disk overtime.Setup Failed.")
-                self.assertTrue(False)
-        else:
-            LogPrint.error("Create Disk failed.Setup Failed.")
-            self.assertTrue(False)
+        r = smart_create_disk(self.dm.disk_info, self.dm.disk_name)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
+        
         
     def test_DeleteDisk_async(self): 
         self.flag = True
         r = self.diskapi.deleteDisk(self.disk_id, self.dm.async1)
-        
         if r['status_code'] == self.dm.expected_status_code:
             LogPrint().info("Delete Disk async  SUCCESS." )
         else:
@@ -300,6 +292,8 @@ class ITC080401_DeleteDisk(BaseTestCase):
             LogPrint().error("Delete Disk sync FAILED. " )
             self.flag = False
         self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_disk(self.disk_id))
             
 class ITC080402_DeleteDisk_AttachtoTemp(BaseTestCase):
     '''
@@ -539,11 +533,33 @@ class ITC080404_DeleteDisk_AttachtoDownVm(BaseTestCase):
         self.assertTrue(self.flag) 
         
     def tearDown(self):
-        self.vmapi.delVm(self.vm_name)                  
+        self.vmapi.delVm(self.vm_name) 
+
+class ITC0805_GetStaticsofDisk(BaseTestCase):   
+    '''
+    @summary: 08磁盘管理-05获取磁盘统计信息
+    '''   
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.diskapi = DiskAPIs()
+        r=smart_create_disk(self.dm.disk_info)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
+    def test_GetStaticsofDiks(self):
+        self.flag=True
+        r = self.diskapi.getStaticsofDisk(self.disk_id)
+        if r['status_code'] == self.dm.expected_status_code:
+            LogPrint().info("GetStaticsofDisk pass")
+        else:
+            LogPrint().info("GetStaticsofDisk fail") 
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_disk(self.disk_id))                 
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Disk.ITC080404_DeleteDisk_AttachtoDownVm"]
+    test_cases = ["Disk.ITC0805_GetStaticsofDisk"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
