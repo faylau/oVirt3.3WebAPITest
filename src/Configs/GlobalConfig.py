@@ -47,7 +47,8 @@ IsoStorages = {'ISO-Storage1' : {'ip':'10.1.167.2', 'path':'/storage/iso1'},
 @summary: Export存储域名称及地址
 '''
 ExportStorages = {'Export-Storage1' : {'ip':'10.1.167.2', 'path':'/storage/export1'},
-                  'Export-Storage2' : {'ip':'10.1.167.2', 'path':'/storage/export2'}
+                  'Export-Storage2' : {'ip':'10.1.167.2', 'path':'/storage/export2'}, 
+                  'Export-Storage3' : {'ip':'10.1.167.2', 'path':'/storage/export3'}
                   }
 
 '''-----------------------------------------------------------------------------------------

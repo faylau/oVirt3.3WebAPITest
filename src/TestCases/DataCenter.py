@@ -1,5 +1,7 @@
 #encoding:utf-8
-from _hotshot import logreader
+from _ast import DictComp
+from test.regrtest import printlist
+
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -18,7 +20,8 @@ import unittest
 import xmltodict
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain
+from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain,\
+    smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.HostAPIs import smart_create_host, smart_del_host
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, smart_create_storage_domain, smart_del_storage_domain
@@ -70,7 +73,7 @@ class ITC01_SetUp(BaseTestCase):
             self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
         create_storage_domains()
         
-        # 将创建的的data1附加到NFS/ISCSI数据中心里。
+        # 将创建的的data1附加到NFS/ISCSI数据中心里（data2/Iso/Export处于游离状态）。
         LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
 
@@ -724,8 +727,14 @@ class ITC0102030102_AttachDataStorage_NotMaster(BaseTestCase):
         '''
         @summary: 初始化测试数据、测试环境。
         '''
+        self.dc_api = DataCenterAPIs()
+        self.sd_api = StorageDomainAPIs()
+        
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
+        
+        # 验证目标存储域是否存在
+        self.assertTrue(StorageDomainAPIs().searchStorageDomainByName(ModuleData.dc_nfs_name))
         
     def test_AttachDataStorage_NotMaster(self):
         '''
@@ -733,18 +742,318 @@ class ITC0102030102_AttachDataStorage_NotMaster(BaseTestCase):
         @note: （1）将data2（data2-nfs-ITC01）附加到已有Master存储域的数据中心（DC-NFS-ITC01）；
         @note: （2）操作成功，验证接口返回的状态码、存储域信息中的data_center字段是否正确。
         '''
-        pass
+        LogPrint().info("Test: Attach data storage '%s' to datacenter '%s'." % (ModuleData.data2_nfs_name, ModuleData.dc_nfs_name))
+        r = self.dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name)
+        if r['status_code'] == self.dm.expected_status_code_attach_sd:
+            data_storage_info = self.dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name)['result']
+            if data_storage_info['storage_domain']['data_center']['@id'] == self.dc_api.getDataCenterIdByName(ModuleData.dc_nfs_name):
+                LogPrint().info("PASS: Attach data storage '%s' to data center '%s' SUCCESS." % (ModuleData.data2_nfs_name, ModuleData.dc_nfs_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Attach data storage '%s' to data center '%s' FAILED." % (ModuleData.data2_nfs_name, ModuleData.dc_nfs_name))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status_code '%s' is Wrong after attaching storage domain to data center." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
     
     def tearDown(self):
         '''
         @summary: 资源清理
         @note: （1）将data2从数据中心分离（先维护，再分离），使其恢复为unattached状态。
         '''
+        LogPrint().info("Post-Test-1: Deactivate storage domain to 'Maintenance'.")
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+        LogPrint().info("Post-Test-2: Detach storage domain from data center.")
+        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+
+class ITC0102030201_AttachIsoStorage(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-03附加-02附加ISO域-01一个ISO域
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 初始化测试环境，使用模块级测试环境（dc_nfs/iso1）
+    
+    def test_ITC0102030201_AttachIsoStorage(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将iso1附加到数据中心；
+        @note: （2）操作成功，验证接口返回状态码、存储域所属DC信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Begin to attach the ISO storage '%s' to Data Center '%s'." % (ModuleData.iso1_name, ModuleData.dc_nfs_name))
+        r = dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, ModuleData.iso1_name)
+        if r['status_code'] == self.dm.expected_status_code_attach_sd:
+            iso_info = dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.iso1_name)['result']
+            if iso_info['storage_domain']['data_center']['@id'] == dc_api.getDataCenterIdByName(ModuleData.dc_nfs_name):
+                LogPrint().info("PASS: Attach ISO storage '%s' to DataCenter '%s' SUCCESS." % (ModuleData.iso1_name, ModuleData.dc_nfs_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Attach ISO storage '%s' to DataCenter '%s' FAIL." % (ModuleData.iso1_name, ModuleData.dc_nfs_name))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Attach operation FAILED. Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = True
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）将ISO域设置为维护状态；
+        @note: （2）将ISO域从数据中心分离。
+        '''
+        LogPrint().info("Post-Test-1: Deactivate storage domain to 'Maintenance'.")
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+        LogPrint().info("Post-Test-2: Detach storage domain from data center.")
+        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+
+class ITC0102030202_AttachIsoStorage_Second(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-03附加-02附加ISO域-02多个ISO域失败
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境；
+        @note: （1）将模块测试环境中的ISO1附加到数据中心；
+        @note: （2）创建一个新的ISO域（ISO2，本用例测试使用）。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # Pre-Test-1：将模块测试环境中的ISO1附加到数据中心
+        self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+        
+        # Pre-Test-2：创建一个新的ISO域（ISO2）
+        self.assertTrue(smart_create_storage_domain(self.dm.iso2_name, self.dm.xml_iso2_info))
+        
+    def test_AttachIsoStorage_Second(self):
+        dc_api = DataCenterAPIs()
+        # Test-1: 将ISO2附加到数据中心（预期操作失败）
+        LogPrint().info("Test: Attach more than 1 iso storages to DataCenter.")
+        r = dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, self.dm.iso2_name)
+        if r['status_code'] == self.dm.expected_status_code_attach_sd_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_attach_sd_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT while attaching more than 1 iso storage to DataCenter.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while attaching more than 1 iso storages to DataCenter: \n %s" % xmltodict.unparse(r['result'], pretty=True))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned staus code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        # 将ISO1维护、分离
+        LogPrint().info("Post-Test-1: Deactivate and Detach the Module iso storage '%s' from DataCenter." % ModuleData.iso1_name)
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+        
+        # 将ISO2删除
+        LogPrint().info("Post-Test-2: Delete iso storage '%s' from DataCenter." % self.dm.iso2_name)
+        self.assertTrue(smart_del_storage_domain(self.dm.iso2_name, self.dm.xml_del_iso_option, ModuleData.host1_name))
+
+class ITC0102030301_AttachExportStorage(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-03附加-03附加Export域-01一个Export域
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 初始化测试环境，使用模块级测试环境（dc_nfs/export1）
+    
+    def test__AttachExportStorage(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将export11附加到数据中心；
+        @note: （2）操作成功，验证接口返回状态码、存储域所属DC信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Begin to attach the Export storage '%s' to Data Center '%s'." % (ModuleData.export1_name, ModuleData.dc_nfs_name))
+        r = dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, ModuleData.export1_name)
+        if r['status_code'] == self.dm.expected_status_code_attach_sd:
+            export_info = dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.export1_name)['result']
+            if export_info['storage_domain']['data_center']['@id'] == dc_api.getDataCenterIdByName(ModuleData.dc_nfs_name):
+                LogPrint().info("PASS: Attach Export storage '%s' to DataCenter '%s' SUCCESS." % (ModuleData.export1_name, ModuleData.dc_nfs_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Attach Export storage '%s' to DataCenter '%s' FAIL." % (ModuleData.export1_name, ModuleData.dc_nfs_name))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Attach operation FAILED. Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = True
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）将export1域设置为维护状态；
+        @note: （2）将export域从数据中心分离（不删除，因为export1是模块级测试环境）。
+        '''
+        LogPrint().info("Post-Test-1: Deactivate storage domain '%s' to 'Maintenance'." % ModuleData.export1_name)
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+        LogPrint().info("Post-Test-2: Detach storage domain '%s' from data center." % ModuleData.export1_name)
+        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+
+class ITC0102030302_AttachExportStorage_Second(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-03附加-03附加Export域-02多个Export域失败
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境；
+        @note: （1）将模块测试环境中的export1附加到数据中心；
+        @note: （2）创建一个新的Export域（export2，本用例测试使用）。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # Pre-Test-1：将模块测试环境中的export1附加到数据中心
+        LogPrint().info("Pre-Test-1: Attach Export storage '%s' (already exist) to DataCenter '%s'." % (ModuleData.export1_name, ModuleData.dc_nfs_name))
+        self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+        
+        # Pre-Test-2：创建一个新的Export域（export2）
+        LogPrint().info("Pre-Test-2: Create a new Export storage '%s' for test." % self.dm.export2_name)
+        self.assertTrue(smart_create_storage_domain(self.dm.export2_name, self.dm.xml_export2_info))
+        
+    def test_AttachExportStorage_Second(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将export2附加到数据中心（数据中心已有Export域）；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        
+        # Test-1: 将export2附加到数据中心（预期操作失败）
+        LogPrint().info("Test: Attach more than 1 Export storages to DataCenter.")
+        r = dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, self.dm.export2_name)
+        if r['status_code'] == self.dm.expected_status_code_attach_sd_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_attach_sd_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT while attaching more than 1 Export storage to DataCenter.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while attaching more than 1 Export storages to DataCenter: \n %s" % xmltodict.unparse(r['result'], pretty=True))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        # 将export1维护、分离
+        LogPrint().info("Post-Test-1: Deactivate and Detach the Module Export storage '%s' from DataCenter." % ModuleData.export1_name)
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+        
+        # 将export2删除
+        LogPrint().info("Post-Test-2: Delete Export storage '%s' from DataCenter." % self.dm.export2_name)
+        self.assertTrue(smart_del_storage_domain(self.dm.export2_name, self.dm.xml_del_export_option, ModuleData.host1_name))
+
+class ITC0102030401_AttachStorage_NoActiveDataStorage(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-03附加-04错误验证-01缺少正常状态Data域时附加其他存储
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # Pre-Test-1：将当前DC-NFS-ITC01中的主存储域设置为Maintenance状态
+        LogPrint().info("Pre-Test: Deactivate DataStorage '%s' for this test case." % ModuleData.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+        
+    def test_AttachStorage_NoActiveDataStorage(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将已存在的ISO域iso1附加到数据中心（DC-NFS-ITC01）
+        @note: （2）操作失败（因为数据中心缺少Active状态的Data域），验证接口返回的状态码、提示信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Begin to attach a storage to DataCenter without active data_storage.")
+        r = dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, ModuleData.iso1_name)
+        if r['status_code'] == self.dm.expected_status_code_attach_sd_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_attach_sd_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT while attaching a storage to DataCenter without active data_storage.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are CORRECT while attaching a storage to DataCenter without active data_storage.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）重新激活data1-nfs-ITC01
+        '''
+        LogPrint().info("Post-Test: Activate data_storage '%s' again." % ModuleData.data1_nfs_name)
+        self.assertTrue(smart_active_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+
+class ITC01020401_DetachStorage_Iso(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-04分离-01分离ISO存储域
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：附加一个ISO域到数据中心
+        LogPrint().info("Pre-Test: Attach the '%s' storage to DataCenter '%s'." % (ModuleData.iso1_name, ModuleData.dc_nfs_name))
+        self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+        
+        # 前提2：将该ISO域设置为维护状态
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+        
+    def test_DetachStorage_Iso(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将iso1设置为维护状态；
+        @note: （2）将iso1从数据中心分离；
+        @note: （3）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Detach ISO storage from DataCenter.")
+        r = dc_api.detachStorageDomainFromDC(ModuleData.dc_nfs_name, ModuleData.iso1_name, self.dm.xml_detach_iso_option)
+        if r['status_code'] == self.dm.expected_status_code_detach_sd:
+            if sd_api.getStorageDomainStatus(ModuleData.iso1_name) == 'unattached':
+                LogPrint().info("PASS: Detach ISO storage '%s' from DataCenter SUCCESS." % ModuleData.iso1_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Detach ISO storage '%s' from DataCenter FAILED." % ModuleData.iso1_name)
+                self.flag = False
+        else:
+            LogPrint().info("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
         pass
+        
+        
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["DataCenter.ITC0102030101_AttachDataStorage_Master"]
+    test_cases = ["DataCenter.ITC01020401_DetachStorage_Iso"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
