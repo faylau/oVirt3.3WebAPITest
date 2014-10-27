@@ -1,4 +1,5 @@
 #encoding:utf-8
+from _hotshot import logreader
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -19,11 +20,11 @@ import xmltodict
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
-from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
-from TestCases.Host import smart_create_host, smart_del_host
-from TestCases.StorageDomain import smart_create_storage_domain, smart_del_storage_domain, smart_deactive_storage_domain
+from TestAPIs.HostAPIs import smart_create_host, smart_del_host
+from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, smart_create_storage_domain, smart_del_storage_domain
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
+from TestData.DataCenter import ITC01_SetUp as ModuleData
 
 
 class ITC01_SetUp(BaseTestCase):
@@ -50,31 +51,22 @@ class ITC01_SetUp(BaseTestCase):
         capi = ClusterAPIs()
         
         # 创建1个数据中心（nfs类型）
-        @BaseTestCase.drive_data(self, self.dm.dc_info)
-        def create_data_centers(xml_dc_info):
-            LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % xmltodict.parse(xml_dc_info)['data_center']['name'])
-            self.assertTrue(dcapi.createDataCenter(xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
-        create_data_centers()
-        
+        LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
+        self.assertTrue(dcapi.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
+    
         # 创建1个集群
-        @BaseTestCase.drive_data(self, self.dm.cluster_info)
-        def create_clusters(xml_cluster_info):
-            LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (xmltodict.parse(xml_cluster_info)['cluster']['name'], xmltodict.parse(xml_cluster_info)['cluster']['data_center']['name']))
-            self.assertTrue(capi.createCluster(xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
-        create_clusters()
-        
+        LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
+        self.assertTrue(capi.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
+    
         # 在NFS数据中心中创建一个主机，并等待主机UP。
-        @BaseTestCase.drive_data(self, self.dm.hosts_info_xml)
-        def create_hosts(xml_host_info):
-            LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (xmltodict.parse(xml_host_info)['host']['name'], xmltodict.parse(xml_host_info)['host']['cluster']['name']))
-            self.assertTrue(smart_create_host(xmltodict.parse(xml_host_info)['host']['name'], xml_host_info))
-        create_hosts()
-        
+        LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host1_name, self.dm.cluster_nfs_name))
+        self.assertTrue(smart_create_host(self.dm.host1_name, self.dm.xml_host_info))
+    
         # 为NFS数据中心分别创建Data（data1/data2）/ISO/Export域。
-        @BaseTestCase.drive_data(self, self.dm.xml_datas_info)
+        @BaseTestCase.drive_data(self, self.dm.xml_storage_info)
         def create_storage_domains(xml_storage_domain_info):
             sd_name = xmltodict.parse(xml_storage_domain_info)['storage_domain']['name']
-            LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % (sd_name))
+            LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % sd_name)
             self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
         create_storage_domains()
         
@@ -87,6 +79,50 @@ class ITC01_SetUp(BaseTestCase):
         @summary: 资源清理
         '''
         pass
+
+class ITC02_TearDown(BaseTestCase):
+    '''
+    @summary: “主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: （1）将数据中心里的Data域（data1）设置为Maintenance状态；
+    @note: （2）删除数据中心dc（非强制）；
+    @note: （3）删除所有unattached状态的存储域（data1/data2/iso1/export1）；
+    @note: （4）删除主机host1；
+    @note: （5）删除集群cluster1。
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = self.initData('ITC01_SetUp')
+        
+    def test_TearDown(self):
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        
+        # Step1：将data1存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        
+        # Step2：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
+        if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+                
+        # Step3：删除4个Unattached状态存储域（data1/data2/iso1/export1）
+        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
+        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name, self.dm.iso1_name, self.dm.export1_name]
+        for sd in dict_sd_to_host:
+            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
+        
+        # Step4：删除主机（host1）
+        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
+        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
+        
+        # Step5：删除集群cluster1
+        if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
+            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
 class ITC010101_GetDCList(BaseTestCase):
     '''
@@ -540,27 +576,175 @@ class ITC01010502_DelDC_Force(BaseTestCase):
             LogPrint().info("Post-Test: Delete the created/updated DataCenter '%s'." % self.dm.dc_name)
             self.dcapi.delDataCenter(self.dm.dc_name)
 
-class ITC010201_GetSDListOfDC(BaseTestCase):
+class ITC010201_GetStorageDomainsOfDC(BaseTestCase):
     '''
     @summary: ITC-01数据中心管理-02存储域操作-01查看存储域列表
-    @todo: 未完成
     '''
     def setUp(self):
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        '''
+        @summary: 初始化测试数据、测试环境（使用的是模块级测试环境，在ITC01_SetUp用例中创建）。
+        '''
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        self.dcapi = DataCenterAPIs()
-        self.sdapi = StorageDomainAPIs()
-        LogPrint().info("Pre-Test: Create a DataCenter '%s'." % self.dm.dc_name)
-        # PreStep-01：创建一个数据中心，其状态为Uninitialized
-        self.dcapi.createDataCenter()
+
+    def test_GetStorageDomainsOfDC(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）调用相应接口，获取数据中心存储域列表；
+        @note: （2）操作成功，验证接口返回的状态码是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Get storage domains list for data center '%s'." % ModuleData.dc_nfs_name)
+        r = dc_api.getDCStorageDomainsList(ModuleData.dc_nfs_name)
+        if r['status_code'] == 200:
+            LogPrint().info("PASS: Get storage domains list for data center '%s' SUCCESS." % ModuleData.dc_nfs_name)
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Get storage domains list fAILED. Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
 
+class ITC010202_GetStorageDomainInfoInDC(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-02查看存储域信息
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境（测试使用的数据中心、存储域是在ITC01_SetUp中创建的模块级测试环境）
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+    def test_GetStorageDomainInfoInDC(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）调用相应接口，查询DC-NFS-ITC01中data1-nfs-ITC01存储域信息；
+        @note: （2）操作成功，验证接口返回的状态码、存储域信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Get storage domain '%s' info from data center '%s'." % (ModuleData.data1_nfs_name, ModuleData.dc_nfs_name))
+        r = dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name)
+        if r['status_code'] == self.dm.expected_status_code_get_sd_info:
+            d1 = xmltodict.parse(self.dm.xml_sd_info)
+            if DictCompare().isSubsetDict(d1, r['result']):
+                LogPrint().info("PASS: Get storage domain '%s' info SUCCESS." % ModuleData.data1_nfs_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Get storage domain info INCORRECT.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
 
+class ITC0102030101_AttachDataStorage_Master(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-03附加-01附加Data域-01Master
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        self.dc_api = DataCenterAPIs()
+        self.cluster_api = ClusterAPIs()
+        
+        # 前提1：创建一个新的NFS数据中心
+        LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
+        self.assertTrue(self.dc_api.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
+        
+        # 前提2：创建一个新的集群
+        LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
+        self.assertTrue(self.cluster_api.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
+        
+        # 前提3：创建一个新的主机
+        LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host_name, self.dm.cluster_nfs_name))
+        self.assertTrue(smart_create_host(self.dm.host_name, self.dm.xml_host_info))
+        
+        # 前提4：准备一个unattached状态的data域（模块测试环境中的data2可以使用）
+        LogPrint().info("Pre-Module-Test-4: Use unattached data storage '%s' for testing." % ModuleData.data2_nfs_name)
 
+    def test_AttachDataStorage_Master(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将data2_nfs附加到数据中心，成为Master存储域；
+        @note: （2）验证接口返回的状态码是否正确。
+        '''
+        LogPrint().info("Test: Attach storage domain '%s' to data center '%s'." % (ModuleData.data2_nfs_name, self.dm.dc_nfs_name))
+        r = self.dc_api.attachStorageDomainToDC(self.dm.dc_nfs_name, ModuleData.data2_nfs_name)
+        if r['status_code'] == 201 and self.dc_api.getDCStorageDomainStatus(self.dm.dc_nfs_name, ModuleData.data2_nfs_name)=='active':
+            LogPrint().info("PASS: Attach storage domain '%s' to data center '%s' SUCCESS." % (ModuleData.data2_nfs_name, self.dm.dc_nfs_name))
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Attach storage domain '%s' to data center '%s' FAILED." % (ModuleData.data2_nfs_name, self.dm.dc_nfs_name))
+            self.flag = False
+        self.assertTrue (self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）
+        '''
+        # Step1：将data1存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % ModuleData.data2_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, ModuleData.data2_nfs_name))
+        
+        # Step2：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
+        if self.dc_api.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            self.assertTrue(self.dc_api.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+
+        # Step3：删除主机（host2）
+        LogPrint().info("Post-Module-Test-3: Delete host '%s'." % self.dm.host_name)
+        self.assertTrue(smart_del_host(self.dm.host_name, self.dm.xml_del_host_option))
+        
+        # Step4：删除集群cluster2
+        if self.cluster_api.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
+            LogPrint().info("Post-Module-Test-4: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            self.assertTrue(self.cluster_api.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+
+class ITC0102030102_AttachDataStorage_NotMaster(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-03附加-01附加Data域-02非Master
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+    def test_AttachDataStorage_NotMaster(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将data2（data2-nfs-ITC01）附加到已有Master存储域的数据中心（DC-NFS-ITC01）；
+        @note: （2）操作成功，验证接口返回的状态码、存储域信息中的data_center字段是否正确。
+        '''
+        pass
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）将data2从数据中心分离（先维护，再分离），使其恢复为unattached状态。
+        '''
+        pass
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["DataCenter.ITC01010502_DelDC_Force"]
+    test_cases = ["DataCenter.ITC0102030101_AttachDataStorage_Master"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
