@@ -11,14 +11,41 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # V0.1           2014/09/03      初始版                                                                     wei keke
 #---------------------------------------------------------------------------------
+from __builtin__ import False
 '''
-
-import xmltodict
-
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
+from Utils.PrintLog import LogPrint
+
+import xmltodict
+
+def smart_create_network(nw_info,nw_name,status_code=201):
+    nw_api = NetworkAPIs()
+    r = nw_api.createNetwork(nw_info)
+    if r['status_code'] == status_code:
+        LogPrint().info("Create network '%s'success."%nw_name)
+        return True
+    else:
+        LogPrint().error("Create network '%s' fail."%nw_name)
+        return False
+
+def smart_delete_network(nw_name,dc_name,status_code=200):
+
+    nw_api = NetworkAPIs()
+    try:
+        print nw_api.getNetworkInfo(nw_name=nw_name,dc_name=dc_name)
+        r = nw_api.delNetwork(nw_name,dc_name)
+        if r ['status_code'] == status_code:
+            LogPrint().info("Delete network '%s'success."%nw_name)
+            return True
+        else:
+            LogPrint().error("Delete network '%s' fail."%nw_name)
+            return False
+    except:
+        LogPrint().info("network '%s' is not exist"%nw_name)
+        return True
 
 class NetworkAPIs(BaseAPIs):
     '''
@@ -55,6 +82,38 @@ class NetworkAPIs(BaseAPIs):
                         return network['@id']
         else:
             return None           
+    
+    def isNetworkExist(self,nw_name,dc_name):
+        '''
+        @summary: 检查网络是否在数据中心内存在
+        @param nw_name:网络名称
+        @param dc_name:数据中心名称
+        @return: True or False  
+        ''' 
+        nw_api = NetworkAPIs()
+        dc_api = DataCenterAPIs()
+        
+        if not nw_api.searchNetworkByName(nw_name)['result']['networks']:
+            return False
+        if not dc_api.searchDataCenterByName(dc_name)['result']['data_centers']:
+            return False
+        nw_list = nw_api.searchNetworkByName(nw_name)['result']['networks']['network']
+        if isinstance(nw_list, dict):
+            if dc_api.getDataCenterNameById(nw_list['data_center']['@id'])==dc_name:
+                return True
+            else:
+                return False
+        else:
+            self.flag=False
+            for nw in nw_list:
+                dc_id = nw['data_center']['@id']
+                dc_name = dc_api.getDataCenterNameById(dc_id)
+                if dc_name == dc_name:
+                    self.flag=True
+            return self.flag
+        
+            
+            
         
                 
     def getNetworksList(self):
@@ -123,11 +182,12 @@ class NetworkAPIs(BaseAPIs):
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         nw_id = self.getNetworkIdByName(nw_name, dc_name)
-        api_url = '%s/%s' % (self.base_url, nw_id)
-        method = 'DELETE'
-        r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
+        if nw_id:
+            api_url = '%s/%s' % (self.base_url, nw_id)
+            method = 'DELETE'
+            r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
         #r.raise_for_status()
-        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+            return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
 
 class NetworkProfilesAPIs(NetworkAPIs):
@@ -189,7 +249,8 @@ class NetworkProfilesAPIs(NetworkAPIs):
         
 if __name__=='__main__':
     nwapi = NetworkAPIs()
-    #print nwapi.searchNetworkByName('network11')
+    print nwapi.isNetworkExist('test1', 'DC-ISCSI')
+    print nwapi.searchNetworkByName('ovirtmgmt')['result']['networks']
     #print nwapi.getNetworkIdByName('aaa', 'Default')
     #print nwapi.getNetworksList()
     #print nwapi.getNetworkInfo(nw_id='8fa8a1db-65bc-43e2-bfba-1ac523b556bb')

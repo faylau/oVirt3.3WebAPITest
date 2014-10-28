@@ -1,16 +1,30 @@
 #encoding:utf-8
 
-cluster_name = 'Default'
-network_name = 'test_network'
-status_code = 201
+import TestData.Cluster.ITC02_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
+
 
 '''
-@note: PreData 
+@note: PreData
 '''
+dc_name = ModuleData.dc_name
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
+cluster_name = 'test-cluster'
+cluster_info = '''
+<cluster>
+        <name>%s</name>
+        <cpu id="Intel Penryn Family"/>
+        <data_center  id="%s"/>
+</cluster>
+''' %(cluster_name,dc_id)
+
+nw_name = 'test_network'
 nw_info = '''
 <network>
     <name>%s</name>
     <description>lalala</description>
-    <data_center id= "5849b030-626e-47cb-ad90-3ce782d831b3"/> 
+    <data_center id= "%s"/> 
 </network>
-'''%network_name
+'''%(nw_name,dc_id)
+
+status_code = 201

@@ -1,31 +1,33 @@
 #encoding:utf-8
-
-nw_name1 = 'network001'
-nw_name2 = 'network002'
-
-
+import TestData.Cluster.ITC02_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
 '''
 @note: PreData
 '''
+dc_name = ModuleData.dc_name
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
+
+nw_name1 = 'network001'
+nw_name2 = 'network002'
 nw_info1 = '''
 <network>
     <name>%s</name>
-    <data_center id= "5849b030-626e-47cb-ad90-3ce782d831b3"/> 
+    <data_center id= "%s"/> 
     <vlan id = "2"/>
         
 </network>
-''' %nw_name1
+''' %(nw_name1,dc_id)
 '''
 @note: TestData
 '''
 nw_info2 = '''
 <network>
     <name>%s</name>
-    <data_center id= "5849b030-626e-47cb-ad90-3ce782d831b3"/> 
+    <data_center id= "%s"/> 
     <vlan id = "2"/>
 </network>
-''' %nw_name2
+''' %(nw_name2,dc_id)
 '''
 @note: ExpectedData
 '''

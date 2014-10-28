@@ -246,20 +246,16 @@ class TemplatesAPIs(BaseAPIs):
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
         
         
-    def delTemplate(self, temp_name,async=None):
+    def delTemplate(self, temp_name):
         '''
         @summary: 删除模板
         @param temp_name: 模板名称
-        @param async: 是否异步，xml文件
-        <action>
-            <async>false</async>
-        </action>
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
         temp_id = self.getTemplateIdByName(temp_name)
         api_url = '%s/%s' % (self.base_url, temp_id)
         method = 'DELETE'
-        r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
    
@@ -410,7 +406,6 @@ class TemplateDisksAPIs(TemplatesAPIs):
         api_url = '%s/%s/disks/%s' % (self.base_url, temp_id,disk_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url,data=delete_data)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
 class TemplateNicsAPIs(TemplatesAPIs):   
@@ -594,8 +589,13 @@ if __name__=='__main__':
     disk_id = '2e12ac4f-9344-4f95-b943-86e1de7a2c27'
     sd_id = '2170acd2-6fd0-4e88-a566-293a20fca97a'
     
+    xml_async='''
+    <action>
+    <async>true</async>
+    </action>
+    '''
     #print xmltodict.unparse(tempapi.createTemplate(temp_info1)['result'],pretty=True)
-    #print tempapi.delTemplate("aa",xml_async)
+    #print tempapi.delTemplate("123456",xml_async)
     #print tempapi.searchTemplateByName('aa')
     
     action1='''
@@ -614,8 +614,8 @@ if __name__=='__main__':
     tempdiskapi = TemplateDisksAPIs()
     #print tempdiskapi.getDiskIdByName('ov', 't')
     #print tempdiskapi.getTemplateDiskInfo('ov', 'osvtest_Disk1')
-    print tempdiskapi.getTemplateDiskStatus('aaa', 'RHEL7-Liu_Disk2')
-    sd_list = tempdiskapi.getTemplateDiskSdList('aaa', 'RHEL7-Liu_Disk2')
+    #print tempdiskapi.getTemplateDiskStatus('aaa', 'RHEL7-Liu_Disk2')
+    #sd_list = tempdiskapi.getTemplateDiskSdList('aaa', 'RHEL7-Liu_Disk2')
     '''
     <storage_domain>
         <name>Data3_ISCSI</name>
@@ -647,7 +647,7 @@ if __name__=='__main__':
     '''
     #print xmltodict.unparse(tempdiskapi.copyTemplateDisk('template00', 'osvtest2_Disk2',copy_data )['result'],pretty=True) 
     #print tempdiskapi.exportTemplateDisk('ov', 'osvtest_Disk1', export_data) (fail)
-    #print tempdiskapi.deleteTemplateDisk('temp', 'VM1_Disk1',delete_data)    (fail) 
+    print tempdiskapi.deleteTemplateDisk('template1','VM2_Disk1',delete_data) 
     tempnicapi = TemplateNicsAPIs()
     
     nic_data='''
@@ -655,8 +655,8 @@ if __name__=='__main__':
     </nic>
     '''
     #print tempnicapi.getTemplateNicList('temp')
-    print tempnicapi.getNicIdByName('aaa', 'nic5')
-    print xmltodict.unparse(tempnicapi.createTemplateNic('aaa', nic_data)['result'],pretty=True)
+    #print tempnicapi.getNicIdByName('aaa', 'nic5')
+    #print xmltodict.unparse(tempnicapi.createTemplateNic('aaa', nic_data)['result'],pretty=True)
     #print tempnicapi.updateTemplateNic('temp','nic2', nic_data)
     #print tempnicapi.deleteTemplateNic('temp', 'nic')   
 

@@ -1,6 +1,7 @@
 #encoding:utf-8
 
 
+
 __authors__ = ['"keke wei" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -12,7 +13,7 @@ __version__ = "V0.1"
 # V0.1           2014/09/04      初始版本                         wei keke
 #---------------------------------------------------------------------------------
 '''
-
+from Utils.PrintLog import LogPrint
 import xmltodict
 
 from BaseAPIs import BaseAPIs
@@ -21,6 +22,44 @@ from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
+def smart_create_cluster(cluster_info,cluster_name,status_code=201):
+    '''
+    @summary: 创建集群，属于Default数据中心
+    @param cluster_info:创建集群的xml信息
+    @param cluster_name:集群名称 
+    @param status_code:创建集群返回的状态码，成功为201
+    @return: True/False  
+    '''
+    cluster_api = ClusterAPIs()
+    r = cluster_api.createCluster(cluster_info)
+    if r ['status_code'] == status_code:
+        LogPrint().info("Create Cluster '%s'success."%cluster_name)
+        return True
+    else:
+        LogPrint().error("Create Cluster '%s' fail."%cluster_name)
+        return False
+        
+def smart_delete_cluster(cluster_name,status_code=200):
+    '''
+    @summary: 删除集群
+    @param cluster_name:待删除的集群名称
+    @param status_code:删除集群返回的状态码，成功为200
+    @return: True/False  
+    '''
+    cluster_api = ClusterAPIs()
+    try:
+        cluster_api.getClusterInfo(cluster_name)
+        r = cluster_api.delCluster(cluster_name)
+        if r ['status_code'] == status_code:
+            LogPrint().info("Delete Cluster '%s'success."%cluster_name)
+            return True
+        else:
+            LogPrint().error("Delete Cluster '%s' fail."%cluster_name)
+            return False
+    except:
+        LogPrint().info("Cluster '%s' is not exist"%cluster_name)
+        return True
+    
 class ClusterAPIs(BaseAPIs):
     '''
     @summary: 提供集群各种常用操作，通过HttpClient调用相应的REST接口实现。
@@ -30,6 +69,7 @@ class ClusterAPIs(BaseAPIs):
         @summary: 初始化函数，定义集群相关API的base_url，如'https://10.1.167.2/api/clusters'
         '''
         self.base_url = '%s/clusters' % WebBaseApiUrl
+        
         
     def searchClusterByName(self, cluster_name):
         '''

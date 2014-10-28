@@ -450,7 +450,7 @@ class ITC07020303_CopyTemplateDisk_nosd(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_template(self.dm.temp_name))
-        
+    
         
 class ITC070301_GetTemplateNicList(BaseTestCase):
     '''

@@ -1,14 +1,18 @@
 #encoding:utf-8
-
+import TestData.Cluster.ITC02_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
 cluster_name = 'test-cluster'
-staus_code = 200
+
 '''
 @note: PreData
 '''
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
 cluster_info = '''
 <cluster>
         <name>%s</name>
         <cpu id="Intel Penryn Family"/>
-        <data_center  id="5849b030-626e-47cb-ad90-3ce782d831b3"/>
+        <data_center  id="%s"/>
 </cluster>
-''' % cluster_name
+''' %(cluster_name,dc_id)
+
+staus_code = 200

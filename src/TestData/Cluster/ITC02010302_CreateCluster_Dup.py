@@ -1,19 +1,23 @@
 #encoding:utf-8
-
-cluster_name = 'test-cluster'
-status_code = 409
-
+import TestData.Cluster.ITC02_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
 '''
 @note: PreData and TestData
 '''
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
+cluster_name = 'test-cluster'
 cluster_info = '''
 <cluster>
         <name>%s</name>
         <cpu id="Intel Penryn Family"/>
-        <data_center  id="5849b030-626e-47cb-ad90-3ce782d831b3"/>  
+        <data_center  id="%s"/>  
 </cluster>
-''' % cluster_name
+''' %(cluster_name,dc_id)
 
+'''
+@ExpectedData
+'''
+status_code = 409
 error_info = '''
 <fault>
     <reason>Operation Failed</reason>
