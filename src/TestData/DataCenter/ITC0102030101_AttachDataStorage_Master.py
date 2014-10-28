@@ -13,7 +13,8 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorages
+from Configs.GlobalConfig import Hosts
+from TestData.DataCenter import ITC01_SetUp as ModuleData
 
 '''
 ---------------------------------------------------------------------------------------------------
@@ -23,8 +24,7 @@ from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorage
 ########################################################################
 # 1个数据中心信息                                                                                                                                    
 ########################################################################
-dc_nfs_name = 'DC-ITC01-NFS'
-dc_name_list = [dc_nfs_name]
+dc_nfs_name = 'DC-ITC0102030101-NFS'
 xml_dc_info = '''
     <data_center>
         <name>%s</name>
@@ -36,8 +36,7 @@ xml_dc_info = '''
 ########################################################################
 # 1个集群信息                                                                                                                                    
 ########################################################################
-cluster_nfs_name = 'Cluster-ITC01-NFS'
-cluster_name_list = [cluster_nfs_name]
+cluster_nfs_name = 'Cluster-ITC0102030101-NFS'
 xml_cluster_info = '''
     <cluster>
         <name>%s</name>
@@ -51,10 +50,10 @@ xml_cluster_info = '''
 ########################################################################
 # 1个主机信息（node1加入NFS数据中心）                                                                                                                                    
 ########################################################################
-host1 = Hosts['node1']
-host1_name = 'node-ITC01-1'
-host1_ip = host1['ip']
-host1_password = host1['password']
+host = Hosts['node4']
+host_name = 'node-ITC0102030101'
+host_ip = host['ip']
+host_password = host['password']
 xml_host_info = '''
     <host>
         <cluster>
@@ -64,83 +63,12 @@ xml_host_info = '''
         <address>%s</address>
         <root_password>%s</root_password>
     </host>
-''' % (cluster_nfs_name, host1_name, host1_ip, host1_password)
+''' % (cluster_nfs_name, host_name, host_ip, host_password)
 
 #######################################################################################
-# 4个存储域信息（data1/data2，1个ISO和1个Export域）                                                                                                                               
+# 1个存储域信息（只需要提供存储域名称，因为它是在模块测试环境中已经创建的data2_nfs）                                                                                                                               
 #######################################################################################
-data1_nfs_name = 'data1-nfs-ITC01'
-data1_nfs = DataStorages['nfs']['data1']
-data1_nfs_ip = data1_nfs['ip']
-data1_nfs_path = data1_nfs['path']
-data2_nfs_name = 'data2-nfs-ITC01'
-data2_nfs = DataStorages['nfs']['data2']
-data2_nfs_ip = data2_nfs['ip']
-data2_nfs_path = data2_nfs['path']
-iso1_name = 'iso1-ITC01'
-iso1 = IsoStorages['ISO-Storage1']
-iso1_ip = iso1['ip']
-iso1_path = iso1['path']
-export1_name = 'export1-ITC01'
-export1 =  ExportStorages['Export-Storage2']
-export1_ip = export1['ip']
-export1_path = export1['path']
-
-xml_storage_info = '''
-<data_driver>
-    <storage_domain>
-        <name>%s</name>
-        <type>data</type>
-        <host>
-            <name>%s</name>
-        </host>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>data</type>
-        <host>
-            <name>%s</name>
-        </host>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>iso</type>
-        <host>
-            <name>%s</name>
-        </host>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>export</type>
-        <host>
-            <name>%s</name>
-        </host>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
-</data_driver>
-''' % (data1_nfs_name, host1_name, data1_nfs_ip, data1_nfs_path, 
-       data2_nfs_name, host1_name, data2_nfs_ip, data2_nfs_path, 
-       iso1_name, host1_name, iso1_ip, iso1_path, 
-       export1_name, host1_name, export1_ip, export1_path )
+data_nfs_name = ModuleData.data2_nfs_name
 
 '''
 ---------------------------------------------------------------------------------------------------
@@ -154,15 +82,7 @@ xml_del_host_option = '''
 </action>
 '''
 
-xml_del_sd_option = '''
-<storage_domain>
-    <host>
-        <name>%s</name>
-    </host>
-    <format>true</format>
-    <async>false</async>
-</storage_domain>
-'''
+
 
 '''
 ---------------------------------------------------------------------------------------------------

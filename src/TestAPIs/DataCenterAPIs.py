@@ -43,6 +43,14 @@ def smart_detach_storage_domain(dc_name, sd_name, data='<action><async>false</as
     r = dc_api.detachStorageDomainFromDC(dc_name, sd_name, data)
     return (r['status_code'] == 200 and ds_api.getStorageDomainStatus(sd_name)=='unattached')
 
+def smart_active_storage_domain(dc_name, sd_name, data=None):
+    '''
+    @summary: 智能激活数据中心里的存储域
+    '''
+    dc_api = DataCenterAPIs()
+    r = dc_api.activeDCStorageDomain(dc_name, sd_name)
+    return (r['status_code'] == 200 and dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='active')
+
 def smart_deactive_storage_domain(dc_name, sd_name, data=None):
     '''
     @summary: 智能取消激活数据中心里的存储域（对active状态存储域进行maintenance操作）
