@@ -7,7 +7,7 @@ import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-sd_name = ModuleData.data2_nfs_name
+sd_name = ModuleData.data1_nfs_name
 cluster_name = ModuleData.cluster_nfs_name
 vm_info='''
 <vm>

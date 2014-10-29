@@ -642,7 +642,7 @@ class ITC0805_GetStaticsofDisk(BaseTestCase):
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Disk.ITC080401_DeleteDisk"]
+    test_cases = ["Disk.ITC08_TearDown"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
