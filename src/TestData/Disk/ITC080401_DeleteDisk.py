@@ -1,5 +1,6 @@
 #encoding:utf-8
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 @note: PreData
 '''
@@ -7,7 +8,7 @@ from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
 disk_name = 'Test-DISK'
-sd_name = 'Data1-ISCSI'
+sd_name = ModuleData.data1_nfs_name
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(sd_name)
 disk_info='''
 <disk>
@@ -16,7 +17,7 @@ disk_info='''
     <storage_domains>
         <storage_domain id = "%s"/>
     </storage_domains>
-    <size>21474836480</size>
+    <size>2147483648</size>
     <sparse>false</sparse>
     <interface>virtio</interface>
     <format>raw</format>
@@ -26,16 +27,6 @@ disk_info='''
 </disk>
 '''%(disk_name,disk_name,sd_id)
 
-async1 = '''
-<action>
-    <async>true</async>
-</action>
-'''
-async2 = '''
-<action>
-    <async>false</async>
-</action>
-'''
 '''
 @note: ExpectedData
 '''

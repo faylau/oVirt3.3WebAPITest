@@ -11,12 +11,111 @@ from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs
+from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,smart_create_template,smart_delete_template
+from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain,smart_detach_storage_domain
+from TestAPIs.ClusterAPIs import ClusterAPIs
+from TestAPIs.StorageDomainAPIs import StorageDomainAPIs,smart_create_storage_domain,smart_del_storage_domain
 
+from TestAPIs.HostAPIs import HostAPIs,smart_create_host,smart_del_host
 import xmltodict
 
 
+class ITC08_SetUp(BaseTestCase):
+    '''
+    @summary: 磁盘管理模块级测试用例，初始化模块测试环境；
+    @note: （1）创建一个NFS类型数据中心；
+    @note: （2）创建一个集群；
+    @note: （3）创建一个主机，并等待其变为UP状态；
+    @note: （4）创建3个存储域（data1/data2/ISO/Export）；
+    @note: （5）将 data1 附加到数据中心。
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
 
+    def test_CreateModuleTestEnv(self):
+        '''
+        @summary: 创建Disk模块测试环境
+        '''
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        
+        # 创建1个数据中心（nfs类型）
+        LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
+        self.assertTrue(dcapi.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
+    
+        # 创建1个集群
+        LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
+        self.assertTrue(capi.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
+    
+        # 在NFS数据中心中创建一个主机，并等待主机UP。
+        LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host1_name, self.dm.cluster_nfs_name))
+        self.assertTrue(smart_create_host(self.dm.host1_name, self.dm.xml_host_info))
+    
+        # 为NFS数据中心创建Data（data1/data2）。
+        @BaseTestCase.drive_data(self, self.dm.xml_storage_info)
+        def create_storage_domains(xml_storage_domain_info):
+            sd_name = xmltodict.parse(xml_storage_domain_info)['storage_domain']['name']
+            LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % sd_name)
+            self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
+        create_storage_domains()
+        
+        # 将创建的的data1附加到NFS/ISCSI数据中心里（data2/Iso/Export处于游离状态）。
+        LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
+
+class ITC08_TearDown(BaseTestCase):
+    '''
+    @summary: “磁盘管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: （1）将数据中心里的Data域（data1）设置为Maintenance状态；
+    @note: （2）删除数据中心dc（非强制）；
+    @note: （3）删除所有unattached状态的存储域（data1/data2）；
+    @note: （4）删除主机host1；
+    @note: （5）删除集群cluster1。
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = self.initData('ITC08_SetUp')
+        
+    def test_TearDown(self):
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        
+        # Step1：将data1存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        
+        # Step2：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
+        if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+                
+        # Step3：删除4个Unattached状态存储域（data1/data2/iso1/export1）
+        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
+        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name]
+        for sd in dict_sd_to_host:
+            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
+        
+        # Step4：删除主机（host1）
+        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
+        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
+        
+        # Step5：删除集群cluster1
+        if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
+            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
 class ITC0801_GetDiskList(BaseTestCase):
     '''
@@ -61,13 +160,13 @@ class ITC0802_GetDiskInfo(BaseTestCase):
             dict_expected = xmltodict.parse(self.dm.disk_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("Get Disk info SUCCESS." )
+                LogPrint().info("PASS:Get Disk info SUCCESS." )
 #                 return True
             else:
-                LogPrint().error("Get Disk info INCORRECT.")
+                LogPrint().error("FAIL:Get Disk info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("Get Disk info FAILED. " )
+            LogPrint().error("FAIL:Get Disk info FAILED. " )
             self.flag = False
         self.assertTrue(self.flag)
     def tearDown(self):
@@ -86,6 +185,35 @@ class ITC080301_CreateDisk(BaseTestCase):
         '''
         self.dm = super(self.__class__, self).setUp()
         self.diskapi = DiskAPIs()  
+    def test_CreateDisk_iscsi_cow(self): 
+        '''
+        @note: 在iscsi存储域内创建cow类型磁盘
+        @note: sprase必须设为true，sharable必须为false，否则报错
+        '''
+        self.flag = True
+        self.diskapi = DiskAPIs()
+        r = self.diskapi.createDisk(self.dm.disk_info_cow)
+        def is_disk_ok():
+            return self.diskapi.getDiskStatus(self.disk_id)=='ok'
+        if r['status_code'] == self.dm.expected_status_code:
+            self.disk_id = r['result']['disk']['@id']
+            #如果磁盘状态在给定时间内变为ok状态，则继续验证状态码和磁盘信息
+            if wait_until(is_disk_ok, 200, 5):
+                dict_actual = r['result']
+                dict_expected = xmltodict.parse(self.dm.disk_info_cow)
+                dictCompare = DictCompare()
+                if dictCompare.isSubsetDict(dict_expected, dict_actual):
+                    LogPrint().info("PASS:Create Disk SUCCESS-raw." )
+#                 return True
+                else:
+                    LogPrint().error("FAIL:Create Disk INCORRECT.The disk_info is wrong")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL:Create Disk FAIED,The status is not ok " )
+                self.flag = False
+        else:
+            LogPrint().error("FAIL:Create Disk FAIED,The status-code is wrong")
+            self.flag = False
          
     def test_CreateDisk_iscsi_raw(self): 
         '''
@@ -105,53 +233,25 @@ class ITC080301_CreateDisk(BaseTestCase):
                 dict_expected = xmltodict.parse(self.dm.disk_info_raw)
                 dictCompare = DictCompare()
                 if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                    LogPrint().info("Create Disk SUCCESS-raw." )
+                    LogPrint().info("PASS:Create Disk SUCCESS-raw." )
 #                 return True
                 else:
-                    LogPrint().error("Create Disk INCORRECT.The disk_info is wrong")
+                    LogPrint().error("FAIL:Create Disk INCORRECT.The disk_info is wrong")
                     self.flag = False
             else:
-                LogPrint().error("Create Disk FAIED,The status is not ok " )
+                LogPrint().error("FAIL:Create Disk FAIED,The status is not ok " )
                 self.flag = False
         else:
-            LogPrint().error("Create Disk FAIED,The status-code is wrong")
+            LogPrint().error("FAIL:Create Disk FAIED,The status-code is wrong")
             self.flag = False
         
-    def test_CreateDisk_iscsi_cow(self): 
-        '''
-        @note: 在iscsi存储域内创建cow类型磁盘
-        @note: sprase必须设为true，sharable必须为false，否则报错
-        '''
-        self.flag = True
-        self.diskapi = DiskAPIs()
-        r = self.diskapi.createDisk(self.dm.disk_info_cow)
-        def is_disk_ok():
-            return self.diskapi.getDiskStatus(self.disk_id)=='ok'
-        if r['status_code'] == self.dm.expected_status_code:
-            self.disk_id = r['result']['disk']['@id']
-            #如果磁盘状态在给定时间内变为ok状态，则继续验证状态码和磁盘信息
-            if wait_until(is_disk_ok, 200, 5):
-                dict_actual = r['result']
-                dict_expected = xmltodict.parse(self.dm.disk_info_cow)
-                dictCompare = DictCompare()
-                if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                    LogPrint().info("Create Disk SUCCESS-raw." )
-#                 return True
-                else:
-                    LogPrint().error("Create Disk INCORRECT.The disk_info is wrong")
-                    self.flag = False
-            else:
-                LogPrint().error("Create Disk FAIED,The status is not ok " )
-                self.flag = False
-        else:
-            LogPrint().error("Create Disk FAIED,The status-code is wrong")
-            self.flag = False
+    
             
     def tearDown(self):
         #print self.disk_id_raw
         #print self.disk_id_cow
 #         self.diskapi.deleteDisk(self.disk_id_raw, self.dm.async)
-        self.assertTrue(smart_delete_disk(self.disk_id,self.dm.async))  
+        self.assertTrue(smart_delete_disk(self.disk_id))  
         
 
 class ITC080302_CreateDisk_VerifyName(BaseTestCase):
@@ -273,25 +373,16 @@ class ITC080401_DeleteDisk(BaseTestCase):
         self.assertTrue(r[0])
         
         
-    def test_DeleteDisk_async(self): 
+    def test_DeleteDisk(self): 
         self.flag = True
-        r = self.diskapi.deleteDisk(self.disk_id, self.dm.async1)
+        r = self.diskapi.deleteDisk(self.disk_id)
         if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("Delete Disk async  SUCCESS." )
+            LogPrint().info("Delete Disk SUCCESS." )
         else:
-            LogPrint().error("Delete Disk async FAILED. " )
+            LogPrint().error("Delete Disk FAILED. " )
             self.flag = False
         self.assertTrue(self.flag)
-    def test_DeleteDisk_sync(self): 
-        self.flag = True
-        r = self.diskapi.deleteDisk(self.disk_id, self.dm.async2)
-        
-        if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("Delete Disk sync SUCCESS." )
-        else:
-            LogPrint().error("Delete Disk sync FAILED. " )
-            self.flag = False
-        self.assertTrue(self.flag)
+    
     def tearDown(self):
         self.assertTrue(smart_delete_disk(self.disk_id))
             
@@ -316,17 +407,9 @@ class ITC080402_DeleteDisk_AttachtoTemp(BaseTestCase):
         '''
         @note: 创建磁盘时，磁盘的sharable属性必须为false，因为共享磁盘不作为模板的一部份
         '''
-        self.diskapi = DiskAPIs()
-        r = self.diskapi.createDisk(self.dm.disk_info)
-        def is_disk_ok():
-            return self.diskapi.getDiskStatus(self.disk_id)=='ok'
-        if r['status_code'] == 202:
-            self.disk_id = r['result']['disk']['@id']
-            if wait_until(is_disk_ok, 200, 5):
-                LogPrint().info("Create disk ok.")
-        else:
-            LogPrint().error("Create disk failed.Status-code is wrong.")
-            self.assertTrue(False)
+        r= smart_create_disk(self.dm.disk_info, self.dm.disk_name)
+        self.assertTrue(r[0])
+        self.disk_id = r[1]
             
         #将该磁盘附加到虚拟机上
         self.vmdiskapi = VmDiskAPIs()
