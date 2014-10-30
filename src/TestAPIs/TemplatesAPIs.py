@@ -32,13 +32,13 @@ def smart_create_template(temp_name,temp_info):
         return tempapi.getTemplateInfo(temp_name=temp_name)['result']['template']['status']['state']=='ok'
     if r['status_code'] == 202:
         if wait_until(is_temp_ok, 600, 10):
-            LogPrint().info("Create Template %s success"%temp_name)
+            LogPrint().info("Pre-Test:Create Template %s success"%temp_name)
             return True
         else:
-            LogPrint().error("Create Template overtime")
+            LogPrint().error("Pre-Test:Create Template overtime")
             return False
     else:
-        LogPrint().error("Create Template failed.Status-code is wrong.")
+        LogPrint().error("Pre-Test:Create Template failed.Status-code is wrong.")
         return False
     
 def smart_delete_template(temp_name):  
@@ -57,10 +57,10 @@ def smart_delete_template(temp_name):
         else:
             r = tempapi.delTemplate(temp_name)
             if r['status_code'] == 200:
-                LogPrint().info("Delete template success.")
+                LogPrint().info("Post-Test:Delete template success.")
                 return True
             else:
-                LogPrint().error("Delete template failed")
+                LogPrint().error("Post-Test:Delete template failed")
                 return False
     except:
         LogPrint().warning("WARN: Template is not exist.")
@@ -77,10 +77,10 @@ def smart_create_tempnic(temp_name,nic_data):
     tempnic_api = TemplateNicsAPIs()
     r = tempnic_api.createTemplateNic(temp_name,nic_data)
     if r['status_code'] == 201:
-        LogPrint().info("Create Nic for Template %s success"%temp_name)
+        LogPrint().info("Pre-Test:Create Nic for Template %s success"%temp_name)
         return True
     else:
-        LogPrint().error("Create Nic for Template failed.Status-code is wrong.")
+        LogPrint().error("Pre-Test:Create Nic for Template failed.Status-code is wrong.")
         return False
     
 def smart_delete_tempnic(temp_name,nic_name):  
@@ -95,10 +95,10 @@ def smart_delete_tempnic(temp_name,nic_name):
         tempnic_api.getTemplateNicInfo(temp_name, nic_name)    
         r = tempnic_api.deleteTemplateNic(temp_name, nic_name)
         if r['status_code'] == 200:
-            LogPrint().info("Delete template's nic success.")
+            LogPrint().info("Post-Test:Delete template's nic success.")
             return True
         else:
-            LogPrint().error("Delete template's nic failed")
+            LogPrint().error("Post-Test:Delete template's nic failed")
             return False
     except:
         LogPrint().warning("WARN: Template_nic is not exist.")

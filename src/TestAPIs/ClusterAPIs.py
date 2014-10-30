@@ -33,10 +33,10 @@ def smart_create_cluster(cluster_info,cluster_name,status_code=201):
     cluster_api = ClusterAPIs()
     r = cluster_api.createCluster(cluster_info)
     if r ['status_code'] == status_code:
-        LogPrint().info("Create Cluster '%s'success."%cluster_name)
+        LogPrint().info("Pre-Test:Create Cluster '%s'success."%cluster_name)
         return True
     else:
-        LogPrint().error("Create Cluster '%s' fail."%cluster_name)
+        LogPrint().error("Pre-Test:Create Cluster '%s' fail."%cluster_name)
         return False
         
 def smart_delete_cluster(cluster_name,status_code=200):
@@ -51,13 +51,13 @@ def smart_delete_cluster(cluster_name,status_code=200):
         cluster_api.getClusterInfo(cluster_name)
         r = cluster_api.delCluster(cluster_name)
         if r ['status_code'] == status_code:
-            LogPrint().info("Delete Cluster '%s'success."%cluster_name)
+            LogPrint().info("Post-Test:Delete Cluster '%s'success."%cluster_name)
             return True
         else:
-            LogPrint().error("Delete Cluster '%s' fail."%cluster_name)
+            LogPrint().error("Post-Test:Delete Cluster '%s' fail."%cluster_name)
             return False
     except:
-        LogPrint().info("Cluster '%s' is not exist"%cluster_name)
+        LogPrint().info("Post-Test:Cluster '%s' is not exist"%cluster_name)
         return True
     
 class ClusterAPIs(BaseAPIs):

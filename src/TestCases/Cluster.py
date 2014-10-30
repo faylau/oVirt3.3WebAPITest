@@ -1,4 +1,6 @@
 #encoding:utf-8
+import TestData
+import TestAPIs
 
 
 __authors__ = ['"wei keke" <keke.wei@cs2c.com.cn>']
@@ -23,6 +25,8 @@ from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from Utils.HTMLTestRunner import HTMLTestRunner
 from TestData.Cluster import ITC02_Setup as ModuleData
+from TestAPIs.HostAPIs import HostAPIs,smart_create_host,smart_del_host
+from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs
 
 import xmltodict
 class ITC02_Setup(BaseTestCase):
@@ -227,9 +231,9 @@ class ITC02010303_CreateClusterNoRequired(BaseTestCase):
         '''
         
 
-class ITC020104_UpdateCluster(BaseTestCase):
+class ITC02010401_UpdateCluster_nohost(BaseTestCase):
     '''
-    @summary: ITC-02集群管理-01集群操作-04编辑集群
+    @summary: ITC-02集群管理-01集群操作-04编辑集群-01集群内无主机
     '''
     def setUp(self):
         '''
@@ -242,19 +246,64 @@ class ITC020104_UpdateCluster(BaseTestCase):
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         
     def test_UpdateCluster(self):
+        self.expected_result_index = 0
+        # 使用数据驱动，根据测试数据文件循环创建多个数据中心
+        @BaseTestCase.drive_data(self, self.dm.cluster_info_new)
+        def do_test(xml_info):
+            self.flag = True
+            r=self.clusterapi.updateCluster(self.dm.cluster_name,xml_info)
+            if r['status_code'] ==self.dm.status_code:
+                dict_actual = r['result']
+                dict_expected = xmltodict.parse(xml_info)
+                dictCompare = DictCompare()
+                if dictCompare.isSubsetDict(dict_expected, dict_actual):
+                    LogPrint().info("PASS:ITC02010401_UpdateCluster_nohost SUCCESS." )
+#                 return True
+                else:
+                    LogPrint().error("FAIL:ITC02010401_UpdateCluster_nohost.Error-info  INCORRECT.")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL:ITC02010401_UpdateCluster_nohost FAILED.Status-code WRONG. " )
+                self.flag = False
+            self.assertTrue(self.flag)
+            self.expected_result_index += 1
+        do_test()
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        self.assertTrue(smart_delete_cluster(self.dm.cluster_name_new))
+
+class ITC0201040201_UpdateCluster_host_cputype(BaseTestCase):
+    '''
+    @summary: ITC-02集群管理-01集群操作-04编辑集群-02集群内有主机-01更改集群的cpu类型
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        # 首先创建一个集群
+        self.clusterapi = ClusterAPIs()
+        self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
+        # 创建一个主机
+        self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+    def test_UpdateCluster_host(self):
         r=self.clusterapi.updateCluster(self.dm.cluster_name,self.dm.cluster_info_new)
+        print r
         if r['status_code'] ==self.dm.status_code:
             dict_actual = r['result']
-            dict_expected = xmltodict.parse(self.dm.cluster_info_new)
+            dict_expected = xmltodict.parse(self.dm.expected_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("Update Cluster '%s' SUCCESS." % self.dm.cluster_name)
+                LogPrint().info("PASS:ITC0201040201_test_UpdateCluster_host_cputype SUCCESS." )
 #                 return True
             else:
-                LogPrint().error("Update Cluster '%s'  INCORRECT.")
+                LogPrint().error("FAIL:ITC0201040201_test_UpdateCluster_host_cputype .Error-info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("Update Cluster '%s' FAILED. " % self.dm.cluster_name)
+            LogPrint().error("FAIL:ITC0201040201_test_UpdateCluster_host_cputype.Status_code WRONG")
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -262,11 +311,92 @@ class ITC020104_UpdateCluster(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
+        self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
+
+class ITC0201040202_UpdateCluster_host_upcpu(BaseTestCase):
+    '''
+    @summary: ITC-02集群管理-01集群操作-04编辑集群-02集群内有主机-02升高cpu级别
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        # 首先创建一个集群
+        self.clusterapi = ClusterAPIs()
+        self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
+        # 创建一个主机
+        self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+    def test_UpdateCluster_host(self):
+        r=self.clusterapi.updateCluster(self.dm.cluster_name,self.dm.cluster_info_new)
+        print r
+        if r['status_code'] ==self.dm.status_code:
+            dict_actual = r['result']
+            dict_expected = xmltodict.parse(self.dm.expected_info)
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(dict_expected, dict_actual):
+                LogPrint().info("PASS:ITC0201040202_test_UpdateCluster_host_upcpu SUCCESS." )
+#                 return True
+            else:
+                LogPrint().error("FAIL:ITC0201040202_test_UpdateCluster_host_upcpu. Error-info INCORRECT.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL:ITC0201040202_test_UpdateCluster_host_upcpu.Status_code is wrong. ")
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
+        self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
+
+class ITC0201040203_UpdateCluster_host_name(BaseTestCase):
+    '''
+    @summary: ITC-02集群管理-01集群操作-04编辑集群-02集群内有主机-03更改名称
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        # 首先创建一个集群
+        self.clusterapi = ClusterAPIs()
+        self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
+        # 创建一个主机
+        self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+    def test_UpdateCluster_host(self):
+        r=self.clusterapi.updateCluster(self.dm.cluster_name,self.dm.cluster_info_new)
+        print r
+        if r['status_code'] ==self.dm.status_code:
+            dict_actual = r['result']
+            dict_expected = xmltodict.parse(self.dm.cluster_info_new)
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(dict_expected, dict_actual):
+                LogPrint().info("PASS:ITC0201040203_test_UpdateCluster_host_name SUCCESS." )
+#                 return True
+            else:
+                LogPrint().error("FAIL:ITC0201040203_test_UpdateCluster_host_name. Error-info INCORRECT.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL:ITC0201040203_test_UpdateCluster_host_name.Status_code is wrong. ")
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name_new))
 
-class ITC020105_DeleteCluster(BaseTestCase):
+class ITC02010501_DeleteCluster_clear(BaseTestCase):
     '''
-    @summary: ITC-02集群管理-01集群操作-05删除集群
+    @summary: ITC-02集群管理-01集群操作-05删除集群-01干净集群
     '''
     def setUp(self):
         '''
@@ -305,7 +435,46 @@ class ITC020105_DeleteCluster(BaseTestCase):
         '''
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
         
-            
+class ITC02010502_DeleteCluster_host(BaseTestCase):
+    '''
+    @summary: ITC-02集群管理-01集群操作-05删除集群-02集群内有主机
+    '''
+    def setUp(self):
+        '''
+        @summary: 测试用例执行前的环境初始化（前提）
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+        # 首先创建一个集群
+        self.clusterapi = ClusterAPIs()
+        self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
+        # 创建一个主机
+        self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+    def test_DeleteCluster_host(self):
+        r=self.clusterapi.delCluster(self.dm.cluster_name)
+        print r
+        if r['status_code'] ==self.dm.status_code:
+            dict_actual = r['result']
+            dict_expected = xmltodict.parse(self.dm.expected_info)
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(dict_expected, dict_actual):
+                LogPrint().info("PASS:ITC02010502_DeleteCluster_host SUCCESS." )
+#                 return True
+            else:
+                LogPrint().error("FAIL:ITC02010502_DeleteCluster_host. Error-info INCORRECT.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL:ITC02010502_DeleteCluster_host.Status_code is wrong. ")
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 测试结束后的资源清理（恢复初始环境）
+        '''
+        self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
+        self.assertTrue(smart_delete_cluster(self.dm.cluster_name)) 
+              
 class ITC020201_GetClusterNetworkList(BaseTestCase):
     '''
     @summary: ITC-02集群管理-02集群网络基本操作-01获取集群网络列表
@@ -513,7 +682,7 @@ class ITC020205_UpdateNetworkofCluster(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Cluster.ITC020205_UpdateNetworkofCluster"]
+    test_cases = ["Cluster.ITC02010503_DeleteCluster_vm"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

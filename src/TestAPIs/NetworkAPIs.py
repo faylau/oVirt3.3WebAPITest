@@ -25,10 +25,10 @@ def smart_create_network(nw_info,nw_name,status_code=201):
     nw_api = NetworkAPIs()
     r = nw_api.createNetwork(nw_info)
     if r['status_code'] == status_code:
-        LogPrint().info("Create network '%s'success."%nw_name)
+        LogPrint().info("Pre-Test:Create network '%s'success."%nw_name)
         return True
     else:
-        LogPrint().error("Create network '%s' fail."%nw_name)
+        LogPrint().error("Pre-Test:Create network '%s' fail."%nw_name)
         return False
 
 def smart_delete_network(nw_name,dc_name,status_code=200):
@@ -38,13 +38,13 @@ def smart_delete_network(nw_name,dc_name,status_code=200):
         print nw_api.getNetworkInfo(nw_name=nw_name,dc_name=dc_name)
         r = nw_api.delNetwork(nw_name,dc_name)
         if r ['status_code'] == status_code:
-            LogPrint().info("Delete network '%s'success."%nw_name)
+            LogPrint().info("Post-Test:Delete network '%s'success."%nw_name)
             return True
         else:
-            LogPrint().error("Delete network '%s' fail."%nw_name)
+            LogPrint().error("Post-Test:Delete network '%s' fail."%nw_name)
             return False
     except:
-        LogPrint().info("network '%s' is not exist"%nw_name)
+        LogPrint().info("Post-Test:network '%s' is not exist"%nw_name)
         return True
 
 class NetworkAPIs(BaseAPIs):

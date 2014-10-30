@@ -463,7 +463,7 @@ class ITC050202_GetNetworkProfileInfo(BaseTestCase):
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Network.ITC050202_GetNetworkProfileInfo"]
+    test_cases = ["Network.ITC05010305_CreateNetwork_DupVlan"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
