@@ -1,4 +1,5 @@
 #encoding:utf-8
+from Utils.Util import wait_until
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -17,6 +18,48 @@ import xmltodict
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
+from Utils.PrintLog import LogPrint
+
+def smart_create_vmdisk(vm_name,disk_info,disk_alias,status_code=202):
+    '''
+    @summary: 为虚拟机创建磁盘
+    '''
+    vmdisk_api = VmDiskAPIs()
+    r=vmdisk_api.createVmDisk(vm_name, disk_info)
+    print r
+    def is_disk_ok():
+        return vmdisk_api.getVmDiskStatus(vm_name, disk_alias=disk_alias)=='ok'
+    if r['status_code']==status_code:
+        if wait_until(is_disk_ok,600,5):
+            LogPrint().info("Pre-Test:Create VMDisk success.")
+            return True
+        else:
+            LogPrint().error("Pre-Test:Create VMDisk overtime")
+            return False
+    else:
+        LogPrint().error("Pre-Test:Create VMDisk failed.Status-code is wrong.")
+        return False
+    
+def smart_delete_vmdisk(vm_name,disk_name,status_code=200):
+    
+    try:
+        vmdiskapi = VmDiskAPIs()
+        vmdiskapi.getVmDiskInfo(vm_name, disk_alias=disk_name)
+        if vmdiskapi.getVmDiskStatus(vm_name, disk_alias=disk_name)!='ok':
+            LogPrint().error("Post-Test:Disk is not ok.Can't delete it.")
+            return False
+        else:
+            r = vmdiskapi.delVmDisk(vm_name, disk_alias=disk_name)
+            if r['status_code'] == 200:
+                LogPrint().info("Post-Test:Delete Disk success.")
+                return True
+            else:
+                LogPrint().error("Post-Test:Delete Disk fail.")
+                return False
+    except:
+        LogPrint().warning("Post-Test:WARN: Disk is not exist.")
+        return True
+        
 
 class VirtualMachineAPIs(BaseAPIs):
     '''

@@ -10,7 +10,7 @@ from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorage
 ########################################################################
 # 1个数据中心信息                                                                                                                                    
 ########################################################################
-dc_nfs_name = 'DC-ITC07-NFS'
+dc_nfs_name = 'DC-ITC05-NFS'
 dc_name_list = [dc_nfs_name]
 xml_dc_info = '''
     <data_center>
@@ -23,7 +23,7 @@ xml_dc_info = '''
 ########################################################################
 # 1个集群信息                                                                                                                                    
 ########################################################################
-cluster_nfs_name = 'Cluster-ITC07-NFS'
+cluster_nfs_name = 'Cluster-ITC05-NFS'
 cluster_name_list = [cluster_nfs_name]
 xml_cluster_info = '''
     <cluster>
@@ -38,8 +38,8 @@ xml_cluster_info = '''
 ########################################################################
 # 1个主机信息（node1加入NFS数据中心）                                                                                                                                    
 ########################################################################
-host1 = Hosts['node1']
-host1_name = 'node-ITC07-1'
+host1 = Hosts['node4']
+host1_name = 'node-ITC05-1'
 host1_ip = host1['ip']
 host1_password = host1['password']
 xml_host_info = '''
@@ -56,18 +56,22 @@ xml_host_info = '''
 #######################################################################################
 # 4个存储域信息（data1/data2，1个ISO和1个Export域）                                                                                                                               
 #######################################################################################
-data1_nfs_name = 'data1-nfs-ITC07'
-data1_nfs = DataStorages['nfs']['data1']
+data1_nfs_name = 'data1-nfs-ITC05'
+data1_nfs = DataStorages['nfs']['data2']
 data1_nfs_ip = data1_nfs['ip']
 data1_nfs_path = data1_nfs['path']
-data2_nfs_name = 'data2-nfs-ITC07'
-data2_nfs = DataStorages['nfs']['data2']
+data2_nfs_name = 'data2-nfs-ITC05'
+data2_nfs = DataStorages['nfs']['data3']
 data2_nfs_ip = data2_nfs['ip']
 data2_nfs_path = data2_nfs['path']
-export1_name = 'export1-ITC07'
+export1_name = 'export1-ITC05'
 export1 =  ExportStorages['Export-Storage2']
 export1_ip = export1['ip']
 export1_path = export1['path']
+iso1_name = 'iso1-ITC05'
+iso1 = IsoStorages['ISO-Storage1']
+iso1_ip = iso1['ip']
+iso1_path = iso1['path']
 
 xml_storage_info = '''
 <data_driver>
@@ -107,19 +111,32 @@ xml_storage_info = '''
             <path>%s</path>
         </storage>
     </storage_domain>
+    <storage_domain>
+        <name>%s</name>
+        <type>iso</type>
+        <host>
+            <name>%s</name>
+        </host>
+        <storage>
+            <type>nfs</type>
+            <address>%s</address>
+            <path>%s</path>
+        </storage>
+    </storage_domain>
 </data_driver>
 ''' % (data1_nfs_name, host1_name, data1_nfs_ip, data1_nfs_path, 
        data2_nfs_name, host1_name, data2_nfs_ip, data2_nfs_path, 
-       export1_name, host1_name, export1_ip, export1_path )
+       export1_name, host1_name, export1_ip, export1_path,
+       iso1_name, host1_name, iso1_ip, iso1_path)
 
 
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-vm_name = 'vm3'
+vm_name = 'vm-ITC05'
 vm_info='''
 <vm>
-        <name>vm3</name>
+        <name>vm-ITC05</name>
         <description>Virtual Machine 2</description>
         <type>server</type>
         <memory>536870912</memory>
@@ -139,25 +156,7 @@ vm_info='''
     </vm>
 '''%cluster_nfs_name
 
-disk_name = 'testkeke'
-disk_info='''
-<disk>
-    <alias>testkeke</alias>
-    <name>testkeke</name>
-    <storage_domains>
-        <storage_domain>
-            <name>%s</name>
-        </storage_domain>
-    </storage_domains>
-    <size>114748364</size>
-    <sparse>false</sparse>
-    <interface>virtio</interface>
-    <format>raw</format>
-    <bootable>true</bootable>
-    <shareable>false</shareable>
-    <wipe_after_delete>false</wipe_after_delete>
-</disk>
-'''%data1_nfs_name
+
 '''
 ---------------------------------------------------------------------------------------------------
 @note: Post-Test-Data

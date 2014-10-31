@@ -94,6 +94,7 @@ encoding//src/TestCases/Network.py=utf-8
 encoding//src/TestCases/Profile.py=utf-8
 encoding//src/TestCases/StorageDomain.py=utf-8
 encoding//src/TestCases/Template.py=utf-8
+encoding//src/TestCases/VirtualMachines.py=utf-8
 encoding//src/TestData/Cluster/ITC020102_GetClusterInfo.py=utf-8
 encoding//src/TestData/Cluster/ITC02010301_CreateCluster.py=utf-8
 encoding//src/TestData/Cluster/ITC02010302_CreateCluster_Dup.py=utf-8
@@ -104,7 +105,6 @@ encoding//src/TestData/Cluster/ITC0201040202_UpdateCluster_host_upcpu.py=utf-8
 encoding//src/TestData/Cluster/ITC0201040203_UpdateCluster_host_name.py=utf-8
 encoding//src/TestData/Cluster/ITC02010501_DeleteCluster_clear.py=utf-8
 encoding//src/TestData/Cluster/ITC02010502_DeleteCluster_host.py=utf-8
-encoding//src/TestData/Cluster/ITC02010503_DeleteCluster_vm.py=utf-8
 encoding//src/TestData/Cluster/ITC020201_GetClusterNetworkList.py=utf-8
 encoding//src/TestData/Cluster/ITC020202_GetClusterNetworkInfo.py=utf-8
 encoding//src/TestData/Cluster/ITC020203_attachNetworktoCluster.py=utf-8
@@ -165,7 +165,11 @@ encoding//src/TestData/StorageDomain/ITC040301_GetFilesFromIsoStorage.py=utf-8
 encoding//src/TestData/StorageDomain/ITC04_SetUp.py=utf-8
 encoding//src/TestData/Template/ITC070102_GetTemplateInfo.py=utf-8
 encoding//src/TestData/Template/ITC07_SetUp.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC050302_GetVMDiskInfo.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05030301_CreateVMDisk_normal.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05_SetUp.py=utf-8
 encoding//src/Utils/HttpClient.py=utf-8
+encoding//src/Utils/PrintLog.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.

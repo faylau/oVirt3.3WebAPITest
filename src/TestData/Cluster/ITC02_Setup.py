@@ -24,7 +24,3 @@ dc_info = '''
     <version minor="3" major="3"/>
 </data_center>
 ''' % dc_name
-
-'''
-@note: ExpectedResult
-'''
