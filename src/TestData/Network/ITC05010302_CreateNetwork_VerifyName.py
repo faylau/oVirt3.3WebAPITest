@@ -1,11 +1,17 @@
 #encoding:utf-8
+import TestData.Cluster.ITC02_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
+
+
+
 
 '''
 @note: TestData
 nw_name_list[0]：含有特殊字符
 nw_name_list[1]：16个字符（刚好超过15个）
 '''
-
+dc_name = ModuleData.dc_name
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
 nw_name_list = ['Network-1*#*', 
                 'network123456789NETWORK']
 
@@ -13,14 +19,14 @@ nw_info = '''
 <data_driver>
     <network>
         <name>%s</name>
-        <data_center id= "5849b030-626e-47cb-ad90-3ce782d831b3"/>    
+        <data_center id= "%s"/>    
     </network>
     <network>
         <name>%s</name>
-        <data_center id= "5849b030-626e-47cb-ad90-3ce782d831b3"/>    
+        <data_center id= "%s"/>    
     </network>
 </data_driver>
-'''%(nw_name_list[0],nw_name_list[1])
+'''%(nw_name_list[0],dc_id,nw_name_list[1],dc_id)
 
 '''
 @note: ExpectedData

@@ -1,9 +1,10 @@
 #encoding:utf-8
 
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
 nw_name = 'network001'
 dc_name = 'Default'
+dc_id = DataCenterAPIs().getDataCenterIdByName(dc_name)
 profile_name = 'p001'
-
 
 '''
 @note: PreData
@@ -11,9 +12,9 @@ profile_name = 'p001'
 nw_info = '''
 <network>
     <name>%s</name>
-    <data_center id= "5849b030-626e-47cb-ad90-3ce782d831b3"/>    
+    <data_center id= "%s"/>    
 </network>
-''' %nw_name
+''' %(nw_name,dc_id)
 
 profile_info = '''
     <vnic_profile>

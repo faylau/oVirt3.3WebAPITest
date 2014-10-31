@@ -1,5 +1,18 @@
-#encoding:utf-8
-from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+#coding:utf-8
+
+
+__authors__ = ['"wei keke" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/24          初始版本                                                           wei keke
+#---------------------------------------------------------------------------------
+'''
+
 from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorages
 
 '''
@@ -64,10 +77,7 @@ data2_nfs_name = 'data2-nfs-ITC01'
 data2_nfs = DataStorages['nfs']['data2']
 data2_nfs_ip = data2_nfs['ip']
 data2_nfs_path = data2_nfs['path']
-export1_name = 'export1-ITC01'
-export1 =  ExportStorages['Export-Storage2']
-export1_ip = export1['ip']
-export1_path = export1['path']
+
 
 xml_storage_info = '''
 <data_driver>
@@ -95,69 +105,10 @@ xml_storage_info = '''
             <path>%s</path>
         </storage>
     </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>export</type>
-        <host>
-            <name>%s</name>
-        </host>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
 </data_driver>
 ''' % (data1_nfs_name, host1_name, data1_nfs_ip, data1_nfs_path, 
-       data2_nfs_name, host1_name, data2_nfs_ip, data2_nfs_path, 
-       export1_name, host1_name, export1_ip, export1_path )
+       data2_nfs_name, host1_name, data2_nfs_ip, data2_nfs_path)
 
-
-'''
-@note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
-'''
-vm_name = 'vm3'
-vm_info='''
-<vm>
-        <name>vm3</name>
-        <description>Virtual Machine 2</description>
-        <type>server</type>
-        <memory>536870912</memory>
-        <cluster>
-            <name>%s</name>
-        </cluster>
-        <template>
-            <name>Blank</name>
-        </template>
-        <cpu>
-            <topology sockets="2" cores="1"/>
-        </cpu>
-        <os>
-            <boot dev="cdrom"/>
-            <boot dev="hd"/>
-        </os>
-    </vm>
-'''%cluster_nfs_name
-
-disk_name = 'testkeke'
-disk_info='''
-<disk>
-    <alias>testkeke</alias>
-    <name>testkeke</name>
-    <storage_domains>
-        <storage_domain>
-            <name>%s</name>
-        </storage_domain>
-    </storage_domains>
-    <size>114748364</size>
-    <sparse>false</sparse>
-    <interface>virtio</interface>
-    <format>raw</format>
-    <bootable>true</bootable>
-    <shareable>false</shareable>
-    <wipe_after_delete>false</wipe_after_delete>
-</disk>
-'''%data1_nfs_name
 '''
 ---------------------------------------------------------------------------------------------------
 @note: Post-Test-Data
@@ -180,7 +131,6 @@ xml_del_sd_option = '''
 </storage_domain>
 '''
 
-
 '''
 ---------------------------------------------------------------------------------------------------
 @note: ExpectedResult
@@ -190,4 +140,3 @@ expected_status_code_create_dc = 201
 expected_status_code_create_cluster = 201
 expected_status_code_del_dc = 200
 expected_status_code_del_cluster = 200
-

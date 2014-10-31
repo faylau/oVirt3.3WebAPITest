@@ -21,14 +21,21 @@ cluster_info = '''
 
 '''
 @note: TestData
+@note: 当集群内无主机时，更改集群的名称、cpu类型以及升高cpu级别
 '''
 cluster_info_new = '''
+<data_driver>
+<cluster>
+        <cpu id="Intel Haswell"/>
+</cluster>
+<cluster>
+        <cpu id="AMD Opteron G3"/>
+</cluster>
 <cluster>
         <name>%s</name>
-        <cpu id="Intel Nehalem Family"/>
-        <data_center  id="%s"/>
 </cluster>
-''' %(cluster_name_new,dc_id)
+</data_driver>
+''' %(cluster_name_new)
 
 '''
 @note: ExpectedData

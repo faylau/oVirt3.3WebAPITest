@@ -7,13 +7,47 @@
 import unittest
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.NetworkAPIs import NetworkAPIs, NetworkProfilesAPIs
+from TestAPIs.NetworkAPIs import NetworkAPIs, NetworkProfilesAPIs,\
+    smart_create_network, smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from Utils.HTMLTestRunner import HTMLTestRunner
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
+from TestData.Network import ITC05_Setup as ModuleData
 
 import xmltodict
+
+class ITC05_Setup(BaseTestCase):
+    '''
+    @summary: “集群管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）
+    @note: （1）创建一个数据中心（NFS）；
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = super(self.__class__, self).setUp()
+
+    def test_Create_DC(self):
+        '''
+        @summary: 创建一个数据中心
+        '''
+        dcapi = DataCenterAPIs()
+        LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % self.dm.dc_name)
+        dcapi.createDataCenter(self.dm.dc_info)
+    
+class ITC05_TearDown(BaseTestCase):
+    '''
+    @summary: “集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: 删除数据中心；
+    '''
+    def test_TearDown(self):
+        dcapi = DataCenterAPIs()
+        if dcapi.searchDataCenterByName(ModuleData.dc_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test: Delete DataCenter '%s'." % ModuleData.dc_name)
+            dcapi.delDataCenter(ModuleData.dc_name)
 
 class ITC050101_GetNetworkList(BaseTestCase):
   
@@ -45,14 +79,14 @@ class ITC050102_GetNetworkInfo(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         self.nwapi = NetworkAPIs()
         # 准备1：创建一个网络
-        self.nwapi.createNetwork(self.dm.nw_info)
+        self.assertTrue(smart_create_network(self.dm.nw_info,self.dm.nw_name))
         
     def test_GetNetworkInfo_name(self):
         '''
         @summary: 测试用例执行步骤
         '''
         # 测试1：根据网络名称和数据中心名称获取网络信息（在同一数据中心内网络名称是唯一的）
-        r = self.nwapi.getNetworkInfo(nw_name=self.dm.nw_name,dc_name=self.dm.dc_name)
+        r = self.nwapi.getNetworkInfo(nw_name=self.dm.nw_name,dc_name=ModuleData.dc_name)
         if r['status_code']==self.dm.expected_status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.nw_info)
@@ -93,8 +127,7 @@ class ITC050102_GetNetworkInfo(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
-        if self.nwapi.searchNetworkByName(self.dm.nw_name):
-            self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)      
+        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))    
 
 class ITC05010301_CreateNetwork(BaseTestCase):
     '''
@@ -105,8 +138,9 @@ class ITC05010301_CreateNetwork(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         self.nwapi = NetworkAPIs()  
         #检查数据中心内是否已有该网络，如果有，删除它 
-        if self.nwapi.searchNetworkByName(self.dm.nw_name):
-            self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name) 
+#         if self.nwapi.searchNetworkByName(self.dm.nw_name):
+#             self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name) 
+        self.assertTrue(smart_delete_network(self.dm.nw_name, self.dm.dc_name))
     def test_CreateNetwork(self): 
         r = self.nwapi.createNetwork(self.dm.nw_info)
         if r['status_code'] == self.dm.expected_status_code:
@@ -125,9 +159,8 @@ class ITC05010301_CreateNetwork(BaseTestCase):
         self.assertTrue(self.flag)
             
     def tearDown(self):
-        if self.nwapi.searchNetworkByName(self.dm.nw_name):
-            self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
-
+        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name)) 
+        
 class ITC05010302_CreateNetwork_VerifyName(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-02验证名称合法性
@@ -196,7 +229,7 @@ class ITC05010303_CreateNetwork_DupName(BaseTestCase):
             self.flag = False
         self.assertTrue(self.flag)
     def tearDown(self):
-        self.nwapi.delNetwork(self.dm.nw_name, 'Default')
+        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
         
 class ITC05010304_CreateNetwork_NoRequired(BaseTestCase):
     '''
@@ -241,7 +274,7 @@ class ITC05010305_CreateNetwork_DupVlan(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         self.nwapi = NetworkAPIs()
         #创建一个网络，vlan id=2
-        print self.nwapi.createNetwork(self.dm.nw_info1)
+        self.assertTrue(smart_create_network(self.dm.nw_info1, self.dm.nw_name1))
           
           
     def test_CreateNetwork_DupVlan(self):
@@ -261,7 +294,7 @@ class ITC05010305_CreateNetwork_DupVlan(BaseTestCase):
             self.flag = False
         self.assertTrue(self.flag)
     def tearDown(self):
-        self.nwapi.delNetwork(self.dm.nw_name1, 'Default')
+        self.assertTrue(smart_delete_network(self.dm.nw_name1,self.dm.dc_name))
         
 class ITC05010401_UpdateNetwork(BaseTestCase):
     '''
@@ -272,7 +305,7 @@ class ITC05010401_UpdateNetwork(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         self.nwapi = NetworkAPIs()  
         #首先新建一个网络 
-        self.nwapi.createNetwork(self.dm.nw_info) 
+        self.assertTrue(smart_create_network(self.dm.nw_info, self.dm.nw_name)) 
     def test_UpdateNetwork(self): 
         r = self.nwapi.updateNetwork(self.dm.nw_name, self.dm.dc_name, self.dm.update_info)
         if r['status_code'] == self.dm.expected_status_code:
@@ -292,7 +325,7 @@ class ITC05010401_UpdateNetwork(BaseTestCase):
             
     def tearDown(self):
         #删除该网络，清空环境
-        self.nwapi.delNetwork(self.dm.new_nw_name, self.dm.dc_name)
+        self.assertTrue(smart_delete_network(self.dm.new_nw_name,self.dm.dc_name))
         
 class ITC05010402_UpdateNetwork_DupName(BaseTestCase):
     '''
@@ -303,8 +336,8 @@ class ITC05010402_UpdateNetwork_DupName(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         self.nwapi = NetworkAPIs()  
         #首先新建两个网络network001和network002 
-        self.nwapi.createNetwork(self.dm.nw_info1)
-        self.nwapi.createNetwork(self.dm.nw_info2) 
+        self.assertTrue(smart_create_network(self.dm.nw_info1, self.dm.nw_name1)) 
+        self.assertTrue(smart_create_network(self.dm.nw_info2, self.dm.nw_name2))  
     def test_UpdateNetwork(self):
         #对network001进行编辑：名称修改为network002 
         r = self.nwapi.updateNetwork(self.dm.nw_name1, self.dm.dc_name, self.dm.update_info)
@@ -322,8 +355,8 @@ class ITC05010402_UpdateNetwork_DupName(BaseTestCase):
             
     def tearDown(self):
         #删除该网络，清空环境
-        self.nwapi.delNetwork(self.dm.nw_name1, self.dm.dc_name)
-        self.nwapi.delNetwork(self.dm.nw_name2, self.dm.dc_name)
+        self.assertTrue(smart_delete_network(self.dm.nw_name1,self.dm.dc_name))
+        self.assertTrue(smart_delete_network(self.dm.nw_name2,self.dm.dc_name))
 
 class ITC050105_DeleteNetwork(BaseTestCase):
     '''
@@ -334,20 +367,22 @@ class ITC050105_DeleteNetwork(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         self.nwapi = NetworkAPIs()  
         #首先新建一个网络 
-        self.nwapi.createNetwork(self.dm.nw_info) 
+        self.assertTrue(smart_create_network(self.dm.nw_info, self.dm.nw_name))
     def test_UpdateNetwork(self): 
         r = self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
         if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            if dictCompare.isSubsetDict(r['result'], xmltodict.parse(self.dm.expected_info)):
-                LogPrint().info("PASS: The returned status code and messages are CORRECT when delete network.")
+            if not self.nwapi.isNetworkExist(self.dm.nw_name, self.dm.dc_name):
+                LogPrint().info("PASS: Delete network success.")
             else:
-                LogPrint().error("FAIL: The returned messages are INCORRECCT when delete network.")
+                LogPrint().error("FAIL: Delete network fail.The network is still exist.")
                 self.flag = False
         else:
             LogPrint().error("FAIL: The returned status code is '%s', INCORRECT. " % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag) 
+    def tearDown(self):
+        #删除该网络，清空环境
+        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
 
 class ITC050201_GetNetworkProfileList(BaseTestCase):
     '''
@@ -383,7 +418,7 @@ class ITC050201_GetNetworkProfileList(BaseTestCase):
         '''
         @summary: 清除该网络及配置集
         '''
-        self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
+        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
 
 class ITC050202_GetNetworkProfileInfo(BaseTestCase):
     '''
@@ -424,11 +459,11 @@ class ITC050202_GetNetworkProfileInfo(BaseTestCase):
         '''
         @summary: 清除该网络及配置集
         '''
-        self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)            
+        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))       
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Network.ITC050202_GetNetworkProfileInfo"]
+    test_cases = ["Network.ITC05010305_CreateNetwork_DupVlan"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

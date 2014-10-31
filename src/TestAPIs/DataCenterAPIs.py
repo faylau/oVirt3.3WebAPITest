@@ -328,7 +328,7 @@ class DataCenterAPIs(BaseAPIs):
 
 if __name__ == "__main__":
     dcapi = DataCenterAPIs()
-    
+    print dcapi.searchDataCenterByName('DC-ISCSI')
     print dcapi.getDCStorageDomainStatus('DC-NFS', 'data1-nfs')
 #     r = dcapi.attachStorageDomainToDC('DC-NFS', 'data1-nfs')
 #     print dcapi.getDataCenterInfo(dc_id='8cfa5137-e11f-445b-bbd5-c5611338d8eb')

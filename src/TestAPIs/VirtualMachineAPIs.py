@@ -172,7 +172,6 @@ class VirtualMachineAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_vm_info)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
     def updateVm(self, vm_name, xml_vm_update_info):

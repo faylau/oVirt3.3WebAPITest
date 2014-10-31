@@ -1,11 +1,14 @@
 #encoding:utf-8
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 @note: PreData
 '''
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
+sd_name = ModuleData.data1_nfs_name
+cluster_name = ModuleData.cluster_nfs_name
 vm_name = 'vm3'
 vm_info='''
 <vm>
@@ -14,7 +17,7 @@ vm_info='''
         <type>server</type>
         <memory>536870912</memory>
         <cluster>
-            <name>Cluster-ISCSI</name>
+            <name>%s</name>
         </cluster>
         <template>
             <name>Blank</name>
@@ -27,7 +30,7 @@ vm_info='''
             <boot dev="hd"/>
         </os>
     </vm>
-'''
+'''%cluster_name
 disk_name = 'testkeke'
 disk_info='''
 <disk>
@@ -35,7 +38,7 @@ disk_info='''
     <name>testkeke</name>
     <storage_domains>
         <storage_domain>
-            <name>Data1-ISCSI</name>
+            <name>%s</name>
         </storage_domain>
     </storage_domains>
     <size>114748364</size>
@@ -46,7 +49,7 @@ disk_info='''
     <shareable>false</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''
+'''%sd_name
 temp_name = 'template-ke'
 temp_info='''
 <template>

@@ -1,19 +1,20 @@
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 @note: PreData
 '''
+'''
+@note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
+'''
 disk_name = 'Test-DISK'
-sd_name = 'Data1-ISCSI'
-sd_id = StorageDomainAPIs().getStorageDomainIdByName(sd_name)
+sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
 disk_info='''
 <data_driver>
 <disk>
     <alias>Disk-test</alias>
     <name>Disk-test</name>
     <storage_domains>
-        <storage_domain>
-            <name>Data1-ISCSI</name>
-        </storage_domain>
+        <storage_domain id = "%s"/>
     </storage_domains>
     <size>105906176</size>
     <sparse>true</sparse>
@@ -27,9 +28,7 @@ disk_info='''
     <alias>Disk-test</alias>
     <name>Disk-test</name>
     <storage_domains>
-        <storage_domain>
-            <name>Data1-ISCSI</name>
-        </storage_domain>
+        <storage_domain id = "%s"/>
     </storage_domains>
     <size>105906176</size>
     <sparse>false</sparse>
@@ -43,9 +42,7 @@ disk_info='''
     <alias>Disk-test</alias>
     <name>Disk-test</name>
     <storage_domains>
-        <storage_domain>
-            <name>Data1-ISCSI</name>
-        </storage_domain>
+        <storage_domain id = "%s"/>
     </storage_domains>
     <size>105906176</size>
     <sparse>true</sparse>
@@ -56,7 +53,7 @@ disk_info='''
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
 </data_driver>
-'''
+'''%(sd_id,sd_id,sd_id)
 '''
 @note: ExpectedData
 '''

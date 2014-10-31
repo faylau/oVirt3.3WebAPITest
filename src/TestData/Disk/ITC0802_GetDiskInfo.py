@@ -1,5 +1,6 @@
 #encoding:utf-8
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 @note: PreData
 '''
@@ -7,8 +8,7 @@ from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
 disk_name = 'Test-DISK'
-sd_name = 'Data1-ISCSI'
-sd_id = StorageDomainAPIs().getStorageDomainIdByName(sd_name)
+sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
 disk_info='''
 <disk>
     <alias>%s</alias>

@@ -9,24 +9,67 @@ from TestAPIs.ProfilesAPIs import ProfilesAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
 from Utils.HTMLTestRunner import HTMLTestRunner
+from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain,\
+smart_detach_storage_domain,smart_active_storage_domain
+from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
     TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
     smart_delete_tempnic
+from TestAPIs.HostAPIs import smart_create_host,smart_del_host
+from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain
 
 import xmltodict
-from TestData.Cluster.ITC020202_GetClusterNetworkInfo import network_name
 from TestAPIs.NetworkAPIs import NetworkAPIs
+
 
 
    
 class ITC07_SetUp(BaseTestCase):
+    '''
+    @summary: 模板管理模块级测试用例，初始化模块测试环境；
+    @note: （1）创建一个NFS类型数据中心；
+    @note: （2）创建一个集群；
+    @note: （3）创建一个主机，并等待其变为UP状态；
+    @note: （4）创建3个存储域（data1/data2/Export）；
+    @note: （5）将 data1 附加到数据中心；
+    @note: （6）创建一个虚拟机
+    @note: （7）创建一个磁盘
+    @note: （8）将磁盘附加到虚拟机
+    '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
         
-    def test_create_vm(self):
-        self.vmapi = VirtualMachineAPIs()
+    def test_CreateModuleTestEnv(self):
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        
+        # 创建1个数据中心（nfs类型）
+        LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
+        self.assertTrue(dcapi.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
+    
+        # 创建1个集群
+        LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
+        self.assertTrue(capi.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
+    
+        # 在NFS数据中心中创建一个主机，并等待主机UP。
+        LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host1_name, self.dm.cluster_nfs_name))
+        self.assertTrue(smart_create_host(self.dm.host1_name, self.dm.xml_host_info))
+    
+        # 为NFS数据中心创建Data（data1/data2/export）。
+        @BaseTestCase.drive_data(self, self.dm.xml_storage_info)
+        def create_storage_domains(xml_storage_domain_info):
+            sd_name = xmltodict.parse(xml_storage_domain_info)['storage_domain']['name']
+            LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % sd_name)
+            self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
+        create_storage_domains()
+        
+        # 将创建的的data1和export域附加到NFS/ISCSI数据中心里。
+        LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
         #创建一个虚拟机
+        self.vmapi = VirtualMachineAPIs()
         r = self.vmapi.createVm(self.dm.vm_info)
         if r['status_code'] == 201:
             self.vm_name = r['result']['vm']['name']
@@ -53,6 +96,60 @@ class ITC07_SetUp(BaseTestCase):
         else:
             LogPrint().error("Attach Disk to vm fail.Status-code is wrong.")
             self.assertTrue(False)
+            
+class ITC07_TearDown(BaseTestCase):
+    '''
+    @summary: “模板管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: （1）删除虚拟机（删除磁盘）
+    @note: （2）将导出域设置为Maintenance状态；分离导出域；
+    @note: （3）将数据中心里的Data域（data1）设置为Maintenance状态；
+    @note: （4）删除数据中心dc（非强制）；
+    @note: （5）删除所有unattached状态的存储域（data1/data2）；
+    @note: （6）删除主机host1；
+    @note: （7）删除集群cluster1。
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = self.initData('ITC07_SetUp')
+        
+    def test_TearDown(self):
+        vmapi=VirtualMachineAPIs()
+        #Step1：删除虚拟机
+        vmapi.delVm(self.dm.vm_name)
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        # Step2：将export存储域设置为Maintenance状态,然后从数据中心分离
+        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.export1_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        LogPrint().info("Post-Module-Test-1: Detach storage domains '%s'." % self.dm.export1_name)
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        # Step3：将data1存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        
+        # Step4：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
+        if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+                
+        # Step5：删除3个Unattached状态存储域（data1/data2/export1）
+        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
+        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name]
+        for sd in dict_sd_to_host:
+            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
+        
+        # Step6：删除主机（host1）
+        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
+        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
+        
+        # Step7：删除集群cluster1
+        if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
+            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+
 
 class ITC070101_GetTemplateList(BaseTestCase):
 
@@ -450,7 +547,7 @@ class ITC07020303_CopyTemplateDisk_nosd(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_template(self.dm.temp_name))
-        
+    
         
 class ITC070301_GetTemplateNicList(BaseTestCase):
     '''
@@ -705,7 +802,7 @@ class ITC070305_DeleteTemplateNic(BaseTestCase):
                                              
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Template.ITC070102_GetTemplateInfo"]
+    test_cases = ["Template.ITC07_TearDown"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

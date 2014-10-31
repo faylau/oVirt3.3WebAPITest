@@ -1,9 +1,8 @@
-=\=\=\=\=\=\=
 --><span=class\="path-divider">/</span><\!--
 --><strong><a=href\="/faylau/oVirt3.3WebAPITest" class\="js-current-repository js-repo-home-link" data-pjax-container-selector\="\#js-repo-pjax-container">oVirt3.3WebAPITest</a></strong>
 .settings/org.eclipse.core.resources.prefs">Merge=remote-tracking branch 'origin/master'</a>
 0=
-<\!--=blob contrib key\: blob_contributors\:v21\:dbf56d07961a91b037095c6dc2d3df8e -->
+<\!--=blob contrib key\: blob_contributors\:v21\:cb49698a9fa80b9785eba89bbf56ec5b -->
 <\!DOCTYPE=html>
 </a>=
 </body>=
@@ -21,7 +20,6 @@
 </table>=
 </tr>=
 </ul>=
-<<<<<<<=HEAD
 <a=href\="\#" class\="octicon octicon-x flash-close js-ajax-error-dismiss" aria-label\="Dismiss error"></a>
 <body=class\="logged_out  env-production windows vis-public page-blob">
 <button=type\="submit" class\="button">Go</button>
@@ -29,7 +27,6 @@
 <div=id\="ajax-error-message" class\="flash flash-error">
 <form=accept-charset\="UTF-8" class\="js-jump-to-line-form">
 <h1=itemscope itemtype\="http\://data-vocabulary.org/Breadcrumb" class\="entry-title public">
-<h2=class\="facebox-header">Users who have contributed to this file</h2>
 <h3><span=class\="text-emphasized">Subversion</span> checkout URL</h3>
 <h4>Ignoring</h4>=
 <h4>Watching</h4>=
@@ -40,27 +37,23 @@
 <input=class\="linejump-input js-jump-to-line-field" type\="text" placeholder\="Jump to line&hellip;" autofocus>
 <li=class\="select-menu-tab">
 <li>=
-<li>&copy;=2014 <span title\="0.06997s from github-fe127-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+<li>&copy;=2014 <span title\="0.04286s from github-fe116-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
 <li><a=href\="/contact">Contact</a></li>
 <link=href\="https\://github.com/faylau/oVirt3.3WebAPITest/commits/master.atom" rel\="alternate" title\="Recent Commits to oVirt3.3WebAPITest\:master" type\="application/atom+xml">
 <meta=content\="6658177" name\="octolytics-dimension-user_id" /><meta content\="faylau" name\="octolytics-dimension-user_login" /><meta content\="23608715" name\="octolytics-dimension-repository_id" /><meta content\="faylau/oVirt3.3WebAPITest" name\="octolytics-dimension-repository_nwo" /><meta content\="true" name\="octolytics-dimension-repository_public" /><meta content\="false" name\="octolytics-dimension-repository_is_fork" /><meta content\="23608715" name\="octolytics-dimension-repository_network_root_id" /><meta content\="faylau/oVirt3.3WebAPITest" name\="octolytics-dimension-repository_network_root_nwo" />
 <p=class\="loader-error">Cannot retrieve contributors at this time</p>
-<script=async\="async" crossorigin\="anonymous" src\="https\://assets-cdn.github.com/assets/github-d01013daa80c5a341ba3ddb684f2f26679eb369d67459151d5175a634a9e98a5.js" type\="text/javascript"></script>
+<script=async\="async" crossorigin\="anonymous" src\="https\://assets-cdn.github.com/assets/github-7a547e19aa0d05db3ce66172529526f3ce4a384332fa212dd368aaa2ab02e79e.js" type\="text/javascript"></script>
 <span=class\="octicon octicon-alert"></span>
-<span>117=lines (116 sloc)</span>
-<span>120=lines (119 sloc)</span>
-<span>6.306=kb</span>
-<span>7.878=kb</span>
+<span>141=lines (140 sloc)</span>
+<span>9.983=kb</span>
 <strong>1</strong>=
 <table=class\="highlight tab-size-8 js-file-line-container">
-<td=id\="LC116" class\="blob-code js-file-line"><span class\="na">\u00E4\u00B8\u00BB\u00E8\u00A6\u0081\u00E5\u008C\u0085\u00E6\u008B\u00AC\u00E6\u00AF\u008F\u00E4\u00B8\u00AA\u00E7\u0094\u00A8\u00E4\u00BE\u008B\u00E6\u0089\u0080\u00E4\u00BD\u00BF\u00E7\u0094\u00A8\u00E7\u009A\u0084\u00E5\u00AD\u0098\u00E5\u0082\u00A8\u00E5\u009F\u009F\u00EF\u00BC\u008C\u00E7\u00A1\u00AE\u00E4\u00BF\u009D\u00E4\u00B8\u008D\u00E4\u00BC\u009A\u00E4\u00B8\u008E\u00E6\u00A8\u00A1\u00E5\u009D\u0097\u00E7\u00BA\u00A7\u00E6\u00B5\u008B\u00E8\u00AF\u0095\u00E7\u008E\u00AF\u00E5\u00A2\u0083\u00E6\u0089\u0080\u00E4\u00BD\u00BF\u00E7\u0094\u00A8\u00E7\u009A\u0084\u00E5\u00AD\u0098\u00E5\u0082\u00A8\u00E5\u009F\u009F\u00E4\u00BA\u00A7\u00E7\u0094\u009F\u00E5\u0086\u00B2\u00E7\u00AA\u0081\u00E3\u0080\u0082&quot;&gt;\u00E6\u00A0\u00B9\u00E6\u008D\u00AEStorageDomain\u00E6\u00A8\u00A1\u00E5\u009D\u0097\u00E7\u00BA\u00A7\u00E6\u00B5\u008B\u00E8\u00AF\u0095\u00E7\u008E\u00AF\u00E5\u00A2\u0083\u00EF\u00BC\u008C\u00E9\u0087\u008D\u00E6\u0096\u00B0\u00E7\u00BB\u0084\u00E7\u00BB\u0087\u00E4\u00BA\u0086\u00E9\u0083\u00A8\u00E5\u0088\u0086\u00E7\u0094\u00A8\u00E4\u00BE\u008B\u00E7\u009A\u0084\u00E6\u00B5\u008B\u00E8\u00AF\u0095\u00E8\u00B5\u0084\u00E6\u00BA\u0090\u00E3\u0080\u0082&lt;/a&gt;</span><span class\="o">\=</span></td>
+<td=id\="LC140" class\="blob-code js-file-line"><span class\="na">\u00E4\u00B8\u00BB\u00E8\u00A6\u0081\u00E5\u008C\u0085\u00E6\u008B\u00AC\u00E6\u00AF\u008F\u00E4\u00B8\u00AA\u00E7\u0094\u00A8\u00E4\u00BE\u008B\u00E6\u0089\u0080\u00E4\u00BD\u00BF\u00E7\u0094\u00A8\u00E7\u009A\u0084\u00E5\u00AD\u0098\u00E5\u0082\u00A8\u00E5\u009F\u009F\u00EF\u00BC\u008C\u00E7\u00A1\u00AE\u00E4\u00BF\u009D\u00E4\u00B8\u008D\u00E4\u00BC\u009A\u00E4\u00B8\u008E\u00E6\u00A8\u00A1\u00E5\u009D\u0097\u00E7\u00BA\u00A7\u00E6\u00B5\u008B\u00E8\u00AF\u0095\u00E7\u008E\u00AF\u00E5\u00A2\u0083\u00E6\u0089\u0080\u00E4\u00BD\u00BF\u00E7\u0094\u00A8\u00E7\u009A\u0084\u00E5\u00AD\u0098\u00E5\u0082\u00A8\u00E5\u009F\u009F\u00E4\u00BA\u00A7\u00E7\u0094\u009F\u00E5\u0086\u00B2\u00E7\u00AA\u0081\u00E3\u0080\u0082&quot;&gt;\u00E6\u00A0\u00B9\u00E6\u008D\u00AEStorageDomain\u00E6\u00A8\u00A1\u00E5\u009D\u0097\u00E7\u00BA\u00A7\u00E6\u00B5\u008B\u00E8\u00AF\u0095\u00E7\u008E\u00AF\u00E5\u00A2\u0083\u00EF\u00BC\u008C\u00E9\u0087\u008D\u00E6\u0096\u00B0\u00E7\u00BB\u0084\u00E7\u00BB\u0087\u00E4\u00BA\u0086\u00E9\u0083\u00A8\u00E5\u0088\u0086\u00E7\u0094\u00A8\u00E4\u00BE\u008B\u00E7\u009A\u0084\u00E6\u00B5\u008B\u00E8\u00AF\u0095\u00E8\u00B5\u0084\u00E6\u00BA\u0090\u00E3\u0080\u0082&lt;/a&gt;</span><span class\="o">\=</span></td>
 <textarea=name\="fullscreen-contents" id\="fullscreen-contents" class\="fullscreen-contents js-fullscreen-contents js-suggester-field" placeholder\=""></textarea>
-<time=datetime\="2014-10-23T06\:37\:18Z" is\="relative-time">Oct 23, 2014</time>
 <title>oVirt3.3WebAPITest/org.eclipse.core.resources.prefs=at master \u00C2\u00B7 faylau/oVirt3.3WebAPITest \u00C2\u00B7 GitHub</title>
 <tr>=
 <ul=class\="site-footer-links">
 <ul>=
->>>>>>>=origin/master
 Clone=in Desktop
 Download=ZIP
 Fetching=contributors&hellip;
@@ -70,7 +63,6 @@ Star=
 aria-label="Switch themes">
 autocapitalize="off">
 class="js-show-file-finder minibutton empty-icon tooltipped tooltipped-s"
-contributor=
 data-clipboard-text=".settings/org.eclipse.core.resources.prefs"
 data-copied-hint="Copied\!">
 data-global-scope-placeholder="Search GitHub"
@@ -85,21 +77,28 @@ data-skip-pjax="true"
 data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=clone">
 eclipse.preferences.version=1
 encoding//src/Configs/GlobalConfig.py=utf-8
+encoding//src/TestAPIs/ClusterAPIs.py=utf-8
 encoding//src/TestAPIs/DataCenterAPIs.py=utf-8
 encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/HostAPIs.py=utf-8
+encoding//src/TestAPIs/NetworkAPIs.py=utf-8
 encoding//src/TestAPIs/StorageConnectionAPIs.py=utf-8
 encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
 encoding//src/TestAPIs/TemplatesAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
+<<<<<<< HEAD
 encoding//src/TestCases/BaseTestCase.py=utf-8
+=======
+>>>>>>> origin/master
 encoding//src/TestCases/Cluster.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/Host.py=utf-8
 encoding//src/TestCases/Network.py=utf-8
+encoding//src/TestCases/Profile.py=utf-8
 encoding//src/TestCases/StorageDomain.py=utf-8
 encoding//src/TestCases/Template.py=utf-8
+<<<<<<< HEAD
 encoding//src/TestData/Cluster/ITC02010301_CreateCluster.py=utf-8
 encoding//src/TestData/DataCenter/ITC01010301_CreateDC.py=utf-8
 encoding//src/TestData/DataCenter/ITC010202_GetStorageDomainInfoInDC.py=utf-8
@@ -120,6 +119,59 @@ encoding//src/TestData/DataCenter/ITC010301_GetClustersInDataCenter.py=utf-8
 encoding//src/TestData/DataCenter/ITC01_SetUp.py=utf-8
 encoding//src/TestData/Disk/ITC080301_CreateDisk.py=utf-8
 encoding//src/TestData/Host/ITC03011301_SelectSpm_Up.py=utf-8
+=======
+encoding//src/TestData/Cluster/ITC020102_GetClusterInfo.py=utf-8
+encoding//src/TestData/Cluster/ITC02010301_CreateCluster.py=utf-8
+encoding//src/TestData/Cluster/ITC02010302_CreateCluster_Dup.py=utf-8
+encoding//src/TestData/Cluster/ITC02010303_CreateClusterNoRequired.py=utf-8
+encoding//src/TestData/Cluster/ITC02010401_UpdateCluster_nohost.py=utf-8
+encoding//src/TestData/Cluster/ITC0201040201_UpdateCluster_host_cputype.py=utf-8
+encoding//src/TestData/Cluster/ITC0201040202_UpdateCluster_host_upcpu.py=utf-8
+encoding//src/TestData/Cluster/ITC0201040203_UpdateCluster_host_name.py=utf-8
+encoding//src/TestData/Cluster/ITC02010501_DeleteCluster_clear.py=utf-8
+encoding//src/TestData/Cluster/ITC02010502_DeleteCluster_host.py=utf-8
+encoding//src/TestData/Cluster/ITC02010503_DeleteCluster_vm.py=utf-8
+encoding//src/TestData/Cluster/ITC020201_GetClusterNetworkList.py=utf-8
+encoding//src/TestData/Cluster/ITC020202_GetClusterNetworkInfo.py=utf-8
+encoding//src/TestData/Cluster/ITC020203_attachNetworktoCluster.py=utf-8
+encoding//src/TestData/Cluster/ITC020204_detachNetworkFromCluster.py=utf-8
+encoding//src/TestData/Cluster/ITC020205_UpdateNetworkofCluster.py=utf-8
+encoding//src/TestData/Cluster/ITC02_Setup.py=utf-8
+encoding//src/TestData/DataCenter/ITC01_SetUp.py=utf-8
+encoding//src/TestData/Disk/ITC0802_GetDiskInfo.py=utf-8
+encoding//src/TestData/Disk/ITC080301_CreateDisk.py=utf-8
+encoding//src/TestData/Disk/ITC080302_CreateDisk_VerifyName.py=utf-8
+encoding//src/TestData/Disk/ITC080303_CreateDisk_NoRequired.py=utf-8
+encoding//src/TestData/Disk/ITC080401_DeleteDisk.py=utf-8
+encoding//src/TestData/Disk/ITC080402_DeleteDisk_AttachtoTemp.py=utf-8
+encoding//src/TestData/Disk/ITC080403_DeleteDisk_AttachtoRunVm.py=utf-8
+encoding//src/TestData/Disk/ITC080404_DeleteDisk_AttachtoDownVm.py=utf-8
+encoding//src/TestData/Disk/ITC0805_GetStaticsofDisk.py=utf-8
+encoding//src/TestData/Disk/ITC08_SetUp.py=utf-8
+encoding//src/TestData/Host/ITC030102_GetHostInfo.py=utf-8
+encoding//src/TestData/Host/ITC03_SetUp.py=utf-8
+encoding//src/TestData/Network/ITC050102_GetNetworkInfo.py=utf-8
+encoding//src/TestData/Network/ITC05010301_CreateNetwork.py=utf-8
+encoding//src/TestData/Network/ITC05010302_CreateNetwork_VerifyName.py=utf-8
+encoding//src/TestData/Network/ITC05010303_CreateNetwork_DupName.py=utf-8
+encoding//src/TestData/Network/ITC05010304_CreateNetwork_NoRequired.py=utf-8
+encoding//src/TestData/Network/ITC05010305_CreateNetwork_DupVlan.py=utf-8
+encoding//src/TestData/Network/ITC05010401_UpdateNetwork.py=utf-8
+encoding//src/TestData/Network/ITC05010402_UpdateNetwork_DupName.py=utf-8
+encoding//src/TestData/Network/ITC050105_DeleteNetwork.py=utf-8
+encoding//src/TestData/Network/ITC050201_GetNetworkProfileList.py=utf-8
+encoding//src/TestData/Network/ITC050202_GetNetworkProfileInfo.py=utf-8
+encoding//src/TestData/Network/ITC05_Setup.py=utf-8
+encoding//src/TestData/Profile/ITC0602_GetProfileInfo.py=utf-8
+encoding//src/TestData/Profile/ITC060301_CreateProfile.py=utf-8
+encoding//src/TestData/Profile/ITC060302_CreateProfile_VerifyName.py=utf-8
+encoding//src/TestData/Profile/ITC060303_CreateProfile_DupName.py=utf-8
+encoding//src/TestData/Profile/ITC060304_CreateProfile_NoRequired.py=utf-8
+encoding//src/TestData/Profile/ITC060401_UpdateProfile.py=utf-8
+encoding//src/TestData/Profile/ITC060402_UpdateProfile_DupName.py=utf-8
+encoding//src/TestData/Profile/ITC060403_UpdateProfile_DiffNw.py=utf-8
+encoding//src/TestData/Profile/ITC0605_DeleteProfile.py=utf-8
+>>>>>>> origin/master
 encoding//src/TestData/StorageDomain/ITC040102_GetStorageDomainInfo.py=utf-8
 encoding//src/TestData/StorageDomain/ITC0401030101_CreateNfsSd_Normal.py=utf-8
 encoding//src/TestData/StorageDomain/ITC0401030102_CreateNfsSd_DupName.py=utf-8
@@ -139,10 +191,15 @@ encoding//src/TestData/StorageDomain/ITC04020301_DelDiskFromDataStorage_OK.py=ut
 encoding//src/TestData/StorageDomain/ITC040301_GetFilesFromIsoStorage.py=utf-8
 encoding//src/TestData/StorageDomain/ITC04_SetUp.py=utf-8
 encoding//src/TestData/Template/ITC070102_GetTemplateInfo.py=utf-8
+<<<<<<< HEAD
 encoding//src/Utils/DBManager.py=utf-8
 encoding//src/Utils/HttpClient.py=utf-8
 encoding//src/Utils/PrintLog.py=utf-8
 encoding//src/Utils/Util.py=utf-8
+=======
+encoding//src/TestData/Template/ITC07_SetUp.py=utf-8
+encoding//src/Utils/HttpClient.py=utf-8
+>>>>>>> origin/master
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.
