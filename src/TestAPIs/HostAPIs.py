@@ -318,7 +318,7 @@ class HostAPIs(BaseAPIs):
         api_url = '%s/%s/forceselectspm' % (self.base_url, host_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_action)
-        print r.text
+#         print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def getHostStatistics(self, host_name):

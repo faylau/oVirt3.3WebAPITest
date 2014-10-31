@@ -1,6 +1,5 @@
 #encoding:utf-8
-from _ast import DictComp
-from test.regrtest import printlist
+
 
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
@@ -82,50 +81,6 @@ class ITC01_SetUp(BaseTestCase):
         @summary: 资源清理
         '''
         pass
-
-class ITC02_TearDown(BaseTestCase):
-    '''
-    @summary: “主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
-    @note: （1）将数据中心里的Data域（data1）设置为Maintenance状态；
-    @note: （2）删除数据中心dc（非强制）；
-    @note: （3）删除所有unattached状态的存储域（data1/data2/iso1/export1）；
-    @note: （4）删除主机host1；
-    @note: （5）删除集群cluster1。
-    '''
-    def setUp(self):
-        '''
-        @summary: 模块测试环境初始化（获取测试数据
-        '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
-        self.dm = self.initData('ITC01_SetUp')
-        
-    def test_TearDown(self):
-        dcapi = DataCenterAPIs()
-        capi = ClusterAPIs()
-        
-        # Step1：将data1存储域设置为Maintenance状态
-        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
-        
-        # Step2：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
-        if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
-            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
-            self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
-                
-        # Step3：删除4个Unattached状态存储域（data1/data2/iso1/export1）
-        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
-        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name, self.dm.iso1_name, self.dm.export1_name]
-        for sd in dict_sd_to_host:
-            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
-        
-        # Step4：删除主机（host1）
-        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
-        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
-        
-        # Step5：删除集群cluster1
-        if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
-            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
-            self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
 class ITC010101_GetDCList(BaseTestCase):
     '''
@@ -1014,10 +969,11 @@ class ITC01020401_DetachStorage_Iso(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：附加一个ISO域到数据中心
-        LogPrint().info("Pre-Test: Attach the '%s' storage to DataCenter '%s'." % (ModuleData.iso1_name, ModuleData.dc_nfs_name))
+        LogPrint().info("Pre-Test-1: Attach the '%s' storage to DataCenter '%s'." % (ModuleData.iso1_name, ModuleData.dc_nfs_name))
         self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
         
         # 前提2：将该ISO域设置为维护状态
+        LogPrint().info("Pre-Test-2: Set the storage domain '%s' to 'maintenance' state." % ModuleData.iso1_name)
         self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
         
     def test_DetachStorage_Iso(self):
@@ -1048,12 +1004,309 @@ class ITC01020401_DetachStorage_Iso(BaseTestCase):
         @summary: 资源清理
         '''
         pass
+
+class ITC01020402_DetachStorage_Export(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-04分离-02分离Export存储域
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
         
+        # 前提1：附加一个Export域到数据中心
+        LogPrint().info("Pre-Test-1: Attach the '%s' storage to DataCenter '%s'." % (ModuleData.export1_name, ModuleData.dc_nfs_name))
+        self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
         
+        # 前提2：将该Export域设置为维护状态
+        LogPrint().info("Pre-Test-2: Set the storage domain '%s' to 'maintenance' state." % ModuleData.export1_name)
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+        
+    def test_DetachStorage_Export(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将export1设置为维护状态；
+        @note: （2）将export1从数据中心分离；
+        @note: （3）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Detach Export storage from DataCenter.")
+        r = dc_api.detachStorageDomainFromDC(ModuleData.dc_nfs_name, ModuleData.export1_name, self.dm.xml_detach_export_option)
+        if r['status_code'] == self.dm.expected_status_code_detach_sd:
+            if sd_api.getStorageDomainStatus(ModuleData.export1_name) == 'unattached':
+                LogPrint().info("PASS: Detach Export storage '%s' from DataCenter SUCCESS." % ModuleData.export1_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Detach Export storage '%s' from DataCenter FAILED." % ModuleData.export1_name)
+                self.flag = False
+        else:
+            LogPrint().info("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
+
+class ITC0102040301_DetachStorage_Data_Normal(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-04分离-03分离Data域-01附加有多个Data域
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：附加第二个Data域到数据中心（模块级数据中心已经有一个Data域）
+        LogPrint().info("Pre-Test-1: Attach the 2nd DataStorage '%s' to DataCenter '%s'." % (ModuleData.data2_nfs_name, ModuleData.dc_nfs_name))
+        self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+        
+        # 前提2：将该Data域设置为维护状态
+        LogPrint().info("Pre-Test-2: Set the DataStorage '%s' to 'maintenance' state." % ModuleData.data2_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+        
+    def test_DetachStorage_Export(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将data2设置为维护状态；
+        @note: （2）将data2从数据中心分离；
+        @note: （3）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Detach Data storage from DataCenter.")
+        r = dc_api.detachStorageDomainFromDC(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name, self.dm.xml_detach_data_option)
+        if r['status_code'] == self.dm.expected_status_code_detach_sd:
+            if sd_api.getStorageDomainStatus(ModuleData.data2_nfs_name) == 'unattached':
+                LogPrint().info("PASS: Detach Data storage '%s' from DataCenter SUCCESS." % ModuleData.data2_nfs_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Detach Data storage '%s' from DataCenter FAILED." % ModuleData.data2_nfs_name)
+                self.flag = False
+        else:
+            LogPrint().info("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass        
+
+class ITC0102040302_DetachStorage_Data_One(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-04分离-03分离Data域-02只有一个Data域时失败
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：将模块测试环境中的data1-nfs域设置为维护状态
+        LogPrint().info("Pre-Test: Set the DataStorage '%s' to 'maintenance' state." % ModuleData.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+        
+    def test_DetachStorage_Data_One(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将data1从数据中心分离；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Detach Data storage '%s' from DataCenter." % ModuleData.data1_nfs_name)
+        r = dc_api.detachStorageDomainFromDC(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name, self.dm.xml_detach_data_option)
+        if r['status_code'] == self.dm.expected_status_code_detach_sd_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_detach_sd_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT while detaching Data storage '%s' from DataCenter." % ModuleData.data1_nfs_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT.")
+                self.flag = False
+        else:
+            LogPrint().info("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        self.assertTrue(smart_active_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))     
+
+class ITC01020501_ActivateStorage_Normal(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-05激活-01正常激活
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：附加data2，然后将其设置为Maintenance状态。
+        LogPrint().info("Pre-Test: Attach data storage '%s' and set it's state as 'Maintenance'." % ModuleData.data2_nfs_name)
+        self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+        
+    def test_ActivateStorage_Normal(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）将data2激活；
+        @note: （2）操作成功，验证接口返回状态码、存储域状态是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Activate data storage '%s'." % ModuleData.data2_nfs_name)
+        r = dc_api.activeDCStorageDomain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name)
+        if r['status_code'] == self.dm.expected_status_code_activate_sd:
+            if dc_api.getDCStorageDomainStatus(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name) == 'active':
+                LogPrint().info("PASS: Activate storage domain '%s' SUCCESS." % ModuleData.data2_nfs_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Activate storage domain '%s' FAILED." % ModuleData.data2_nfs_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        LogPrint().info("Post-Test: Deactivate and Detach storage '%s' from DataCenter '%s'." % (ModuleData.data2_nfs_name, ModuleData.dc_nfs_name))
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+
+class ITC01020601_DeactivateStorage_Normal(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-02存储域操作-06取消激活-01Active状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+    def test_DeactivateStorage_Normal(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）取消激活data1-nfs；
+        @note: （2）操作成功，验证接口返回的状态码、存储域状态是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Deactivate storage domain '%s'." % ModuleData.data1_nfs_name)
+        r = dc_api.deactiveDCStorageDomain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name)
+        if r['status_code'] == self.dm.expected_status_code_deactivate_sd:
+            if dc_api.getDCStorageDomainStatus(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name) == 'maintenance':
+                LogPrint().info("PASS: Deactivate storage domain '%s' SUCCESS." % ModuleData.data1_nfs_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Deactivate storage domain '%s' FAILED. It's state is not 'maintenance'." % ModuleData.data1_nfs_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        LogPrint().info("Post-Test: Activate data storage '%s'." % ModuleData.data1_nfs_name)
+        self.assertTrue(smart_active_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+
+class ITC010301_GetClustersInDataCenter(BaseTestCase):
+    '''
+    @summary: ITC-01数据中心管理-03集群操作-01查看集群列表
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+    def test_GetClustersInDataCenter(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）获取数据中心下的集群列表；
+        @note: （2）操作成功，验证接口返回的状态码是否正确。
+        '''
+        dc_api = DataCenterAPIs()
+        r = dc_api.getDCClustersList(ModuleData.dc_nfs_name)
+        if r['status_code'] == self.dm.expected_status_code_get_clusters_in_dc:
+            LogPrint().info("PASS: Get clustes list in DataCenter '%s' SUCCESS." % ModuleData.dc_nfs_name)
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
+
+class ITC01_TearDown(BaseTestCase):
+    '''
+    @summary: “数据中心管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: （1）将数据中心里的Data域（data1）设置为Maintenance状态；
+    @note: （2）删除数据中心dc（非强制）；
+    @note: （3）删除所有unattached状态的存储域（data1/data2/iso1/export1）；
+    @note: （4）删除主机host1；
+    @note: （5）删除集群cluster1。 
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = self.initData('ITC01_SetUp')
+        
+    def test_TearDown(self):
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        
+        # Step1：将data1存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        
+        # Step2：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
+        if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+                
+        # Step3：删除4个Unattached状态存储域（data1/data2/iso1/export1）
+        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
+        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name, self.dm.iso1_name, self.dm.export1_name]
+        for sd in dict_sd_to_host:
+            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
+        
+        # Step4：删除主机（host1）
+        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
+        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
+        
+        # Step5：删除集群cluster1
+        if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
+            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["DataCenter.ITC01020401_DetachStorage_Iso"]
+    test_cases = ["DataCenter.ITC01_TearDown"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

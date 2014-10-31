@@ -79,10 +79,10 @@ if __name__ == "__main__":
     
     xml_del_option = '''
     <host>
-        <name>node-ITC04-1</name>
+        <name>node-ITC03011301-1</name>
     </host>
     '''
-    sc_api.delStorageConnection('32a15c3c-e388-40af-bd8b-bfaa6e791513', xml_del_option)
+    sc_api.delStorageConnection('195bd76b-e1b0-4e75-8043-a7de105acd2a', xml_del_option)
     
     
     

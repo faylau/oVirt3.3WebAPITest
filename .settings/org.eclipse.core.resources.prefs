@@ -90,25 +90,36 @@ encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/HostAPIs.py=utf-8
 encoding//src/TestAPIs/StorageConnectionAPIs.py=utf-8
 encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
-<<<<<<< HEAD
-encoding//src/TestCases/BaseTestCase.py=utf-8
-=======
 encoding//src/TestAPIs/TemplatesAPIs.py=utf-8
->>>>>>> origin/master
+encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
+encoding//src/TestCases/BaseTestCase.py=utf-8
 encoding//src/TestCases/Cluster.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/Host.py=utf-8
 encoding//src/TestCases/Network.py=utf-8
 encoding//src/TestCases/StorageDomain.py=utf-8
-<<<<<<< HEAD
+encoding//src/TestCases/Template.py=utf-8
+encoding//src/TestData/Cluster/ITC02010301_CreateCluster.py=utf-8
+encoding//src/TestData/DataCenter/ITC01010301_CreateDC.py=utf-8
 encoding//src/TestData/DataCenter/ITC010202_GetStorageDomainInfoInDC.py=utf-8
 encoding//src/TestData/DataCenter/ITC0102030101_AttachDataStorage_Master.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102030102_AttachDataStorage_NotMaster.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102030201_AttachIsoStorage.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102030202_AttachIsoStorage_Second.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102030301_AttachExportStorage.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102030302_AttachExportStorage_Second.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102030401_AttachStorage_NoActiveDataStorage.py=utf-8
+encoding//src/TestData/DataCenter/ITC01020401_DetachStorage_Iso.py=utf-8
+encoding//src/TestData/DataCenter/ITC01020402_DetachStorage_Export.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102040301_DetachStorage_Data_Normal.py=utf-8
+encoding//src/TestData/DataCenter/ITC0102040302_DetachStorage_Data_One.py=utf-8
+encoding//src/TestData/DataCenter/ITC01020501_ActivateStorage_Normal.py=utf-8
+encoding//src/TestData/DataCenter/ITC01020601_DeactivateStorage_Normal.py=utf-8
+encoding//src/TestData/DataCenter/ITC010301_GetClustersInDataCenter.py=utf-8
 encoding//src/TestData/DataCenter/ITC01_SetUp.py=utf-8
-=======
-encoding//src/TestCases/Template.py=utf-8
->>>>>>> origin/master
 encoding//src/TestData/Disk/ITC080301_CreateDisk.py=utf-8
+encoding//src/TestData/Host/ITC03011301_SelectSpm_Up.py=utf-8
 encoding//src/TestData/StorageDomain/ITC040102_GetStorageDomainInfo.py=utf-8
 encoding//src/TestData/StorageDomain/ITC0401030101_CreateNfsSd_Normal.py=utf-8
 encoding//src/TestData/StorageDomain/ITC0401030102_CreateNfsSd_DupName.py=utf-8
@@ -128,6 +139,10 @@ encoding//src/TestData/StorageDomain/ITC04020301_DelDiskFromDataStorage_OK.py=ut
 encoding//src/TestData/StorageDomain/ITC040301_GetFilesFromIsoStorage.py=utf-8
 encoding//src/TestData/StorageDomain/ITC04_SetUp.py=utf-8
 encoding//src/TestData/Template/ITC070102_GetTemplateInfo.py=utf-8
+encoding//src/Utils/DBManager.py=utf-8
+encoding//src/Utils/HttpClient.py=utf-8
+encoding//src/Utils/PrintLog.py=utf-8
+encoding//src/Utils/Util.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.

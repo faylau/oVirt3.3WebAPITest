@@ -1,6 +1,7 @@
 #encoding:utf-8
 
 
+
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -18,9 +19,12 @@ import unittest
 import xmltodict
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
+from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain,\
+    smart_deactive_storage_domain
 from TestAPIs.HostAPIs import HostAPIs, HostNicAPIs, smart_create_host, smart_del_host
 from TestAPIs.ClusterAPIs import ClusterAPIs
+from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,\
+    smart_del_storage_domain
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from Utils.Util import wait_until
@@ -638,7 +642,7 @@ class ITC0301040202_EditHost_Maintenance_VerifyUneditableOptions(BaseTestCase):
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.xml_host_info))
         
         # 将主机设置为Maintenance状态
-        r = self.host_api.deactiveHost(self.dm.host_name)
+        self.host_api.deactiveHost(self.dm.host_name)
         def is_host_maintenance():
                 return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
         LogPrint().info("Pre-Test-Step2: Deactive host '%s'." % self.dm.host_name)
@@ -1041,7 +1045,7 @@ class ITC03010702_DeactivateHost_Maintenance(BaseTestCase):
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.xml_host_info))
         
         # 前提2：将主机设置为Maintenance状态
-        r = self.host_api.deactiveHost(self.dm.host_name)
+        self.host_api.deactiveHost(self.dm.host_name)
         def is_host_maintenance():
                 return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
         LogPrint().info("Pre-Test-Step2: Deactive host '%s'." % self.dm.host_name)
@@ -1101,7 +1105,7 @@ class ITC03010801_InstallHost_Maintenance(BaseTestCase):
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.xml_host_info))
         
         # 前提2：将主机设置为Maintenance状态
-        r = self.host_api.deactiveHost(self.dm.host_name)
+        self.host_api.deactiveHost(self.dm.host_name)
         def is_host_maintenance():
                 return self.host_api.getHostStatus(self.dm.host_name)=='maintenance'
         LogPrint().info("Pre-Test-Step2: Deactive host '%s'." % self.dm.host_name)
@@ -1226,7 +1230,7 @@ class ITC0301090201_FenceHost_Stop_HostMaintenance(BaseTestCase):
 #             self.assertTrue(self.flag)
         
         # 前提2：将主机host2设置为Maintenance状态
-        r = self.host_api.deactiveHost(self.dm.host2_name)
+        self.host_api.deactiveHost(self.dm.host2_name)
         def is_host_maintenance():
                 return self.host_api.getHostStatus(self.dm.host2_name)=='maintenance'
         LogPrint().info("Pre-Test-Step2: Deactive host '%s'." % self.dm.host2_name)
@@ -1623,28 +1627,69 @@ class ITC03011301_SelectSpm_Up(BaseTestCase):
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        
-        # 前提1：创建2个主机（host1、host2），其中host2有电源管理。
+        self.dc_api = DataCenterAPIs()
+        self.cluster_api = ClusterAPIs()
+        # 前提1：创建数据中心和集群
+        LogPrint().info("Pre-Test-1: Create DataCenter '%s' and Cluster '%s'." % (self.dm.dc1_name, self.dm.cluster1_name))
+        self.dc_api.createDataCenter(self.dm.xml_dc1_info)
+        self.cluster_api.createCluster(self.dm.xml_cluster1_info)
+        # 前提2：创建第1个主机（host1）
+        LogPrint().info("Pre-Test-2: Create the 1st host '%s'." % self.dm.host1_name)
         self.host_api = HostAPIs()
-        dict_hosts = {self.dm.host1_name:self.dm.xml_host1_info, self.dm.host2_name:self.dm.xml_host2_info}
-        for host_name in dict_hosts:
-            self.assertTrue(smart_create_host(host_name, dict_hosts[host_name]))
+        self.assertTrue(smart_create_host(self.dm.host1_name, self.dm.xml_host1_info))
+        # 前提3：创建并附加Data存储域data1-nfs
+        LogPrint().info("Pre-Test-3: Create and Attach data storage '%s' to DataCenter '%s'." % (self.dm.data1_nfs_name, self.dm.dc1_name))
+        self.assertTrue(smart_create_storage_domain(self.dm.data1_nfs_name, self.dm.xml_data1_info))
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc1_name, self.dm.data1_nfs_name))
+        # 前提4：创建第2个主机（加入到同一数据中心）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' in the same DataCenter." % self.dm.host2_name)
+        self.assertTrue(smart_create_host(self.dm.host2_name, self.dm.xml_host2_info))
             
     def test_SelectSpm_Up(self):
         '''
         @summary: 测试步骤
-        @note: （1）将非spm主机设置为spm；
+        @note: （1）将非spm主机（host2）设置为spm；
         @note: （2）操作成功，验证接口返回的状态码、信息是否正确。
         '''
-        if self.host_api.getSPMInfo(self.dm.host1_name)['is_spm']:
-            self.spm_host = self.dm.host1_name
-            self.non_spm_host = self.dm.host2_name
+        LogPrint().info("Test: Force select host '%s' as SPM." % self.dm.host2_name)
+        r = self.host_api.forceSelectSPM(self.dm.host2_name)
+        if r['status_code'] == self.dm.expected_status_code_select_spm:
+            if self.host_api.getSPMInfo(self.dm.host2_name)['is_spm']:
+                LogPrint().info("PASS: Force select host '%s' as SPM SUCCESS." % self.dm.host2_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Force select host '%s' as SPM FAILED." % self.dm.host2_name)
+                self.flag = False
         else:
-            self.spm_host = self.dm.host2_name
-            self.non_spm_host = self.dm.host1_name
-        r = self.host_api.forceSelectSPM(self.non_spm_host)
-        print r['status_code']
-        print xmltodict.unparse(r['result'], pretty=True)
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+            
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）将host2设置为维护状态，并删除；
+        @note: （2）将data1设置为维护状态；
+        @note: （3）删除数据中心（非强制，之后data存储域变为Unattached状态）
+        @note: （4）删除unattached状态的data1存储域；
+        @note: （5）删除主机host1;
+        @note: （6）删除集群。
+        '''
+        LogPrint().info("Post-Test-1: Delete host2 '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_host_del_option))
+        LogPrint().info("Post-Test-2: Deactivate storage domain '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc1_name, self.dm.data1_nfs_name))
+        LogPrint().info("Post-Test-3: Delete DataCenter '%s'." % self.dm.dc1_name)
+        if self.dc_api.searchDataCenterByName(self.dm.dc1_name)['result']['data_centers']:
+            self.assertTrue(self.dc_api.delDataCenter(self.dm.dc1_name)['status_code']==self.dm.expected_status_code_del_dc)
+        LogPrint().info("Post-Test-4: Delete storage domain '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_del_storage_domain(self.dm.data1_nfs_name, self.dm.xml_del_sd_option))
+        LogPrint().info("Post-Test-5: Delete host '%s'." % self.dm.host1_name)
+        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_host_del_option))
+        LogPrint().info("Post-Test-6: Delete cluster '%s'." % self.dm.cluster1_name)
+        self.assertTrue(self.cluster_api.delCluster(self.dm.cluster1_name)['status_code'] == self.dm.expected_status_code_del_cluster)
+        
 
 class ITC030201_GetHostNicList(BaseTestCase):
     '''
@@ -1814,7 +1859,7 @@ class ITC0305_HostStatistics(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Host.ITC0305_HostStatistics"]
+    test_cases = ["Host.ITC03011301_SelectSpm_Up"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
