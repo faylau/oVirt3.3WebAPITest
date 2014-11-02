@@ -20,6 +20,34 @@ from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 from Utils.PrintLog import LogPrint
 
+def smart_create_vm(vm_name, xml_vm_info, status_code=201):
+    '''
+    @summary: 智能创建虚拟机
+    '''
+    vm_api = VirtualMachineAPIs()
+    r = vm_api.createVm(xml_vm_info)
+    if r['status_code'] == status_code:
+        LogPrint().info("INFO: Create vm '%s' success." % vm_name)
+        return True
+    else:
+        LogPrint().warning("WARN: Create vm '%s' FAILED. Returned status code is wrong." % vm_name)
+        return False
+    
+def smart_del_vm(vm_name, xml_del_vm_option=None, status_code=200):
+    '''
+    @summary: 智能删除虚拟机（可以包含磁盘）；
+    @param vm_name: 虚拟机名称；
+    @param xml_del_vm_option: 删除虚拟机时使用的xml选项（不删除磁盘、强制删除等），缺省为None表示删除虚拟机及磁盘；
+    '''
+    vm_api = VirtualMachineAPIs()
+    r = vm_api.delVm(vm_name, xml_del_vm_option)
+    if r['status_code'] == status_code and not vm_api.searchVmByName(vm_name)['result']['vms']:
+        LogPrint().info("INFO: Delete vm '%s' success." % vm_name)
+        return True
+    else:
+        LogPrint().error("ERROR: Delete vm '%s' FAILED." % vm_name)
+        return False
+
 def smart_create_vmdisk(vm_name,disk_info,disk_alias,status_code=202):
     '''
     @summary: 为虚拟机创建磁盘
