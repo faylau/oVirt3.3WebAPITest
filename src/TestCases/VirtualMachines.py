@@ -758,7 +758,11 @@ class ITC050305_DeleteVMDisk(BaseTestCase):
                                              
 if __name__ == "__main__":
     
+<<<<<<< HEAD
     test_cases = ["VirtualMachines.ITC05030401_UpdateVMDisk_vmdown"]
+=======
+    test_cases = ["VirtualMachines.ITC0501050102_DelVm_Normal_Up"]
+>>>>>>> eb13c8235a5354f4277677b2e689dfec29728258
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

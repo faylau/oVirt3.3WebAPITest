@@ -65,5 +65,11 @@ xml_vm_info='''
 @note: ExpectedResult
 ---------------------------------------------------------------------------------------------------
 '''
-expected_status_code_del_vm = 200
+expected_status_code_del_vm_up = 409
+expected_info_del_vm_up = '''
+<fault>
+    <reason>Operation Failed</reason>
+    <detail>[Cannot remove VM. VM is running.]</detail>
+</fault>
+'''
 

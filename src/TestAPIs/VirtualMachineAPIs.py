@@ -49,7 +49,7 @@ def smart_del_vm(vm_name, xml_del_vm_option=None, status_code=200):
             LogPrint().info("Info: Stop vm '%s' to 'down' state." % vm_name)
             r = vm_api.stopVm(vm_name)
             if wait_until(is_vm_down, 50, 5):
-                LogPrint().info("Info: Stop vm '%s'." % vm_name)
+                LogPrint().info("Info: Delete vm '%s'." % vm_name)
                 r = vm_api.delVm(vm_name)
                 return r['status_code']==200
         else:
@@ -399,8 +399,6 @@ class VirtualMachineAPIs(BaseAPIs):
         api_url = '%s/%s/start' % (self.base_url, vm_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_start_vm_option)
-        print r.status_code
-        print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def stopVm(self, vm_name):
