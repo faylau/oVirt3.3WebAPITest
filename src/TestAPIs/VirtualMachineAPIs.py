@@ -46,18 +46,18 @@ def smart_delete_vmdisk(vm_name,disk_name,status_code=200):
         vmdiskapi = VmDiskAPIs()
         vmdiskapi.getVmDiskInfo(vm_name, disk_alias=disk_name)
         if vmdiskapi.getVmDiskStatus(vm_name, disk_alias=disk_name)!='ok':
-            LogPrint().error("Post-Test:Disk is not ok.Can't delete it.")
+            LogPrint().error("Post-Test:Disk '%s' is not ok.Can't delete it."%disk_name)
             return False
         else:
             r = vmdiskapi.delVmDisk(vm_name, disk_alias=disk_name)
             if r['status_code'] == 200:
-                LogPrint().info("Post-Test:Delete Disk success.")
+                LogPrint().info("Post-Test:Delete Disk '%s'success."%disk_name)
                 return True
             else:
-                LogPrint().error("Post-Test:Delete Disk fail.")
+                LogPrint().error("Post-Test:Delete Disk '%s' fail."%disk_name)
                 return False
     except:
-        LogPrint().warning("Post-Test:WARN: Disk is not exist.")
+        LogPrint().warning("Post-Test:WARN: Disk '%s'is not exist."%disk_name)
         return True
         
 
