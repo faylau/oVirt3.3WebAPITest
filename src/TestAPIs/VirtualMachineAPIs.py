@@ -126,7 +126,7 @@ def smart_active_vmdisk(vm_name,disk_id,status_code=200):
     vmdisk_api = VmDiskAPIs()
     r = vmdisk_api.activateVmDisk(vm_name, disk_id=disk_id)
     def is_disk_active():
-        return VmDiskAPIs().getVmDiskInfo(vm_name, disk_id=disk_id)['result']['disk']['active']==True  
+        return VmDiskAPIs().getVmDiskInfo(vm_name, disk_id=disk_id)['result']['disk']['active']=='true' 
     if r['status_code'] == status_code:
         if wait_until(is_disk_active, 100, 5):
             LogPrint().info("Active vmdisk success.")
@@ -144,8 +144,9 @@ def smart_deactive_vmdisk(vm_name,disk_id,status_code=200):
     ''' 
     vmdisk_api = VmDiskAPIs()
     r = vmdisk_api.deactivateVmDisk(vm_name, disk_id=disk_id)
+    print r
     def is_disk_deactive():
-        return VmDiskAPIs().getVmDiskInfo(vm_name, disk_id=disk_id)['result']['disk']['active']==False  
+        return VmDiskAPIs().getVmDiskInfo(vm_name, disk_id=disk_id)['result']['disk']['active']=='false'  
     if r['status_code'] == status_code:
         if wait_until(is_disk_deactive, 100, 5):
             LogPrint().info("Deactive vmdisk success.")
