@@ -651,31 +651,78 @@ class ITC0501050102_DelVm_Normal_Up(BaseTestCase):
     def test_DelVm_Normal_Up(self):
         '''
         @summary: 测试步骤
-        @note: （1）删除Down状态的虚拟机；
-        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        @note: （1）删除Up状态的虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Delete vm '%s' with 'Down' state." % self.dm.vm_name)
-#         r = vm_api.delVm(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_del_vm:
-#             if not vm_api.searchVmByName(self.dm.vm_name):
-#                 LogPrint().info("PASS: Delete vm '%s' success." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Delete vm '%s' FAILED." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Delete vm '%s' with 'Up' state." % self.dm.vm_name)
+        r = vm_api.delVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_del_vm_up:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_del_vm_up), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
     
     def tearDown(self):
         '''
         @summary: 资源清理
         @note: （1）删除创建的虚拟机；
         '''
-#         LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
+        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+
+class ITC05010502_DelVm_WithoutDisk(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-02不删除磁盘
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test-1: Create a vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+        # 前提2：为虚拟机添加一个磁盘disk1
+        LogPrint().info("Pre-Test-2: Create a disk '%s' and attach it to vm '%s'." % (self.dm.disk_name, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        
+    def test_DelVm_Normal_Up(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）删除Up状态的虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Delete vm '%s' with 'Up' state." % self.dm.vm_name)
+        r = vm_api.delVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_del_vm_up:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_del_vm_up), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
 
 class ITC050301_GetVMDiskList(BaseTestCase):
 
