@@ -1,4 +1,5 @@
 #encoding:utf-8
+
 __authors__ = ['"keke wei" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -7,7 +8,9 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # Version        Date            Desc                            Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/09/16      初始版本                         wei keke
+# V0.1           2014/09/16    初始版本                                                             wei keke
+# V0.2           2014/11/03    将searchDiskByName修改为
+#                              searchDiskByAlias                fei liu
 #---------------------------------------------------------------------------------
 '''
 
@@ -80,13 +83,13 @@ class DiskAPIs(BaseAPIs):
         '''
         self.base_url = '%s/disks' % WebBaseApiUrl
         
-    def searchDiskByName(self, disk_name):
+    def searchDiskByAlias(self, disk_alias):
         '''
         @summary: 根据磁盘名称查找
         @param disk_name: 磁盘名称
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：搜索到的所有集群（dict格式）。
         '''
-        return self.searchObject('disks', disk_name)
+        return self.searchObject('disks', disk_alias, search_item='alias')
     
     def getDiskIdByName(self, disk_alias):
         '''
