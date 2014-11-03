@@ -1,3 +1,4 @@
+=\=\=\=\=\=\=
 --><span=class\="path-divider">/</span><\!--
 --><strong><a=href\="/faylau/oVirt3.3WebAPITest" class\="js-current-repository js-repo-home-link" data-pjax-container-selector\="\#js-repo-pjax-container">oVirt3.3WebAPITest</a></strong>
 .settings/org.eclipse.core.resources.prefs">Merge=remote-tracking branch 'origin/master'</a>
@@ -21,6 +22,7 @@
 </table>=
 </tr>=
 </ul>=
+<<<<<<<=HEAD
 <a=href\="\#" class\="octicon octicon-x flash-close js-ajax-error-dismiss" aria-label\="Dismiss error"></a>
 <body=class\="logged_out  env-production windows vis-public page-blob">
 <button=type\="submit" class\="button">Go</button>
@@ -56,6 +58,7 @@
 <tr>=
 <ul=class\="site-footer-links">
 <ul>=
+>>>>>>>=2df6a8ffb033480691ff9be852566da9734624f6
 Clone=in Desktop
 Download=ZIP
 Fetching=contributors&hellip;
@@ -88,10 +91,7 @@ encoding//src/TestAPIs/StorageConnectionAPIs.py=utf-8
 encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
 encoding//src/TestAPIs/TemplatesAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
-<<<<<<< HEAD
-=======
 encoding//src/TestCases/BaseTestCase.py=utf-8
->>>>>>> 2df6a8ffb033480691ff9be852566da9734624f6
 encoding//src/TestCases/Cluster.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
@@ -111,18 +111,13 @@ encoding//src/TestData/Cluster/ITC0201040202_UpdateCluster_host_upcpu.py=utf-8
 encoding//src/TestData/Cluster/ITC0201040203_UpdateCluster_host_name.py=utf-8
 encoding//src/TestData/Cluster/ITC02010501_DeleteCluster_clear.py=utf-8
 encoding//src/TestData/Cluster/ITC02010502_DeleteCluster_host.py=utf-8
-<<<<<<< HEAD
-=======
 encoding//src/TestData/Cluster/ITC02010503_DeleteCluster_vm.py=utf-8
->>>>>>> 2df6a8ffb033480691ff9be852566da9734624f6
 encoding//src/TestData/Cluster/ITC020201_GetClusterNetworkList.py=utf-8
 encoding//src/TestData/Cluster/ITC020202_GetClusterNetworkInfo.py=utf-8
 encoding//src/TestData/Cluster/ITC020203_attachNetworktoCluster.py=utf-8
 encoding//src/TestData/Cluster/ITC020204_detachNetworkFromCluster.py=utf-8
 encoding//src/TestData/Cluster/ITC020205_UpdateNetworkofCluster.py=utf-8
 encoding//src/TestData/Cluster/ITC02_Setup.py=utf-8
-<<<<<<< HEAD
-=======
 encoding//src/TestData/DataCenter/ITC01010301_CreateDC.py=utf-8
 encoding//src/TestData/DataCenter/ITC01010502_DelDC_Force.py=utf-8
 encoding//src/TestData/DataCenter/ITC010202_GetStorageDomainInfoInDC.py=utf-8
@@ -140,7 +135,6 @@ encoding//src/TestData/DataCenter/ITC0102040302_DetachStorage_Data_One.py=utf-8
 encoding//src/TestData/DataCenter/ITC01020501_ActivateStorage_Normal.py=utf-8
 encoding//src/TestData/DataCenter/ITC01020601_DeactivateStorage_Normal.py=utf-8
 encoding//src/TestData/DataCenter/ITC010301_GetClustersInDataCenter.py=utf-8
->>>>>>> 2df6a8ffb033480691ff9be852566da9734624f6
 encoding//src/TestData/DataCenter/ITC01_SetUp.py=utf-8
 encoding//src/TestData/Disk/ITC0802_GetDiskInfo.py=utf-8
 encoding//src/TestData/Disk/ITC080301_CreateDisk.py=utf-8
@@ -153,10 +147,7 @@ encoding//src/TestData/Disk/ITC080404_DeleteDisk_AttachtoDownVm.py=utf-8
 encoding//src/TestData/Disk/ITC0805_GetStaticsofDisk.py=utf-8
 encoding//src/TestData/Disk/ITC08_SetUp.py=utf-8
 encoding//src/TestData/Host/ITC030102_GetHostInfo.py=utf-8
-<<<<<<< HEAD
-=======
 encoding//src/TestData/Host/ITC03011301_SelectSpm_Up.py=utf-8
->>>>>>> 2df6a8ffb033480691ff9be852566da9734624f6
 encoding//src/TestData/Host/ITC03_SetUp.py=utf-8
 encoding//src/TestData/Network/ITC050102_GetNetworkInfo.py=utf-8
 encoding//src/TestData/Network/ITC05010301_CreateNetwork.py=utf-8
@@ -199,16 +190,6 @@ encoding//src/TestData/StorageDomain/ITC040301_GetFilesFromIsoStorage.py=utf-8
 encoding//src/TestData/StorageDomain/ITC04_SetUp.py=utf-8
 encoding//src/TestData/Template/ITC070102_GetTemplateInfo.py=utf-8
 encoding//src/TestData/Template/ITC07_SetUp.py=utf-8
-<<<<<<< HEAD
-encoding//src/TestData/VirtualMachines/ITC050302_GetVMDiskInfo.py=utf-8
-encoding//src/TestData/VirtualMachines/ITC0503030101_CreateVMDisk_normal.py=utf-8
-encoding//src/TestData/VirtualMachines/ITC0503030102_CreateVMDisk_noRequired.py=utf-8
-encoding//src/TestData/VirtualMachines/ITC05030302_CreateVMDisk_attach.py=utf-8
-encoding//src/TestData/VirtualMachines/ITC05030401_UpdateVMDisk.py=utf-8
-encoding//src/TestData/VirtualMachines/ITC05_SetUp.py=utf-8
-encoding//src/Utils/HttpClient.py=utf-8
-encoding//src/Utils/PrintLog.py=utf-8
-=======
 encoding//src/TestData/VirtualMachines/ITC050101_GetVmsList.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC050102_GetVmInfo.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05010301_CreateVm_Normal.py=utf-8
@@ -218,12 +199,16 @@ encoding//src/TestData/VirtualMachines/ITC05010305_CreateVm_NoRequiredParams.py=
 encoding//src/TestData/VirtualMachines/ITC05010403_EditVm_DupName.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC0501050101_DelVm_Normal_Down.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC0501050102_DelVm_Normal_Up.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC050302_GetVMDiskInfo.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC0503030101_CreateVMDisk_normal.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC0503030102_CreateVMDisk_noRequired.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05030302_CreateVMDisk_attach.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05030401_UpdateVMDisk_vmdown.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05_SetUp.py=utf-8
 encoding//src/Utils/DBManager.py=utf-8
 encoding//src/Utils/HttpClient.py=utf-8
 encoding//src/Utils/PrintLog.py=utf-8
 encoding//src/Utils/Util.py=utf-8
->>>>>>> 2df6a8ffb033480691ff9be852566da9734624f6
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.
