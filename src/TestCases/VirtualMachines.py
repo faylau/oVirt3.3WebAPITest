@@ -14,7 +14,7 @@ smart_detach_storage_domain,smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
     smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
-    smart_start_vm
+    smart_start_vm, smart_deactive_vmdisk
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
     TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
     smart_delete_tempnic
@@ -255,29 +255,36 @@ class ITC0503030201_CreateVMDisk_attach(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))       
 
-class ITC05030401_UpdateVMDisk(BaseTestCase):
+class ITC05030401_UpdateVMDisk_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-01成功编辑
+    @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-01虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
         self.vmdisk_api = VmDiskAPIs()
-        self.assertTrue(smart_create_vmdisk(ModuleData.vm_name, self.dm.disk_info, self.dm.disk_name))
-    def test_UpdateVMDisk(self):
+        r=smart_create_vmdisk(ModuleData.vm_name, self.dm.disk_info, self.dm.disk_name)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
+    
+    def test_active(self):
         self.flag=True
         r = self.vmdisk_api.updateVmDisk(ModuleData.vm_name, self.dm.disk_name, self.dm.update_disk_info)
         print r
         if r['status_code']==self.dm.expected_status_code:
             dictCompare=DictCompare()
             if dictCompare.isSubsetDict(xmltodict.parse(self.dm.update_disk_info), r['result']):
-                LogPrint().info("Update vmdisk '%s' success."%self.dm.disk_name)
+                LogPrint().info("Update  active vmdisk '%s' success."%self.dm.disk_name)
             else:
-                LogPrint().info("Update vmdisk '%s' fail.The disk-info is wrong."%self.dm.disk_name)
+                LogPrint().info("Update active vmdisk '%s' fail.The disk-info is wrong."%self.dm.disk_name)
                 self.flag=False
         else:
-            LogPrint().info("Update vmdisk '%s' fail.The status_code is wrong."%self.dm.disk_name)
+            LogPrint().info("Update active vmdisk '%s' fail.The status_code is wrong."%self.dm.disk_name)
             self.flag=False
         self.assertTrue(self.flag)
+    
+#     def test_deactive(self):
+#         self.flag=True
+#         self.assertTrue(smart_deactive_vmdisk(ModuleData.vm_name, self.disk_id))
     def tearDown(self):
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name_new))
 
@@ -750,11 +757,22 @@ class ITC05030301_CreateVMDisk_normal(BaseTestCase):
         for index in range(0,2):
             self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name[index]))
          
-  
+class ITC050305_DeleteVMDisk(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-03虚拟机磁盘管理-05删除磁盘
+    '''  
                                              
 if __name__ == "__main__":
     
+<<<<<<< HEAD
     test_cases = ["VirtualMachines.ITC05010502_DelVm_WithoutDisk"]
+=======
+<<<<<<< HEAD
+    test_cases = ["VirtualMachines.ITC05030401_UpdateVMDisk_vmdown"]
+=======
+    test_cases = ["VirtualMachines.ITC0501050102_DelVm_Normal_Up"]
+>>>>>>> eb13c8235a5354f4277677b2e689dfec29728258
+>>>>>>> origin/master
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
