@@ -23,14 +23,9 @@ from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_sto
 from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 import TestData.VirtualMachines.ITC05_SetUp as ModuleData
-<<<<<<< HEAD
 
 import xmltodict
-
-=======
 from collections import OrderedDict
->>>>>>> 2df6a8ffb033480691ff9be852566da9734624f6
-
    
 class ITC05_SetUp(BaseTestCase):
     '''
@@ -135,8 +130,6 @@ class ITC05_TearDown(BaseTestCase):
             LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
             self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
-<<<<<<< HEAD
-
 class ITC050301_GetVMDiskList(BaseTestCase):
 
     def setUp(self):
@@ -198,6 +191,7 @@ class ITC0503030101_CreateVMDisk_normal(BaseTestCase):
     def tearDown(self):
         for index in range(0,2):
             self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name[index]))
+
 class ITC0503030102_CreateVMDisk_noRequired(BaseTestCase):
     '''
     @summary: 05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-01创建内部磁盘 -02参数完整性
@@ -286,12 +280,7 @@ class ITC05030401_UpdateVMDisk(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name_new))
-    
-                                                   
-if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["VirtualMachines.ITC05030401_UpdateVMDisk"]
-=======
+
 class ITC050101_GetVmsList(BaseTestCase):
     '''
     @summary: ITC-05虚拟机管理-01虚拟机操作-01查看虚拟机列表
@@ -723,37 +712,6 @@ class ITC05010502_DelVm_WithoutDisk(BaseTestCase):
         '''
         LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name))
-
-class ITC050301_GetVMDiskList(BaseTestCase):
-
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-    def test_GetVMDiskList(self):
-        vmdisk_api = VmDiskAPIs()
-        r = vmdisk_api.getVmDisksList(ModuleData.vm_name)
-        if r['status_code'] == 200:
-            LogPrint().info("Get VMDiskList success.")
-            self.assertTrue(True)
-        else:
-            LogPrint().error("Get VMDiskList fail.The status_code is wrong.")
-            self.assertTrue(False)
-        
-class ITC050302_GetVMDiskInfo(BaseTestCase):
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_vmdisk(ModuleData.vm_name,self.dm.disk_info,self.dm.disk_name))
-        self.vmdisk_api = VmDiskAPIs()
-    def test_GetVMDiskInfo(self):
-        self.flag=True
-        r = self.vmdisk_api.getVmDiskInfo(ModuleData.vm_name, self.dm.disk_name)
-        if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("Get GetVMDiskInfo success.")
-        else:
-            LogPrint().error("Get GetVMDiskInfo fail.The Template info is wrong.")
-            self.flag=False
-        self.assertTrue(self.flag)
-    def tearDown(self):
-        self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name,self.dm.disk_name))
        
 class ITC05030301_CreateVMDisk_normal(BaseTestCase):
     '''
@@ -791,7 +749,7 @@ class ITC05030301_CreateVMDisk_normal(BaseTestCase):
 if __name__ == "__main__":
     
     test_cases = ["VirtualMachines.ITC0501050102_DelVm_Normal_Up"]
->>>>>>> 2df6a8ffb033480691ff9be852566da9734624f6
+
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
