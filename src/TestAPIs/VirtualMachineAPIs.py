@@ -20,6 +20,65 @@ from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 from Utils.PrintLog import LogPrint
 
+def smart_create_vm(vm_name, xml_vm_info, status_code=201):
+    '''
+    @summary: 智能创建虚拟机
+    '''
+    vm_api = VirtualMachineAPIs()
+    r = vm_api.createVm(xml_vm_info)
+    if r['status_code'] == status_code:
+        LogPrint().info("INFO: Create vm '%s' success." % vm_name)
+        return True
+    else:
+        LogPrint().warning("WARN: Create vm '%s' FAILED. Returned status code is wrong." % vm_name)
+        return False
+    
+def smart_del_vm(vm_name, xml_del_vm_option=None, status_code=200):
+    '''
+    @summary: 智能删除虚拟机（可以包含磁盘）；
+    @param vm_name: 虚拟机名称；
+    @param xml_del_vm_option: 删除虚拟机时使用的xml选项（不删除磁盘、强制删除等），缺省为None表示删除虚拟机及磁盘；
+    '''
+    vm_api = VirtualMachineAPIs()
+    def is_vm_down():
+        return vm_api.getVmStatus(vm_name)=='down'
+    if vm_api.searchVmByName(vm_name):
+        vm_state = vm_api.getVmStatus(vm_name)
+        # 当VM状态为UP时，掉电，然后再删除
+        if vm_state is not 'down':
+            LogPrint().info("Info: Stop vm '%s' to 'down' state." % vm_name)
+            r = vm_api.stopVm(vm_name)
+            if wait_until(is_vm_down, 50, 5):
+                LogPrint().info("Info: Stop vm '%s'." % vm_name)
+                r = vm_api.delVm(vm_name)
+                return r['status_code']==200
+        else:
+            LogPrint().info("Info: Delete vm '%s'." % vm_name)
+            r = vm_api.delVm(vm_name)
+            return r['status_code']==200
+    else:
+        LogPrint().info("Info: Vm '%s' not exist." % vm_name)
+        return True
+    
+def smart_start_vm(vm_name, xml_start_vm_option=None, status_code=200):
+    '''
+    @summary: 智能启动虚拟机（启动，并等待变为Up状态）
+    '''
+    vm_api = VirtualMachineAPIs()
+    r = vm_api.startVm(vm_name)
+    def is_vm_up():
+        return vm_api.getVmStatus(vm_name)=='up'
+    if wait_until(is_vm_up, 300, 5):
+        if r['status_code'] == 200:
+            LogPrint().info("PASS: Start vm '%s' SUCCESS." % vm_name)
+            return True
+        else:
+            LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % vm_name)
+            return False
+    else:
+        LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % vm_name)
+        return False
+
 def smart_create_vmdisk(vm_name,disk_info,disk_alias,status_code=202):
     '''
     @summary: 为虚拟机创建磁盘
@@ -303,6 +362,8 @@ class VirtualMachineAPIs(BaseAPIs):
         api_url = '%s/%s/start' % (self.base_url, vm_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_start_vm_option)
+        print r.status_code
+        print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def stopVm(self, vm_name):
