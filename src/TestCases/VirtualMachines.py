@@ -13,7 +13,8 @@ from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,s
 smart_detach_storage_domain,smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
-    smart_create_vmdisk, smart_delete_vmdisk
+    smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
+    smart_start_vm
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
     TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
     smart_delete_tempnic
@@ -23,8 +24,7 @@ from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_sto
 import xmltodict
 from TestAPIs.NetworkAPIs import NetworkAPIs
 import TestData.VirtualMachines.ITC05_SetUp as ModuleData
-
-
+from collections import OrderedDict
 
    
 class ITC05_SetUp(BaseTestCase):
@@ -76,8 +76,7 @@ class ITC05_SetUp(BaseTestCase):
         else:
             LogPrint().error("Create vm failed.Status-code is wrong.")
             self.assertTrue(False)
-        
-            
+                   
 class ITC05_TearDown(BaseTestCase):
     '''
     @summary: “虚拟机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
@@ -131,6 +130,390 @@ class ITC05_TearDown(BaseTestCase):
             LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
             self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
+class ITC050101_GetVmsList(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-01查看虚拟机列表
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+    
+    def test_GetVmsList(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）获取虚拟机列表；
+        @note: （2）操作成功，验证接口返回状态码是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Get VMs list.")
+        r = vm_api.getVmsList()
+        if r['status_code'] == self.dm.expected_status_code_get_vms:
+            LogPrint().info("PASS: Get VMs list SUCCESS.")
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG.")
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        '''
+        pass
+
+class ITC050102_GetVmInfo(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-02查看虚拟机信息
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm-ITC050102
+        LogPrint().info("Pre-Test: Create a vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+    def test_GetVmInfo(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）调用相关接口，获取指定VM信息；
+        @note: （2）操作成功，验证接口返回验证码、虚拟机信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Get vm '%s' info." % self.dm.vm_name)
+        r = vm_api.getVmInfo(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_get_vm_info:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_vm_info), r['result']):
+                LogPrint().info("PASS: Get vm '%s' info success." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Get vm '%s' info INCORRECT." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+
+class ITC05010301_CreateVm_Normal(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-01普通创建
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+    def test_CreateVm_Normal(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）创建一个普通机（使用Blank模板）；
+        @note: （2）操作成功，验证接口返回的状态码、虚拟机信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Create a vm '%s' from template 'Blank'." % self.dm.vm_name)
+        r = vm_api.createVm(self.dm.xml_vm_info)
+        if r['status_code'] == self.dm.expected_status_code_create_vm:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_vm_info), r['result']):
+                LogPrint().info("PASS: Create vm '%s' success." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Create vm '%s' FAILED, returned vm info are INCORRECT." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong when creating vm '%s'." % (r['status_code'], self.dm.vm_name))
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+
+class ITC05010303_CreateVm_DupName(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-03重名
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test: Create the 1st vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+    def test_CreateVm_DupName(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）创建一个重名的虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Create the 2nd vm with dup name '%s'." % self.dm.vm_name)
+        r = vm_api.createVm(self.dm.xml_vm_info)
+        if r['status_code'] == self.dm.expected_status_code_create_vm_dup:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_create_vm_dup), r['result']):
+                LogPrint().info("PASS: Returned messages are CORRECT while creating vm with dup name.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm with dup name.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong when creating vm with dup name '%s'." % (r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+
+class ITC05010304_CreateVm_NameVerify(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-04名称有效性
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+    def test_CreateVm_DupName(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）使用无效虚拟机名创建虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        self.i = 0
+        @BaseTestCase.drive_data(self, self.dm.xml_vm_info)
+        def do_test(vm_info):
+            LogPrint().info("Test: Create vm with invalid name '%s'." % xmltodict.parse(vm_info)['vm']['name'])
+            r = vm_api.createVm(vm_info)
+            if r['status_code'] == self.dm.expected_status_code_create_vm_invalid_name:
+                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.i]), r['result']):
+                    LogPrint().info("PASS: Returned messages are CORRECT while creating vm with invalid name.")
+                    self.flag = True
+                else:
+                    LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm with invalid name.")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Returned status code '%s' is Wrong when creating vm with invalid name '%s'." % (r['status_code']))
+                self.flag = False
+            self.i += 1
+            self.assertTrue(self.flag)
+        do_test()
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        # 如果虚拟机存在，则删除，否则给出提示信息。
+        for vm_name in self.dm.vm_name_list:
+            LogPrint().info("Post-Test: Delete vm '%s'." % vm_name)
+            self.assertTrue(smart_del_vm(vm_name))
+
+class ITC05010305_CreateVm_NoRequiredParams(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-05缺少必填参数
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+    def test_CreateVm_NoRequiredParams(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）使用缺少必填参数（name、cluster、template）的xml文件创建虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        
+        self.dict_vms = OrderedDict()
+        self.dict_vms[self.dm.vm1_name] = self.dm.xml_vm1_info
+        self.dict_vms[self.dm.vm2_name] = self.dm.xml_vm2_info
+        self.dict_vms[self.dm.vm3_name] = self.dm.xml_vm3_info
+        
+        LogPrint().info("Test: Create vm without required parameters (name/cluster/template).")
+        
+        self.i = 0
+        for vm_name in self.dict_vms:
+            r = vm_api.createVm(self.dict_vms[vm_name])
+            if r['status_code'] == self.dm.expected_status_code_list[self.i]:
+                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.i]), r['result']):
+                    LogPrint().info("PASS: Returned messages are CORRECT while creating vm without required parameters (name/cluster/template).")
+                    self.flag = True
+                else:
+                    LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm without parameters (name/cluster/template).")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Returned status code '%s' is Wrong when creating vm without parameters (name/cluster/template).")
+                self.flag = False
+            self.assertTrue(self.flag)
+            self.i += 1
+
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        # 如果虚拟机存在，则删除，否则给出提示信息。
+        for vm_name in self.dict_vms:
+            LogPrint().info("Post-Test: Delete vm '%s'." % vm_name)
+            self.assertTrue(smart_del_vm(vm_name))
+
+class ITC05010403_EditVm_DupName(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-04编辑-03重名
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+    def test_EditVm_DupName(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）编辑虚拟机，使用重复的名称；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Edit vm '%s' with dup name '%s'." % (self.dm.vm_name, ModuleData.vm_name))
+        r = vm_api.updateVm(self.dm.vm_name, self.dm.xml_vm_update_info)
+        if r['status_code'] == self.dm.expected_status_code_edit_vm_dup:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_edit_vm_dup), r['result']):
+                LogPrint().info("PASS: Returned messages are CORRECT while edit vm with dup name.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while edit vm with dup name.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong when edit vm with dup name '%s'." % (r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+
+class ITC0501050101_DelVm_Normal_Down(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-01Down状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+    def test_DelVm_Normal_Down(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）删除Down状态的虚拟机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Delete vm '%s' with 'Down' state." % self.dm.vm_name)
+        r = vm_api.delVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_del_vm:
+            if not vm_api.searchVmByName(self.dm.vm_name):
+                LogPrint().info("PASS: Delete vm '%s' success." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Delete vm '%s' FAILED." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+
+class ITC0501050102_DelVm_Normal_Up(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-02Up状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1，并启动。
+        LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+    def test_DelVm_Normal_Up(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）删除Down状态的虚拟机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+#         vm_api = VirtualMachineAPIs()
+#         LogPrint().info("Test: Delete vm '%s' with 'Down' state." % self.dm.vm_name)
+#         r = vm_api.delVm(self.dm.vm_name)
+#         if r['status_code'] == self.dm.expected_status_code_del_vm:
+#             if not vm_api.searchVmByName(self.dm.vm_name):
+#                 LogPrint().info("PASS: Delete vm '%s' success." % self.dm.vm_name)
+#                 self.flag = True
+#             else:
+#                 LogPrint().error("FAIL: Delete vm '%s' FAILED." % self.dm.vm_name)
+#                 self.flag = False
+#         else:
+#             LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+#             self.flag = False
+#         self.assertTrue(self.flag)
+    
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+#         LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+#         self.assertTrue(smart_del_vm(self.dm.vm_name))
 
 class ITC050301_GetVMDiskList(BaseTestCase):
 
@@ -193,596 +576,12 @@ class ITC05030301_CreateVMDisk_normal(BaseTestCase):
     def tearDown(self):
         for index in range(0,2):
             self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name[index]))
-        
-            
-class ITC0701030102_CreateTemplate_SD(BaseTestCase):
-    '''
-    @summary: 07模板管理-03创建模板-01成功创建-02指定存储域
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-    
-    def test_CreateTemplate_SD(self):
-        self.tempapi = TemplatesAPIs()
-        r = self.tempapi.createTemplate(self.dm.temp_info)
-        def is_temp_ok():
-            return self.tempapi.getTemplateInfo(temp_name=self.dm.temp_name)['result']['template']['status']['state']=='ok'
-        if r['status_code'] == self.dm.expected_status_code:
-            if wait_until(is_temp_ok, 600, 10):
-                LogPrint().info("Create Template ok.")
-            else:
-                LogPrint().error("Create Template overtime")
-                self.assertTrue(False)
-        else:
-            LogPrint().error("Create Template failed.Status-code is wrong.")
-            self.assertTrue(False)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name)) 
-           
-
-class ITC0701030201_CreateTemplate_DupName(BaseTestCase):
-    '''
-    @summary: 07模板管理-03创建模板-02创建失败-01模板重名
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        smart_create_template(self.dm.temp_name, self.dm.temp_info)
-            
-    def test_CreateTemplate_DupName(self):
-        self.tempapi = TemplatesAPIs()
-        r = self.tempapi.createTemplate(self.dm.temp_info)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            d1 = xmltodict.parse(self.dm.expected_info)
-            if dictCompare.isSubsetDict(d1, r['result']):
-                LogPrint().info("PASS: Returned status code and messages are CORRECT when create host with dup name.")
-            else:
-                LogPrint().error("FAIL: Returned messages are incorrectly.")
-                self.flag = False
-        else:
-            LogPrint().error("Status-code is wrong.")
-            self.assertTrue(False)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))     
-
-class ITC0701030202_CreateTemplate_VerifyName(BaseTestCase):
-    '''
-    @summary: 07模板管理-03创建模板-02创建失败-02验证名称合法性
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-            
-    def test_CreateTemplate_VerifyName(self):
-        self.tempapi = TemplatesAPIs()
-        r = self.tempapi.createTemplate(self.dm.temp_info)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            d1 = xmltodict.parse(self.dm.expected_info)
-            if dictCompare.isSubsetDict(d1, r['result']):
-                LogPrint().info("PASS: Returned status code and messages are CORRECT when create host with dup name.")
-            else:
-                LogPrint().error("FAIL: Returned messages are incorrectly.")
-                self.flag = False
-        else:
-            LogPrint().error("Status-code is wrong.")
-            self.assertTrue(False)
-
-class ITC0701030203_CreateTemplate_NoRequired(BaseTestCase):
-    '''
-    @summary: 07模板管理-03创建模板-02创建失败-03验证参数完整性
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-            
-    def test_CreateTemplate_NoRequired(self):
-        self.tempapi = TemplatesAPIs()
-        self.expected_result_index = 0
-        @BaseTestCase.drive_data(self, self.dm.temp_info)
-        def do_test(xml_info):
-            self.flag = True
-            r = self.tempapi.createTemplate(xml_info)
-            if r['status_code']==self.dm.expected_status_code:
-                dictCompare = DictCompare()
-                if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.expected_result_index]), r['result']):
-                    LogPrint().info("PASS: The returned status code and messages are CORRECT.")
-                else:
-                    LogPrint().error("FAIL: The returned messages are INCORRECT.")
-                    self.flag = False
-            else:
-                LogPrint().error("FAIL: The returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
-                self.flag = False
-            self.assertTrue(self.flag)
-            self.expected_result_index += 1
-        do_test()
-        
-class ITC070105_DeleteTemplate(BaseTestCase):
-    '''
-    @summary: 07模板管理-01基本操作-05删除模板
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-            
-    def test_DeleteTemplate(self):
-        self.flag=True
-        self.tempapi = TemplatesAPIs()
-        r = self.tempapi.delTemplate(self.dm.temp_name)
-        def temp_not_exist():
-            return self.tempapi.searchTemplateByName(self.dm.temp_name)['result']['templates'] ==None
-        if r['status_code'] == self.dm.expected_status_code:
-            if wait_until(temp_not_exist,300, 5):
-                LogPrint().info("Delete Template success.")
-            else:
-                LogPrint().info("Delete Template failed.The Template still exist")
-                self.flag=False
-        else:
-            LogPrint().info("Delete Template failed.The status_code is wrong")
-            self.flag=False
-        self.assertTrue(self.flag)
- 
-class ITC07010601_ExportTemplate_sync(BaseTestCase): 
-    '''
-    @summary: 07模板管理-01基本操作-06导出模板-01同步
-    @bug: 该功能目前在web界面上失败，暂时只能通过返回状态码来判断
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_exportTemplate_sync(self):
-        self.flag=True
-        self.tempapi = TemplatesAPIs()
-        r = self.tempapi.exportTemplate(self.dm.temp_name, self.dm.action)
-        if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("Export template success.")
-        else:
-            LogPrint().error("Export template failed.The status_code is wrong.")
-            self.flag=False
-        self.assertTrue(self.flag)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-
-class ITC07010602_ExportTemplate_async(BaseTestCase): 
-    '''
-    @summary: 07模板管理-01基本操作-06导出模板-02异步
-    @bug: 该功能目前在web界面上失败，暂时只能通过返回状态码来判断
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_exportTemplate_sync(self):
-        self.flag=True
-        self.tempapi = TemplatesAPIs()
-        r = self.tempapi.exportTemplate(self.dm.temp_name, self.dm.action)
-        if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("Export template success.")
-        else:
-            LogPrint().error("Export template failed.The status_code is wrong.")
-            self.flag=False
-        self.assertTrue(self.flag)                           
-
-class ITC070201_GetTemplateDiskList(BaseTestCase): 
-    '''
-    @summary: 07模板管理-02模板磁盘管理-01获取模板磁盘列表
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_GetTemplateDiskList(self):
-        self.flag = True
-        tempdisk_api = TemplateDisksAPIs()
-        r = tempdisk_api.getTemplateDiskList(self.dm.temp_name)  
-        if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("GetTemplateDiskList success.")
-        else:
-            LogPrint().error("GetTemplateDiskList fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-        
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-
-class ITC070202_GetTemplateDiskInfo(BaseTestCase): 
-    '''
-    @summary: 07模板管理-02模板磁盘管理-02获取模板磁盘详情
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_GetTemplateDiskInfo(self):
-        self.flag = True
-        tempdisk_api = TemplateDisksAPIs()
-        r = tempdisk_api.getTemplateDiskInfo(self.dm.temp_name,self.dm.disk_name)  
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            expected_result = xmltodict.parse(self.dm.disk_info)
-            actual_result = r['result']
-            if dictCompare.isSubsetDict(expected_result,actual_result):
-                LogPrint().info("GetTemplateDiskInfo success.")
-            else:
-                LogPrint().error("GetTemplateDiskInfo fail.The disk_info is wrong")
-                self.flag = False
-        else:
-            LogPrint().error("GetTemplateDiskInfo fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-        
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))     
-
-class ITC07020301_CopyTemplateDisk_sync(BaseTestCase): 
-    '''
-    @summary: 07模板管理-02模板磁盘管理-03复制模板-01同步
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_CopyTemplateDisk_sync(self):
-        self.flag = True
-        tempdisk_api = TemplateDisksAPIs()
-        r = tempdisk_api.copyTemplateDisk(self.dm.temp_name, self.dm.disk_name, self.dm.copy_data)  
-        print r
-        def is_tempdisk_ok():
-            return tempdisk_api.getTemplateDiskStatus(self.dm.temp_name, self.dm.disk_name)=='ok'
-        def check_tempdisk_sd(temp_name,disk_name,sd_id):
-            '''
-            @summary: 检查模板磁盘所在的存储域是否包含源和目的存储域
-            @param temp_name: 模板名称
-            @param disk_name: 磁盘名称
-            @param sd_id:存储域id 
-            @return: True or False
-            '''
-            sd_list = tempdisk_api.getTemplateDiskSdList(temp_name, disk_name)
-            flag = False
-            for index in range(len(sd_list)):
-                if sd_list[index]['@id'] == sd_id:
-                    flag = True
-            return flag
-                
-            
-        if r['status_code'] == self.dm.expected_status_code:
-            if wait_until(is_tempdisk_ok, 300, 10):
-                if check_tempdisk_sd(self.dm.temp_name, self.dm.disk_name, self.dm.des_sd_id):
-                    LogPrint().info("CopyTemplateDisk success.")
-                else:
-                    LogPrint().error("CopyTemplateDisk to storagedomain '%s' fail."%self.dm.des_sd_name)
-                    self.flag= False
-            else:
-                LogPrint().error("CopyTemplateDisk overtime")
-                self.flag= False
-        else:
-            LogPrint().error("CopyTemplateDisk fail.The status_code is wrong")
-            self.flag= False
-        self.assertTrue(self.flag) 
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name)) 
-
-class ITC07020302_CopyTemplateDisk_async(BaseTestCase): 
-    '''
-    @summary: 07模板管理-02模板磁盘管理-03复制模板-01异步
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_CopyTemplateDisk_async(self):
-        self.flag = True
-        tempdisk_api = TemplateDisksAPIs()
-        r = tempdisk_api.copyTemplateDisk(self.dm.temp_name, self.dm.disk_name, self.dm.copy_data)  
-        print r
-        def is_tempdisk_ok():
-            return tempdisk_api.getTemplateDiskStatus(self.dm.temp_name, self.dm.disk_name)=='ok'
-        def check_tempdisk_sd(temp_name,disk_name,sd_id):
-            '''
-            @summary: 检查模板磁盘所在的存储域是否包含源和目的存储域
-            @param temp_name: 模板名称
-            @param disk_name: 磁盘名称
-            @param sd_id:存储域id 
-            @return: True or False
-            '''
-            sd_list = tempdisk_api.getTemplateDiskSdList(temp_name, disk_name)
-            flag = False
-            for index in range(len(sd_list)):
-                if sd_list[index]['@id'] == sd_id:
-                    flag = True
-            return flag
-                
-            
-        if r['status_code'] == self.dm.expected_status_code:
-            if wait_until(is_tempdisk_ok, 300, 10):
-                if check_tempdisk_sd(self.dm.temp_name, self.dm.disk_name, self.dm.des_sd_id):
-                    LogPrint().info("CopyTemplateDisk success.")
-                else:
-                    LogPrint().error("CopyTemplateDisk to storagedomain '%s' fail."%self.dm.des_sd_name)
-                    self.flag= False
-            else:
-                LogPrint().error("CopyTemplateDisk overtime")
-                self.flag= False
-        else:
-            LogPrint().error("CopyTemplateDisk fail.The status_code is wrong")
-            self.flag= False
-        self.assertTrue(self.flag) 
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))  
-              
-class ITC07020303_CopyTemplateDisk_nosd(BaseTestCase): 
-    '''
-    @summary: 07模板管理-02模板磁盘管理-03复制模板-03缺少存储域
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_CopyTemplateDisk_nosd(self):
-        self.flag = True
-        tempdisk_api = TemplateDisksAPIs()
-        r = tempdisk_api.copyTemplateDisk(self.dm.temp_name, self.dm.disk_name, self.dm.copy_data)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
-                LogPrint().info("CopyTemplateDisk_nosd success.")
-            else:
-                LogPrint().error("CopyTemplateDisk_nosd fail.The error_log is wrong.")
-                self.flag = False
-        else:
-            LogPrint().error("CopyTemplateDisk_nosd fail.The status_code is wrong.")
-            self.flag = False
-        self.assertTrue(self.flag)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-    
-        
-class ITC070301_GetTemplateNicList(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-01获取网络接口列表
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_GetTemplateNicList(self):
-        tempnic_api = TemplateNicsAPIs()
-        r=tempnic_api.getTemplateNicList(self.dm.temp_name)
-        if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("GetTemplateNicList success.")
-        else:
-            LogPrint().error("GetTemplateNicList fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-    
-class ITC070302_GetTemplateNicInfo(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-02获取网络接口详情
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-        self.assertTrue(smart_create_tempnic(self.dm.temp_name, self.dm.nic_data))
-    def test_GetTemplateNicInfo(self):
-        tempnic_api = TemplateNicsAPIs()
-        r =  tempnic_api.getTemplateNicInfo(self.dm.temp_name, self.dm.nic_name)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            expected_result = xmltodict.parse(self.dm.nic_data)
-            actual_result = r['result']
-            if dictCompare.isSubsetDict(expected_result,actual_result):
-                LogPrint().info("GetTemplateNicInfo success.")
-            else:
-                LogPrint().error("GetTemplateNicInfo fail.The nic_info is wrong")
-                self.flag = False
-        else:
-            LogPrint().error("GetTemplateNicInfo fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-        
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))     
-            
-class ITC0703030101_CreateTemplateNic(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-03新建网络接口-01成功创建-01测试最小集
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_CreateTemplateNic(self):  
-        tempnic_api = TemplateNicsAPIs()
-        self.expected_result_index = 0
-        @BaseTestCase.drive_data(self, self.dm.nic_data)
-        def do_test(xml_info):
-            r =  tempnic_api.createTemplateNic(self.dm.temp_name, xml_info)
-            if r['status_code'] == self.dm.expected_status_code:
-                dictCompare = DictCompare()
-                print xml_info
-                expected_result = xmltodict.parse(xml_info)
-                actual_result = r['result']
-                if dictCompare.isSubsetDict(expected_result,actual_result):
-                    LogPrint().info("CreateTemplateNic success.")
-                else:
-                    LogPrint().error("CreateTemplateNic fail.The nic_info is wrong")
-                    self.flag = False
-            else:
-                LogPrint().error("CreateTemplateNic fail.The status_code is wrong")
-                self.flag = False
-            self.assertTrue(self.flag)
-            self.expected_result_index += 1
-        do_test()
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-class ITC0703030102_CreateTemplateNic_proid(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-03新建网络接口-01成功创建-02指定配置集
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-        #为所在数据中心的ovirtmgmt网络创建一个配置集
-        self.nw_id = NetworkAPIs().getNetworkIdByName('ovirtmgmt', self.dm.dc_name)
-        r =ProfilesAPIs().createProfiles(self.dm.profile_info, self.nw_id)
-        if r['status_code'] == 201:
-            self.proid = r['result']['vnic_profile']['@id']
-            LogPrint().info("Create Profile success.")
-        else:
-            LogPrint().error("Create Profile fail.The status_code is wrong.")
-    def test_CreateTemplateNic_proid(self):  
-        tempnic_api = TemplateNicsAPIs()
-        r =  tempnic_api.createTemplateNic(self.dm.temp_name, self.dm.nic_data,self.proid)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            expected_result = xmltodict.parse((self.dm.nic_data %self.proid))
-            actual_result = r['result']
-            if dictCompare.isSubsetDict(expected_result,actual_result):
-                LogPrint().info("CreateTemplateNic success.")
-            else:
-                LogPrint().error("CreateTemplateNic fail.The nic_info is wrong")
-                self.flag = False
-        else:
-            LogPrint().error("CreateTemplateNic fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)    
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-        TemplateNicsAPIs().deleteTemplateNic(self.dm.temp_name, self.dm.nic_name)
-        ProfilesAPIs().delProfile(self.dm.profile_name, self.nw_id)
-class ITC0703030201_CreateTemplateNic_DupName(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-03新建网络接口-01创建失败-01重名
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-        self.assertTrue(smart_create_tempnic(self.dm.temp_name, self.dm.nic_data))
-    def test_CreateTemplateNic_DupName(self):  
-        tempnic_api = TemplateNicsAPIs()
-        r =  tempnic_api.createTemplateNic(self.dm.temp_name, self.dm.nic_data)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            expected_result = xmltodict.parse(self.dm.expected_info)
-            actual_result = r['result']
-            if dictCompare.isSubsetDict(expected_result,actual_result):
-                LogPrint().info("CreateTemplateNic_DupName pass.")
-            else:
-                LogPrint().error("CreateTemplateNic_DupName fail.The error_info is wrong")
-                self.flag = False
-        else:
-            LogPrint().error("CreateTemplateNic_DupName fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-        
-class ITC0703030202_CreateTemplateNic_VerifyName(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-03新建网络接口-01创建失败-02验证名称合法性
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_CreateTemplateNic_VerifyName(self):  
-        tempnic_api = TemplateNicsAPIs()
-        r =  tempnic_api.createTemplateNic(self.dm.temp_name, self.dm.nic_data)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            expected_result = xmltodict.parse(self.dm.expected_info)
-            actual_result = r['result']
-            if dictCompare.isSubsetDict(expected_result,actual_result):
-                LogPrint().info("CreateTemplateNic_VerifyName pass.")
-            else:
-                LogPrint().error("CreateTemplateNic_VerifyName fail.The error_info is wrong")
-                self.flag = False
-        else:
-            LogPrint().error("CreateTemplateNic_VerifyName fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-
-class ITC0703030203_CreateTemplateNic_NoRequired(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-03新建网络接口-01创建失败-03缺少必填项
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-    def test_CreateTemplateNic_NoRequired(self):  
-        tempnic_api = TemplateNicsAPIs()
-        r =  tempnic_api.createTemplateNic(self.dm.temp_name, self.dm.nic_data)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            expected_result = xmltodict.parse(self.dm.expected_info)
-            actual_result = r['result']
-            if dictCompare.isSubsetDict(expected_result,actual_result):
-                LogPrint().info("CreateTemplateNic_NoRequired pass.")
-            else:
-                LogPrint().error("CreateTemplateNic_NoRequired fail.The error_info is wrong")
-                self.flag = False
-        else:
-            LogPrint().error("CreateTemplateNic_NoRequired fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-
-class ITC07030401_UpdateTemplateNic(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-04编辑网络接口-01成功
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-        self.assertTrue(smart_create_tempnic(self.dm.temp_name, self.dm.nic_data))
-        #为所在数据中心的ovirtmgmt网络创建一个配置集
-        self.nw_id = NetworkAPIs().getNetworkIdByName('ovirtmgmt', self.dm.dc_name)
-        r =ProfilesAPIs().createProfiles(self.dm.profile_info, self.nw_id)
-        if r['status_code'] == 201:
-            self.proid = r['result']['vnic_profile']['@id']
-            LogPrint().info("Create Profile success.")
-        else:
-            LogPrint().error("Create Profile fail.The status_code is wrong.")
-    def test_UpdateTemplateNic(self):
-        self.flag = True  
-        tempnic_api = TemplateNicsAPIs()
-        r =  tempnic_api.updateTemplateNic(self.dm.temp_name, self.dm.nic_name,self.dm.update_info,self.proid)
-        if r['status_code'] == self.dm.expected_status_code:
-            dictCompare = DictCompare()
-            expected_result = xmltodict.parse((self.dm.update_info %self.proid))
-            actual_result = r['result']
-            if dictCompare.isSubsetDict(expected_result,actual_result):
-                LogPrint().info("UpdateTemplateNic success.")
-            else:
-                LogPrint().error("UpdateTemplateNic fail.The nic_info is wrong")
-                self.flag = False
-        else:
-            LogPrint().error("UpdateTemplateNic fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-        
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))
-        ProfilesAPIs().delProfile(self.dm.profile_name, self.nw_id)
-class ITC070305_DeleteTemplateNic(BaseTestCase):
-    '''
-    @summary: 07模板管理-03模板网络接口-05删除网络接口
-    '''
-    def setUp(self):
-        self.dm = super(self.__class__, self).setUp()
-        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-        self.assertTrue(smart_create_tempnic(self.dm.temp_name, self.dm.nic_data))
-    def test_DeleteTemplateNic(self):  
-        tempnic_api = TemplateNicsAPIs()
-        r =  tempnic_api.deleteTemplateNic(self.dm.temp_name, self.dm.nic_name)
-        if r['status_code'] == self.dm.expected_status_code:
-            if not tempnic_api.getNicIdByName(self.dm.temp_name, self.dm.nic_name):
-                LogPrint().info("DeleteTemplateNic pass.")
-            else:
-                LogPrint().error("DeleteTemplateNic fail.The nic is still exist.")
-                self.flag = False
-        else:
-            LogPrint().error("DeleteTemplateNi fail.The status_code is wrong")
-            self.flag = False
-        self.assertTrue(self.flag)
-    def tearDown(self):
-        self.assertTrue(smart_delete_template(self.dm.temp_name))   
+         
+  
                                              
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["VirtualMachines.ITC05030301_CreateVMDisk_normal"]
+    
+    test_cases = ["VirtualMachines.ITC0501050102_DelVm_Normal_Up"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
