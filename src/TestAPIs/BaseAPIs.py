@@ -1,4 +1,17 @@
-#encoding:utf-8
+#coding:utf-8
+
+__authors__ = ['"fei liu" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date            Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/09/02    初始版本                                                            fei liu
+# V0.2           2014/11/03    修改了searchObject的参数                        fei liu
+#---------------------------------------------------------------------------------
+'''
 
 import urllib
 import xmltodict
@@ -18,14 +31,14 @@ class BaseAPIs(object):
         '''
         pass
     
-    def searchObject(self, obj_type, search_str):
+    def searchObject(self, obj_type, search_str, search_item='name'):
         '''
         @summary: 根据字符串对指定目标进行搜索
         @param obj_type: 要查找的目标类型，如datacenters、hosts等
         @param search_str: 要搜索的字符串，如数据中心名称，状态等
         @return: 字典，（1）返回状态码；（2）Dict类型搜索结果
         '''
-        url = '%s/%s?search=name%s%s' % (WebBaseApiUrl, obj_type, urllib.quote('='), search_str)
+        url = '%s/%s?search=%s%s%s' % (WebBaseApiUrl, obj_type, search_item, urllib.quote('='), search_str)
         method = 'GET'
         r = HttpClient.sendRequest(method, url)
         #r.raise_for_status()

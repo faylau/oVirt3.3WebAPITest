@@ -699,37 +699,43 @@ class ITC05010502_DelVm_WithoutDisk(BaseTestCase):
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
         # 前提2：为虚拟机添加一个磁盘disk1
-        LogPrint().info("Pre-Test-2: Create a disk '%s' and attach it to vm '%s'." % (self.dm.disk_name, self.dm.vm_name))
-        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        LogPrint().info("Pre-Test-2: Create a disk '%s' and attach it to vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        r = smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
         
-    def test_DelVm_Normal_Up(self):
+    def test_DelVm_WithoutDisk(self):
         '''
         @summary: 测试步骤
-        @note: （1）删除Up状态的虚拟机；
-        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        @note: （1）删除虚拟机，但不删除磁盘；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
         '''
         vm_api = VirtualMachineAPIs()
-        LogPrint().info("Test: Delete vm '%s' with 'Up' state." % self.dm.vm_name)
-        r = vm_api.delVm(self.dm.vm_name)
-        if r['status_code'] == self.dm.expected_status_code_del_vm_up:
-            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_del_vm_up), r['result']):
-                LogPrint().info("PASS: Returned status code and messages are CORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+        disk_api = DiskAPIs()
+        LogPrint().info("Test: Delete vm '%s' without its disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        r = vm_api.delVm(self.dm.vm_name, self.dm.xml_del_vm_without_disk)
+        if r['status_code'] == self.dm.expected_status_code_del_vm:
+            if not vm_api.searchVmByName(self.dm.vm_name) and disk_api.searchDiskByAlias(self.dm.disk_alias)['result']['disks']:
+                LogPrint().info("PASS: Delete vm '%s' without disk SUCCESS." % self.dm.vm_name)
                 self.flag = True
             else:
-                LogPrint().error("FAIL: Returned messages are INCORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+                LogPrint().error("FAIL: Delete vm '%s' without disk FAILED. Vm still exists or Disk is removed." % self.dm.vm_name)
                 self.flag = False
         else:
-            LogPrint().error("FAIL: Returned status code '%s' is Wrong." % r['status_code'])
+            LogPrint().error("FAIL: Returned status code '%s' is Wrong while deleting vm '%s' without disk." % (r['status_code'], self.dm.vm_name))
             self.flag = False
         self.assertTrue(self.flag)
     
     def tearDown(self):
         '''
         @summary: 资源清理
-        @note: （1）删除创建的虚拟机；
+        @note: （1）删除创建的磁盘；
+        @note: （1）删除创建的虚拟机。
         '''
-        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+        LogPrint().info("Post-Test-1: Delete vm '%s' if it exist." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name))
+        LogPrint().info("Post-Test-2: Delete disk '%s' if it exist." % self.dm.disk_alias)
+        self.assertTrue(smart_delete_disk(self.disk_id))
        
 class ITC05030301_CreateVMDisk_normal(BaseTestCase):
     '''
@@ -847,8 +853,20 @@ class ITC05030501_DeleteVMDisk_option(BaseTestCase):
                                            
 if __name__ == "__main__":
     
+<<<<<<< HEAD
     test_cases = ["VirtualMachines.ITC05030501_DeleteVMDisk_option"]
 
+=======
+<<<<<<< HEAD
+    test_cases = ["VirtualMachines.ITC05010502_DelVm_WithoutDisk"]
+=======
+<<<<<<< HEAD
+    test_cases = ["VirtualMachines.ITC05030401_UpdateVMDisk_vmdown"]
+=======
+    test_cases = ["VirtualMachines.ITC0501050102_DelVm_Normal_Up"]
+>>>>>>> eb13c8235a5354f4277677b2e689dfec29728258
+>>>>>>> origin/master
+>>>>>>> 1673ebb4fa170342dd98d8d0cbd18a2858e81534
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
