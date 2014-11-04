@@ -9,7 +9,8 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # Version        Date            Desc                            Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/09/10      初始版本                                                            Liu Fei 
+# V0.1           2014/09/10      初始版本                                                            Liu Fei
+# V0.2           2014/11/04      加入若干smart方法                                        Liu Fei / Keke Wei
 #---------------------------------------------------------------------------------
 '''
 
@@ -27,10 +28,10 @@ def smart_create_vm(vm_name, xml_vm_info, status_code=201):
     vm_api = VirtualMachineAPIs()
     r = vm_api.createVm(xml_vm_info)
     if r['status_code'] == status_code:
-        LogPrint().info("INFO: Create vm '%s' success." % vm_name)
+        LogPrint().info("INFO-PASS: Create vm '%s' success." % vm_name)
         return True
     else:
-        LogPrint().warning("WARN: Create vm '%s' FAILED. Returned status code is wrong." % vm_name)
+        LogPrint().warning("INFO-WARN: Create vm '%s' FAILED. Returned status code is wrong." % vm_name)
         return False
     
 def smart_del_vm(vm_name, xml_del_vm_option=None, status_code=200):
@@ -45,19 +46,28 @@ def smart_del_vm(vm_name, xml_del_vm_option=None, status_code=200):
     if vm_api.searchVmByName(vm_name):
         vm_state = vm_api.getVmStatus(vm_name)
         # 当VM状态为UP时，掉电，然后再删除
-        if vm_state is not 'down':
-            LogPrint().info("Info: Stop vm '%s' to 'down' state." % vm_name)
+        if vm_state == 'up':
+            LogPrint().info("INFO-STEP: Stop vm '%s' from 'up' to 'down' state." % vm_name)
             r = vm_api.stopVm(vm_name)
             if wait_until(is_vm_down, 50, 5):
-                LogPrint().info("Info: Delete vm '%s'." % vm_name)
+                LogPrint().info("INFO-STEP: Delete vm '%s'." % vm_name)
                 r = vm_api.delVm(vm_name)
                 return r['status_code']==200
-        else:
-            LogPrint().info("Info: Delete vm '%s'." % vm_name)
+        # 当VM状态为Suspended时，掉电，然后再删除
+        elif vm_state == 'suspended':
+            LogPrint().info("INFO-STEP: Stop vm '%s' from 'suspended' to 'down' state." % vm_name)
+            r = vm_api.stopVm(vm_name)
+            if wait_until(is_vm_down, 100, 5):
+                LogPrint().info("INFO-STEP: Delete vm '%s'." % vm_name)
+                r = vm_api.delVm(vm_name)
+                return r['status_code']==200
+        # 当VM状态为Down时，直接删除
+        elif vm_state == 'down':
+            LogPrint().info("INFO-STEP: Delete vm '%s'." % vm_name)
             r = vm_api.delVm(vm_name)
             return r['status_code']==200
     else:
-        LogPrint().info("Info: Vm '%s' not exist." % vm_name)
+        LogPrint().info("INFO-WARN: Vm '%s' not exist." % vm_name)
         return True
     
 def smart_start_vm(vm_name, xml_start_vm_option=None, status_code=200):
@@ -70,13 +80,13 @@ def smart_start_vm(vm_name, xml_start_vm_option=None, status_code=200):
         return vm_api.getVmStatus(vm_name)=='up'
     if wait_until(is_vm_up, 300, 5):
         if r['status_code'] == 200:
-            LogPrint().info("PASS: Start vm '%s' SUCCESS." % vm_name)
+            LogPrint().info("INFO-PASS: Start vm '%s' SUCCESS." % vm_name)
             return True
         else:
-            LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % vm_name)
+            LogPrint().error("INFO-FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % vm_name)
             return False
     else:
-        LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % vm_name)
+        LogPrint().error("INFO-FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % vm_name)
         return False
     
 def smart_suspend_vm(vm_name, status_code=202):
