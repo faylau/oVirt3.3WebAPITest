@@ -269,7 +269,6 @@ class ITC05030401_UpdateVMDisk_vmdown(BaseTestCase):
     def test_active(self):
         self.flag=True
         r = self.vmdisk_api.updateVmDisk(ModuleData.vm_name, self.dm.disk_name, self.dm.update_disk_info)
-        print r
         if r['status_code']==self.dm.expected_status_code:
             dictCompare=DictCompare()
             if dictCompare.isSubsetDict(xmltodict.parse(self.dm.update_disk_info), r['result']):
@@ -282,9 +281,21 @@ class ITC05030401_UpdateVMDisk_vmdown(BaseTestCase):
             self.flag=False
         self.assertTrue(self.flag)
     
-#     def test_deactive(self):
-#         self.flag=True
-#         self.assertTrue(smart_deactive_vmdisk(ModuleData.vm_name, self.disk_id))
+    def test_deactive(self):
+        self.flag=True
+        self.assertTrue(smart_deactive_vmdisk(ModuleData.vm_name, self.disk_id))
+        r = self.vmdisk_api.updateVmDisk(ModuleData.vm_name, self.dm.disk_name, self.dm.update_disk_info)
+        if r['status_code']==self.dm.expected_status_code:
+            dictCompare=DictCompare()
+            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.update_disk_info), r['result']):
+                LogPrint().info("Update  deactive vmdisk '%s' success."%self.dm.disk_name)
+            else:
+                LogPrint().info("Update deactive vmdisk '%s' fail.The disk-info is wrong."%self.dm.disk_name)
+                self.flag=False
+        else:
+            LogPrint().info("Update deactive vmdisk '%s' fail.The status_code is wrong."%self.dm.disk_name)
+            self.flag=False
+        self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name_new))
 
@@ -757,10 +768,74 @@ class ITC05030301_CreateVMDisk_normal(BaseTestCase):
         for index in range(0,2):
             self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name[index]))
          
-class ITC050305_DeleteVMDisk(BaseTestCase):
+
+class ITC05030402_UpdateVMDisk_vmrun(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-05删除磁盘
+    @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmdisk_api = VmDiskAPIs()
+        r=smart_create_vmdisk(ModuleData.vm_name, self.dm.disk_info, self.dm.disk_name)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
+        VirtualMachineAPIs().startVm(ModuleData.vm_name)
+        def is_vm_up():
+            return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
+        if wait_until(is_vm_up, 300, 10):
+            LogPrint().info("Start vm success.")
+            self.assertTrue(True)
+        else:
+            LogPrint().info("Start vm overtime.")
+            self.assertTrue(False)
+    
+    def test_active(self):
+        self.flag=True
+        r = self.vmdisk_api.updateVmDisk(ModuleData.vm_name, self.dm.disk_name, self.dm.update_disk_info)
+        if r['status_code']==self.dm.expected_status_code:
+            dictCompare=DictCompare()
+            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.update_disk_info), r['result']):
+                LogPrint().info("Update  active vmdisk '%s' success."%self.dm.disk_name)
+            else:
+                LogPrint().info("Update active vmdisk '%s' fail.The disk-info is wrong."%self.dm.disk_name)
+                self.flag=False
+        else:
+            LogPrint().info("Update active vmdisk '%s' fail.The status_code is wrong."%self.dm.disk_name)
+            self.flag=False
+        self.assertTrue(self.flag)
+    
+    def test_deactive(self):
+        self.flag=True
+        self.assertTrue(smart_deactive_vmdisk(ModuleData.vm_name, self.disk_id))
+        r = self.vmdisk_api.updateVmDisk(ModuleData.vm_name, self.dm.disk_name, self.dm.update_disk_info)
+        if r['status_code']==self.dm.expected_status_code:
+            dictCompare=DictCompare()
+            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.update_disk_info), r['result']):
+                LogPrint().info("Update  deactive vmdisk '%s' success."%self.dm.disk_name)
+            else:
+                LogPrint().info("Update deactive vmdisk '%s' fail.The disk-info is wrong."%self.dm.disk_name)
+                self.flag=False
+        else:
+            LogPrint().info("Update deactive vmdisk '%s' fail.The status_code is wrong."%self.dm.disk_name)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name_new))
+        VirtualMachineAPIs().stopVm(ModuleData.vm_name)
+        def is_vm_down():
+            return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
+        if wait_until(is_vm_down, 300, 10):
+            LogPrint().info("Stop vm success.")
+            self.assertTrue(True)
+        else:
+            LogPrint().info("Stop vm overtime.")
+            self.assertTrue(False)  
+            
+class ITC05030501_DeleteVMDisk_option(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-01是否永久删除
     '''  
+<<<<<<< HEAD
 
 class ITC05010503_DelVm_Force(BaseTestCase):
     '''
@@ -1045,6 +1120,40 @@ class ITC05020103_StartVm_Once(BaseTestCase):
 if __name__ == "__main__":
     
     test_cases = ["VirtualMachines.ITC05020103_StartVm_Once"]
+=======
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmdisk_api = VmDiskAPIs()
+        r=smart_create_vmdisk(ModuleData.vm_name, self.dm.disk_info, self.dm.disk_name)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
+    def test_detach(self):
+        '''
+        @summary: 将磁盘从虚拟机分离，而不删除
+        '''
+        r=self.vmdisk_api.delVmDisk(ModuleData.vm_name, disk_id=self.disk_id,xml_del_disk_option=self.dm.del_disk_option)
+        if r['status_code']==self.dm.expected_status_code:
+            
+        
+            
+                                           
+if __name__ == "__main__":
+    
+<<<<<<< HEAD
+    test_cases = ["VirtualMachines.ITC05030501_DeleteVMDisk_option"]
+
+=======
+<<<<<<< HEAD
+    test_cases = ["VirtualMachines.ITC05010502_DelVm_WithoutDisk"]
+=======
+<<<<<<< HEAD
+    test_cases = ["VirtualMachines.ITC05030401_UpdateVMDisk_vmdown"]
+=======
+    test_cases = ["VirtualMachines.ITC0501050102_DelVm_Normal_Up"]
+>>>>>>> eb13c8235a5354f4277677b2e689dfec29728258
+>>>>>>> origin/master
+>>>>>>> 1673ebb4fa170342dd98d8d0cbd18a2858e81534
+>>>>>>> origin/master
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
