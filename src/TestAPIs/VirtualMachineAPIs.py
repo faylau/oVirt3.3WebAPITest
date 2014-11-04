@@ -78,6 +78,29 @@ def smart_start_vm(vm_name, xml_start_vm_option=None, status_code=200):
     else:
         LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % vm_name)
         return False
+    
+def smart_suspend_vm(vm_name, status_code=202):
+    '''
+    @summary: 智能挂起虚拟机（挂起，并等待变为suspended状态）
+    '''
+    vm_api = VirtualMachineAPIs()
+    def is_vm_suspended():
+        return vm_api.getVmStatus(vm_name)=='suspended'
+    if vm_api.getVmStatus(vm_name) == 'suspended':
+        LogPrint().info("INFO: Vm '%s' already in 'suspended' state." % vm_name)
+        return True
+    elif vm_api.getVmStatus(vm_name) == 'up':
+        r = vm_api.suspendVm(vm_name)
+        if wait_until(is_vm_suspended, 300, 5):
+            if r['status_code'] == status_code:
+                LogPrint().info("INFO-PASS: Suspend vm '%s' SUCCESS." % vm_name)
+                return True
+            else:
+                LogPrint().error("INFO-FAIL: Suspend vm '%s' FAILED. Returned status code is INCORRECT." % vm_name)
+                return False
+        else:
+            LogPrint().error("INFO-FAIL: Suspend vm '%s' FAILED. It's final state is not 'suspended'." % vm_name)
+            return False
 
 def smart_create_vmdisk(vm_name,disk_info,disk_alias,status_code=202):
     '''
