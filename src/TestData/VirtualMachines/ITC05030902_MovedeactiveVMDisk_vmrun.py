@@ -20,7 +20,7 @@ disk_info='''
     <interface>virtio</interface>
     <format>raw</format>
     <bootable>true</bootable>
-    <shareable>true</shareable>
+    <shareable>false</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
 '''%(disk_name,sd_id)
@@ -28,18 +28,16 @@ disk_info='''
 '''
 @note: TestData
 '''
-del_disk_option_detach='''
+move_option='''
 <action>
-    <detach>true</detach>
+    <storage_domain>
+        <name>%s</name>
+    </storage_domain>
+    <async>false</async>
 </action>
-'''
-
-del_disk_option_remove='''
-<action>
-    <detach>false</detach>
-</action>
-'''
+'''%ModuleData.data2_nfs_name
 '''
 @note: ExpectedData
 '''
 expected_status_code = 200
+

@@ -97,6 +97,19 @@ class DiskAPIs(BaseAPIs):
         '''
         r = self.searchDiskByName(disk_alias)
         return r['result']['disks']['disk']['@id']
+    
+    def isExist(self,disk_id):
+        '''
+        @summary: 系统内磁盘是否存在
+        '''
+        disk_list = DiskAPIs().getDisksList()['result']['disks']['disk']
+        flag=False
+        for disk in disk_list:
+            diskid = disk['@id']
+            if diskid == disk_id:
+                flag=True
+        return flag
+                
         
     def getDisksList(self):
         '''
@@ -193,6 +206,7 @@ class DiskAPIs(BaseAPIs):
 if __name__=='__main__':
     diskapi = DiskAPIs()
     #print diskapi.getDisksList()
+    print diskapi.isExist('0cf6c057-c60a-4904-bc80-92747e93b')
 
     disk_test_info = '''
     <disk>

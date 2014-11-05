@@ -144,7 +144,6 @@ def smart_deactive_vmdisk(vm_name,disk_id,status_code=200):
     ''' 
     vmdisk_api = VmDiskAPIs()
     r = vmdisk_api.deactivateVmDisk(vm_name, disk_id=disk_id)
-    print r
     def is_disk_deactive():
         return VmDiskAPIs().getVmDiskInfo(vm_name, disk_id=disk_id)['result']['disk']['active']=='false'  
     if r['status_code'] == status_code:
@@ -157,6 +156,31 @@ def smart_deactive_vmdisk(vm_name,disk_id,status_code=200):
     else:
         LogPrint().error("Deactive vmdisk fail.")
         return False    
+def smart_create_vmnic(vm_name,nic_info,nic_name,status_code=201):
+    vmnic_api=VmNicAPIs()
+    r=vmnic_api.createVmNic(vm_name, nic_info)
+    if r['status_code']==status_code:
+        LogPrint().info("Create vmnic success.")
+        return True
+    else:
+        LogPrint().error("Create vmnic fail.")
+        return False
+def smart_delete_vmnic(vm_name,nic_name,status_code=200):
+    try:
+        VmNicAPIs().getVmNicInfo(vm_name, nic_name)
+        r=VmNicAPIs().delVmNic(vm_name, nic_name)
+        if r['status_code']==status_code:
+            LogPrint().info("Delete vmnic success.")
+            return True
+        else:
+            LogPrint().error("Delete vmnic fail.")
+            return False
+    except:
+        LogPrint().info("Vminc is not exist.")
+        return True
+            
+        
+        
 
 class VirtualMachineAPIs(BaseAPIs):
     '''
@@ -584,6 +608,7 @@ class VmDiskAPIs(VirtualMachineAPIs):
         api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
+        print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def getVmDiskStatus(self, vm_name, disk_alias=None, disk_id=None):
@@ -595,6 +620,26 @@ class VmDiskAPIs(VirtualMachineAPIs):
         '''
         disk_info = self.getVmDiskInfo(vm_name, disk_alias, disk_id)
         return disk_info['result']['disk']['status']['state']
+    
+    def is_vmdisk_exist(self,vm_name,disk_id):
+        '''
+        @summary: 虚拟机内是否存在该磁盘
+        '''
+        flag=False
+        vm_disks = self.getVmDisksList(vm_name)['result']['disks']
+        if not vm_disks:
+            return flag
+        vm_disks = self.getVmDisksList(vm_name)['result']['disks']['disk']
+        if isinstance(vm_disks, list):
+            for disk in vm_disks:
+                if disk['@id']==disk_id:
+                    flag=True
+        else:
+            if vm_disks['@id']==disk_id:
+                flag=True
+        return flag
+                
+        
         
     def createVmDisk(self, vm_name, xml_disk_info):
         '''
@@ -779,7 +824,7 @@ class VmDiskAPIs(VirtualMachineAPIs):
             disk_id = self.getVmDiskIdByName(vm_name, disk_alias)
         api_url = '%s/%s/%s/%s/move' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
         method = 'POST'
-        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_move_info)
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_move_option)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def exportVmDisk(self, vm_name, xml_export_option, disk_id=None, disk_alias=None):
@@ -1251,6 +1296,7 @@ if __name__=='__main__':
     vmsnapshotapi = VmSnapshotAPIs()
     vmwatchdogapi = VmWatchdogAPIs()
     vmappapi = VmAppAPIs()
+    print vmdiskapi.is_vmdisk_exist('vm-ITC05', 'f3057dff-5f5d-4b80-87e6-3f9884e72f57')
     
 #     print vmdiskapi.getVmDiskInfo('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')
 #     print vmdiskapi.getVmDiskStatus('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')
