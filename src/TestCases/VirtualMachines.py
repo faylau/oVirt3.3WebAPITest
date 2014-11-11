@@ -1,9 +1,17 @@
-#encoding:utf-8
+#coding:utf-8
+
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>', '"Keke Wei" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
 '''
-@author: keke
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date            Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/11/03      初始版本                                                            Liu Fei / keke wei
+#---------------------------------------------------------------------------------
 '''
-import unittest
-import time
+
 from BaseTestCase import BaseTestCase
 from TestAPIs.DiskAPIs import DiskAPIs
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
@@ -15,6 +23,7 @@ smart_detach_storage_domain,smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
     smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
+<<<<<<< HEAD
     smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic,\
     smart_start_vm, smart_deactive_vmdisk, smart_suspend_vm
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
@@ -23,10 +32,17 @@ from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain,\
     StorageDomainAPIs
+=======
+    smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic, smart_deactive_vmdisk, smart_suspend_vm
+from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template, smart_delete_tempnic
+from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
+from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
+>>>>>>> 24b778a36d81a81409b64deb95c2dfde4cd33aa3
 from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 import TestData.VirtualMachines.ITC05_SetUp as ModuleData
 
+import unittest
 import xmltodict
 from collections import OrderedDict
    
@@ -1033,7 +1049,6 @@ class ITC05030601_activeVMDisk_vmrun(BaseTestCase):
             self.assertTrue(False)
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))
 
-    
 class ITC05030602_activeVMDisk_vmdown(BaseTestCase):
     '''
     @summary: 05虚拟机管理-03虚拟机磁盘管理-06激活磁盘-02虚拟机关机
@@ -1108,6 +1123,7 @@ class ITC05030701_deactiveVMDisk_vmrun(BaseTestCase):
             LogPrint().info("Stop vm overtime.")
             self.assertTrue(False)
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))
+        
 class ITC05030702_deactiveVMDisk_vmdown(BaseTestCase):
     '''
     @summary: 05虚拟机管理-03虚拟机磁盘管理-07取消激活磁盘-02虚拟机关机
@@ -1357,7 +1373,6 @@ class ITC050310_statisticsVmDisk(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))
 
-
 class ITC050401_GetVmNicList(BaseTestCase):
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -1370,8 +1385,7 @@ class ITC050401_GetVmNicList(BaseTestCase):
         else:
             LogPrint().error("FAIL:Get vmnic list fail.")
             self.assertTru(False)
-         
-    
+          
 class ITC050402_GetVmNicInfo(BaseTestCase):
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -1393,6 +1407,7 @@ class ITC050402_GetVmNicInfo(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+
 class ITC05040301_CreateVmNic_normal(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-03创建-01正常创建
@@ -1458,6 +1473,7 @@ class ITC05040302_CreateVmNic_dupname(BaseTestCase):
    
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+
 class ITC05040303_CreateVmNic_norequired(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-03创建-03参数完整性
@@ -1511,7 +1527,36 @@ class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
    
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+<<<<<<< HEAD
     
+=======
+       
+class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性
+    '''
+    def setUp(self): 
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+    def test(self):
+        self.flag=True
+        r = self.vmnic_api.createVmNic(ModuleData.vm_name, self.dm.nic_info)
+        if r['status_code'] == self.dm.expected_status_code:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
+                LogPrint().info("PASS:Returned status_code and error-info CORRECT.")
+            else:
+                LogPrint().error("FAIL:Returned error-info is wrong.")
+                self.flag=False
+                print xmltodict.unparse(r['result'],pretty=True)
+        else:
+            LogPrint().error("FAIL:Returned status_code is wrong.")
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)     
+   
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+>>>>>>> 24b778a36d81a81409b64deb95c2dfde4cd33aa3
 
 class ITC05010503_DelVm_Force(BaseTestCase):
     '''
@@ -2260,6 +2305,7 @@ class ITC05020403_SuspendVm_Suspended(BaseTestCase):
         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name))  
 
+<<<<<<< HEAD
 class ITC05040401_UpdateVmNic_normal(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-04编辑网络接口-01正常编辑
@@ -2400,6 +2446,398 @@ class ITC050405_ActiveVmNic(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+=======
+class ITC05020501_MigrateVm_AutoSelectHost(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-01自动选择主机
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+        
+    def test_MigrateVm_AutoSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，自动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        vm_api = VirtualMachineAPIs()
+        host_api = HostAPIs()
+        LogPrint().info("Test: Begin to migrate vm '%s' by Auto-Select host way." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm:
+            if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
+                LogPrint().info("PASS: Migrate vm '%s' from '%s' to '%s' SUCCESS." % (self.dm.vm_name, ModuleData.host1_name, self.dm.host2_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or it's not running on '%s'." % (self.dm.vm_name, self.dm.host2_name))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Migrate vm '%s' FAILED. Returned status code '%s' is WRONG." % (self.dm.vm_name, r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+        
+class ITC05020502_MigrateVm_HandSelectHost(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-02手动选择主机
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+        
+    def test_MigrateVm_HandSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，手动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        vm_api = VirtualMachineAPIs()
+        host_api = HostAPIs()
+        LogPrint().info("Test: Begin to migrate vm '%s' to host '%s' by Hand-Select." % (self.dm.vm_name, self.dm.host2_name))
+        # xml_migrate_vm_option中定义的手动选择迁移的主机
+        r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm:
+            if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
+                LogPrint().info("PASS: Migrate vm '%s' to '%s' by Hand-Select SUCCESS." % (self.dm.vm_name, ModuleData.host1_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or it's not running on '%s'." % (self.dm.vm_name, self.dm.host2_name))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Migrate vm '%s' FAILED. Returned status code '%s' is WRONG." % (self.dm.vm_name, r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+
+class ITC05020503_MigrateVm_OnlyOneHost(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-03只有一个主机
+    @note: 只有一个主机时，虚拟机无法迁移；
+    @bug: 提示信息不完整，可能是问题。
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        
+        # 前提3：启动虚拟机
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+    def test_MigrateVm_AutoSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，自动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Begin to migrate vm '%s' while only 1 host exist." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with only 1 host.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with only 1 host.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with only 1 host." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test：删除虚拟机及磁盘
+        LogPrint().info("Post-Test: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+
+class ITC05020504_MigrateVm_NotAllowMigration(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-04虚拟机设置不允许迁移
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1（设置为不允许迁移）；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+        
+    def test_MigrateVm_NotAllowMigration(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）对设置为不允许迁移的VM进行迁移操作；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。 
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Migrate vm '%s' with 'Migration Not Allowed' option." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm_not_allow:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_not_allow), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with 'Migration Not Allowed' option.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with 'Migration Not Allowed' option.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with 'Migration Not Allowed' option." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+
+class ITC05020601_CancelMigration_DuringMigration(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-06取消迁移-01迁移过程中
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+        
+    def test_MigrateVm_AutoSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，自动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        def is_vm_migrating():
+            return vm_api.getVmStatus(self.dm.vm_name)=='migrating'
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        vm_api = VirtualMachineAPIs()
+        host_api = HostAPIs()
+        LogPrint().info("Test-Step-1: Begin to migrate vm '%s'." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm and wait_until(is_vm_migrating, 300, 5):
+            LogPrint().info("Test-Info-1: Vm '%s' is in 'migrating' state." % self.dm.vm_name)
+            LogPrint().info("Test-Step-2: Begin 'Cancel-Migration' action.")
+            r1 = vm_api.cancelMigration(self.dm.vm_name)
+            if r1['status_code']==self.dm.expected_status_code_cancel_migration:
+                if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(ModuleData.host1_name):
+                    LogPrint().info("PASS: Cancel Migration SUCCESS.")
+                    self.flag = True
+                else:
+                    LogPrint().error("FAIL: Cancel Migration FAILED. Vm's final state is not 'Up' or vm's host is Wrong.")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Returned status code '%s' is WRONG while Cancel-Migration." % r1['status_code'])
+                self.flag = False
+            self.assertTrue(self.flag)
+        else:
+            LogPrint().error("Test-Step1-FAIL: Migrate vm '%s' FAILED. Maybe the vm's state is not 'migrating'." % self.dm.vm_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+
+class ITC05020602_CancelMigration_NotDuringMigration(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-06取消迁移-02非迁移过程中
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+        
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+        
+    def test_CancelMigration_NotDuringMigration(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作（自动选择迁移主机）；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。 
+        '''
+        vm_api = VirtualMachineAPIs()
+
+        LogPrint().info("Test: Begin 'Cancel-Migration' action while vm is not in migration progress.")
+        r = vm_api.cancelMigration(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_cancel_migration_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_cancel_migration_fail), r['result']):
+                LogPrint().info("PASS: Retured status code and info are CORRECT.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are INCORRECT.\n'%s'" % xmltodict.unparse(r['result'], pretty=True))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+
+if __name__ == "__main__":
+    
+    test_cases = ["VirtualMachines.ITC05020602_CancelMigration_NotDuringMigration"]
+>>>>>>> 24b778a36d81a81409b64deb95c2dfde4cd33aa3
 
 class ITC050406_DeactiveVmNic(BaseTestCase):
     '''

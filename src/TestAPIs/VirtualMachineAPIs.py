@@ -1,5 +1,5 @@
 #encoding:utf-8
-from Utils.Util import wait_until
+
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -20,6 +20,7 @@ from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 from Utils.PrintLog import LogPrint
+from Utils.Util import wait_until
 
 def smart_create_vm(vm_name, xml_vm_info, status_code=201):
     '''
@@ -527,7 +528,7 @@ class VirtualMachineAPIs(BaseAPIs):
         api_url = '%s/%s/migrate' % (self.base_url, vm_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_migrate_option)
-        print r.status_code, r.text
+#         print r.status_code, r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
         
     def cancelMigration(self, vm_name):
@@ -540,7 +541,7 @@ class VirtualMachineAPIs(BaseAPIs):
         api_url = '%s/%s/cancelmigration' % (self.base_url, vm_id)
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data='<action/>')
-        print r.status_code, r.text
+#         print r.status_code, r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def exportVm(self, vm_name, xml_export_vm_option=None):
