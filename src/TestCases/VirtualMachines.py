@@ -13,34 +13,21 @@ __version__ = "V0.1"
 '''
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DiskAPIs import DiskAPIs
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
-from Utils.PrintLog import LogPrint
-from Utils.Util import DictCompare,wait_until
-from Utils.HTMLTestRunner import HTMLTestRunner
-from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain,\
-smart_detach_storage_domain,smart_active_storage_domain
+from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain, smart_detach_storage_domain, smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
-    smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
-<<<<<<< HEAD
-    smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic,\
-    smart_start_vm, smart_deactive_vmdisk, smart_suspend_vm
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
-    TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
-    smart_delete_tempnic
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host
-from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain,\
-    StorageDomainAPIs
-=======
-    smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic, smart_deactive_vmdisk, smart_suspend_vm
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template, smart_delete_tempnic
+from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs, smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
+    smart_start_vm, smart_create_vmnic,smart_delete_vmnic, smart_deactive_vmdisk, smart_suspend_vm
+from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs, smart_create_template, smart_create_tempnic, smart_delete_template, smart_delete_tempnic
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
->>>>>>> 24b778a36d81a81409b64deb95c2dfde4cd33aa3
 from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 import TestData.VirtualMachines.ITC05_SetUp as ModuleData
+
+from Utils.PrintLog import LogPrint
+from Utils.Util import DictCompare,wait_until
+from Utils.HTMLTestRunner import HTMLTestRunner
 
 import unittest
 import xmltodict
@@ -1527,9 +1514,6 @@ class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
    
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-<<<<<<< HEAD
-    
-=======
        
 class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
     '''
@@ -1556,7 +1540,6 @@ class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
    
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
->>>>>>> 24b778a36d81a81409b64deb95c2dfde4cd33aa3
 
 class ITC05010503_DelVm_Force(BaseTestCase):
     '''
@@ -2305,7 +2288,6 @@ class ITC05020403_SuspendVm_Suspended(BaseTestCase):
         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name))  
 
-<<<<<<< HEAD
 class ITC05040401_UpdateVmNic_normal(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-04编辑网络接口-01正常编辑
@@ -2329,6 +2311,7 @@ class ITC05040401_UpdateVmNic_normal(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.new_nic_name))
+
 class ITC05040402_UpdateVmNic_dupname(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-04编辑网络接口-02重名
@@ -2357,7 +2340,6 @@ class ITC05040402_UpdateVmNic_dupname(BaseTestCase):
 
 class ITC05040403_UpdateVmNic_type(BaseTestCase):
     '''
-    ///////////////////////////////////////////////////////////////
     @summary: 05虚拟机管理-04网络接口-04编辑网络接口-03编辑接口类型
     @note: 虚拟机运行状态下
     '''
@@ -2446,7 +2428,7 @@ class ITC050405_ActiveVmNic(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-=======
+
 class ITC05020501_MigrateVm_AutoSelectHost(BaseTestCase):
     '''
     @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-01自动选择主机
@@ -2834,11 +2816,6 @@ class ITC05020602_CancelMigration_NotDuringMigration(BaseTestCase):
         LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
 
-if __name__ == "__main__":
-    
-    test_cases = ["VirtualMachines.ITC05020602_CancelMigration_NotDuringMigration"]
->>>>>>> 24b778a36d81a81409b64deb95c2dfde4cd33aa3
-
 class ITC050406_DeactiveVmNic(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-06取消激活网络接口
@@ -2862,6 +2839,7 @@ class ITC050406_DeactiveVmNic(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+        
 class ITC05040701_DeleteVmNic_vmdown_plugged(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-07删除网络接口-01虚拟机down
@@ -2926,7 +2904,7 @@ class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
 
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
+
     test_cases = ["VirtualMachines.ITC05040702_DeleteVmNic_vmrun"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
