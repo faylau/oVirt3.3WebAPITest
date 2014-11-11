@@ -58,11 +58,7 @@
 <tr>=
 <ul=class\="site-footer-links">
 <ul>=
-<<<<<<< HEAD
->>>>>>>=1673ebb4fa170342dd98d8d0cbd18a2858e81534
-=======
->>>>>>>=origin/master
->>>>>>> 29ed9a73277f4c03d905a964c1bd54fd19c16d54
+>>>>>>>=29ed9a73277f4c03d905a964c1bd54fd19c16d54
 Clone=in Desktop
 Download=ZIP
 Fetching=contributors&hellip;
@@ -231,7 +227,6 @@ encoding//src/TestData/VirtualMachines/ITC05030401_UpdateVMDisk.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05030401_UpdateVMDisk_vmdown.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05030402_UpdateVMDisk_vmrun.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05030501_DeleteVMDisk_option.py=utf-8
-<<<<<<< HEAD
 encoding//src/TestData/VirtualMachines/ITC05030502_DeleteActiveVMDisk_vmrun.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05030702_deactiveVMDisk_vmdown.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05030801_MoveactiveVMDisk_vmdown.py=utf-8
@@ -245,8 +240,14 @@ encoding//src/TestData/VirtualMachines/ITC05040302_CreateVmNic_dupname.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05040303_CreateVmNic_norequired.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05040304_CreateVmNic_verifyname.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05040305_CreateVmNic_verifymac.py=utf-8
-=======
->>>>>>> 29ed9a73277f4c03d905a964c1bd54fd19c16d54
+encoding//src/TestData/VirtualMachines/ITC05040401_UpdateVmNic_normal.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05040402_UpdateVmNic_dupname.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05040403_UpdateVmNic_type.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05040404_UpdateVmNic_dupmac.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC050405_ActiveVmNic.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC050406_DeactiveVmNic.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05040701_DeleteVmNic_vmdown_plugged.py=utf-8
+encoding//src/TestData/VirtualMachines/ITC05040702_DeleteVmNic_vmrun_plugged.py=utf-8
 encoding//src/TestData/VirtualMachines/ITC05_SetUp.py=utf-8
 encoding//src/Utils/DBManager.py=utf-8
 encoding//src/Utils/HttpClient.py=utf-8

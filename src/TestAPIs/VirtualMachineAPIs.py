@@ -192,6 +192,7 @@ def smart_deactive_vmdisk(vm_name,disk_id,status_code=200):
 def smart_create_vmnic(vm_name,nic_info,nic_name,status_code=201):
     vmnic_api=VmNicAPIs()
     r=vmnic_api.createVmNic(vm_name, nic_info)
+    print r
     if r['status_code']==status_code:
         LogPrint().info("Create vmnic success.")
         return True
@@ -888,7 +889,24 @@ class VmNicAPIs(VirtualMachineAPIs):
         '''
         self.base_url = '%s/vms' % WebBaseApiUrl
         self.sub_url_nics = 'nics'
-        
+    def isVmNicExist(self,vm_name,nic_name):
+        '''
+        @summary: 检查虚拟机的网络接口是否存在，存在返回True，否则返回False
+        '''
+        nic_list = self.getVmNicsList(vm_name)['result']['nics']['nic']
+        flag = False
+        if isinstance(nic_list, dict):
+            if nic_list['name'] == nic_name:
+                return True
+            else:
+                return False
+        else:
+            for nic in nic_list:
+                if nic['name'] == nic_name:
+                    flag=True
+            return flag
+            
+    
     def getVmNicIdByName(self, vm_name, nic_name):
         '''
         @summary: 根据虚拟机Nic的名称返回其id
@@ -1325,6 +1343,7 @@ if __name__=='__main__':
     vmapi = VirtualMachineAPIs()
     vmdiskapi = VmDiskAPIs()
     vmnicapi = VmNicAPIs()
+    print vmnicapi.isVmNicExist('vm-ITC05', 'nic3')
     vmcdromapi = VmCdromAPIs()
     vmsnapshotapi = VmSnapshotAPIs()
     vmwatchdogapi = VmWatchdogAPIs()

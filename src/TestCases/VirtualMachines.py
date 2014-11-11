@@ -15,11 +15,8 @@ smart_detach_storage_domain,smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
     smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
-<<<<<<< HEAD
-    smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic
-=======
+    smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic,\
     smart_start_vm, smart_deactive_vmdisk, smart_suspend_vm
->>>>>>> 29ed9a73277f4c03d905a964c1bd54fd19c16d54
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
     TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
     smart_delete_tempnic
@@ -903,7 +900,6 @@ class ITC05030501_DeleteVMDisk_option(BaseTestCase):
         self.flag=True
         r=self.vmdisk_api.delVmDisk(ModuleData.vm_name, disk_id=self.disk_id,xml_del_disk_option=self.dm.del_disk_option_detach)
         if r['status_code']==self.dm.expected_status_code:
-<<<<<<< HEAD
             if not self.vmdisk_api.is_vmdisk_exist(ModuleData.vm_name, self.disk_id) \
             and DiskAPIs().isExist(self.disk_id):
                 LogPrint().info("Detach disk from vm success.")
@@ -1516,39 +1512,6 @@ class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
     
-   
-class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
-    '''
-    @summary: 05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性
-    '''
-    def setUp(self): 
-        self.dm = super(self.__class__, self).setUp()
-        self.vmnic_api = VmNicAPIs()
-    def test(self):
-        self.flag=True
-        r = self.vmnic_api.createVmNic(ModuleData.vm_name, self.dm.nic_info)
-        if r['status_code'] == self.dm.expected_status_code:
-            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
-                LogPrint().info("PASS:Returned status_code and error-info CORRECT.")
-            else:
-                LogPrint().error("FAIL:Returned error-info is wrong.")
-                self.flag=False
-                print xmltodict.unparse(r['result'],pretty=True)
-        else:
-            LogPrint().error("FAIL:Returned status_code is wrong.")
-            print xmltodict.unparse(r['result'],pretty=True)
-            self.flag=False
-        self.assertTrue(self.flag)     
-   
-    def tearDown(self):
-        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-if __name__ == "__main__":
-    
-    test_cases = ["VirtualMachines.ITC05040305_CreateVmNic_verifymac"]
-
-
-=======
-            pass
 
 class ITC05010503_DelVm_Force(BaseTestCase):
     '''
@@ -1558,8 +1521,7 @@ class ITC05010503_DelVm_Force(BaseTestCase):
         '''
         @summary: 初始化测试数据、测试环境。
         '''
-        self.dm = super(self.__class__, self).setUp()
-        
+        self.dm = super(self.__class__, self).setUp()        
         # 前提1：创建一个虚拟机vm1
         LogPrint().info("Pre-Test-1: Create a vm with name '%s'." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
@@ -2298,16 +2260,241 @@ class ITC05020403_SuspendVm_Suspended(BaseTestCase):
         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name))  
 
+class ITC05040401_UpdateVmNic_normal(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-01正常编辑
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+    def test(self):
+        r=self.vmnic_api.updateVmNic(ModuleData.vm_name, self.dm.nic_name, self.dm.update_vm_nic_info)
+        if r['status_code'] == self.dm.expected_status_code:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.update_vm_nic_info), r['result']):
+                LogPrint().info("PASS:Update vmnic success.")
+            else:
+                LogPrint().error("FAIL:Update vmnic fail.The info is wrong.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:Update vmnic fail.The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.new_nic_name))
+class ITC05040402_UpdateVmNic_dupname(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-02重名
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info1, self.dm.nic_name1))
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info2, self.dm.nic_name2))
+    def test(self):
+        r=self.vmnic_api.updateVmNic(ModuleData.vm_name, self.dm.nic_name1, self.dm.update_vm_nic_info)
+        if r['status_code'] == self.dm.expected_status_code:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
+                LogPrint().info("PASS:Can not update nic dupname.")
+            else:
+                LogPrint().error("FAIL:The error-info is wrong.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name1))     
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name2)) 
+
+class ITC05040403_UpdateVmNic_type(BaseTestCase):
+    '''
+    ///////////////////////////////////////////////////////////////
+    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-03编辑接口类型
+    @note: 虚拟机运行状态下
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+        r=smart_create_vmdisk(ModuleData.vm_name,self.dm.disk_info, self.dm.disk_name)
+        self.assertTrue(r[0])
+        self.disk_id=r[1]
+        self.assertTrue(smart_start_vm(ModuleData.vm_name))
+    def test(self):
+        r=self.vmnic_api.updateVmNic(ModuleData.vm_name, self.dm.nic_name, self.dm.update_vm_nic_info)
+        print r
+        if r['status_code'] == self.dm.expected_status_code:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.update_vm_nic_info), r['result']):
+                LogPrint().info("PASS:Update vmnic type success.")
+            else:
+                LogPrint().error("FAIL:Update vmnic type fail.The info is wrong.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:Update vmnic type fail.The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        VirtualMachineAPIs().stopVm(ModuleData.vm_name)
+        def is_vm_down():
+            return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
+        if wait_until(is_vm_down, 300, 10):
+            LogPrint().info("Stop vm success.")
+            self.assertTrue(True)
+        else:
+            LogPrint().info("Stop vm overtime.")
+            self.assertTrue(False)
+        self.assertTrue(smart_delete_disk(self.disk_id))
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+
+class ITC05040404_UpdateVmNic_dupmac(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-04mac已被使用
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info1, self.dm.nic_name1))
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info2, self.dm.nic_name2))
+    def test(self):
+        r=self.vmnic_api.updateVmNic(ModuleData.vm_name, self.dm.nic_name1, self.dm.update_vm_nic_info)
+        if r['status_code'] == self.dm.expected_status_code:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
+                LogPrint().info("PASS:Can not update nic dupmac.")
+            else:
+                LogPrint().error("FAIL:The error-info is wrong.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name1))     
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name2)) 
+
+class ITC050405_ActiveVmNic(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-05激活网络接口
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+        
+    def test(self):
+        r=self.vmnic_api.activateVmNic(ModuleData.vm_name, self.dm.nic_name)
+        if r['status_code'] == self.dm.expected_status_code:
+            if self.vmnic_api.getVmNicInfo(ModuleData.vm_name, self.dm.nic_name)['result']['nic']['active']=='true':
+                LogPrint().info("PASS:Active vmnic success.")
+            else:
+                LogPrint().error("FAIL:Active vmnic fail.The info is wrong.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:Active vmnic fail.The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+
+class ITC050406_DeactiveVmNic(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-06取消激活网络接口
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+    def test(self):
+        r=self.vmnic_api.deactivateVmNic(ModuleData.vm_name, self.dm.nic_name)
+        if r['status_code'] == self.dm.expected_status_code:
+            if self.vmnic_api.getVmNicInfo(ModuleData.vm_name, self.dm.nic_name)['result']['nic']['active']=='false':
+                LogPrint().info("PASS:Deactive vmnic success.")
+            else:
+                LogPrint().error("FAIL:Deactive vmnic fail.The info is wrong.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:Deactive vmnic fail.The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+class ITC05040701_DeleteVmNic_vmdown_plugged(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-07删除网络接口-01虚拟机down
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+    def test(self):
+        r=self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
+        if r['status_code'] == self.dm.expected_status_code:
+            if not self.vmnic_api.isVmNicExist(ModuleData.vm_name, self.dm.nic_name):
+                LogPrint().info("PASS:Delete vmnic success.")
+            else:
+                LogPrint().error("FAIL:Delete vmnic fail.The vmnic is still exist.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:Delete vmnic fail.The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
+
+class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
+    '''
+    @summary: 05虚拟机管理-04网络接口-07删除网络接口-02虚拟机run
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.vmnic_api = VmNicAPIs()
+        self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+        r=smart_create_vmdisk(ModuleData.vm_name, self.dm.disk_info, self.dm.disk_name)
+        self.assertTrue(r[0])
+        self.disk_id = r[1]
+        self.assertTrue(smart_start_vm(ModuleData.vm_name))
+    def test(self):
+        r=self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
+        if r['status_code'] == self.dm.expected_status_code:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
+                LogPrint().info("PASS:Can not delete plugged nic when vm is running.")
+            else:
+                LogPrint().error("FAIL:The error-info is wrong.")
+                self.flag=False
+        else:
+            LogPrint().error("FAIL:The status_code is '%s'."%r['status_code'])
+            print xmltodict.unparse(r['result'],pretty=True)
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        VirtualMachineAPIs().stopVm(ModuleData.vm_name)
+        def is_vm_down():
+            return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
+        if wait_until(is_vm_down, 300, 10):
+            LogPrint().info("Stop vm success.")
+            self.assertTrue(True)
+        else:
+            LogPrint().info("Stop vm overtime.")
+            self.assertTrue(False)
+        self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))
+        self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
 
 
 if __name__ == "__main__":
-    
-    test_cases = ["VirtualMachines.ITC05020403_SuspendVm_Suspended"]
->>>>>>> 29ed9a73277f4c03d905a964c1bd54fd19c16d54
-
+    #import sys;sys.argv = ['', 'Test.testName']
+    test_cases = ["VirtualMachines.ITC05040702_DeleteVmNic_vmrun"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
     testSuite.addTests(tests)
  
     unittest.TextTestRunner(verbosity=2).run(testSuite)
+    
+    
