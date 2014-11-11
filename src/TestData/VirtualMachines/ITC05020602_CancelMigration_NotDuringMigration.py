@@ -8,7 +8,7 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # Version        Date                Desc                            Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/11/05          初始版本                                                            Liu Fei 
+# V0.1           2014/11/11          初始版本                                                            Liu Fei 
 #---------------------------------------------------------------------------------
 '''
 
@@ -21,7 +21,7 @@ from TestData.VirtualMachines import ITC05_SetUp as ModuleData
 ---------------------------------------------------------------------------------------------------
 '''
 # 前提1：创建虚拟机的信息
-vm_name = "vm-ITC05020601"
+vm_name = "vm-ITC05020602"
 xml_vm_info='''
 <vm>
     <name>%s</name>
@@ -40,7 +40,7 @@ xml_vm_info='''
 ''' % (vm_name, ModuleData.cluster_nfs_name)
 
 # 前提2：创建磁盘的信息
-disk_alias = 'disk-ITC05020601'
+disk_alias = 'disk-ITC05020602'
 xml_disk_info = '''
 <disk>
     <alias>%s</alias>
@@ -57,7 +57,7 @@ xml_disk_info = '''
 
 # 前提3：创建主机的信息
 host2 = Hosts['node1']
-host2_name = 'node-ITC05020601'
+host2_name = 'node-ITC05020602'
 host2_ip = host2['ip']
 host2_password = host2['password']
 xml_host2_info = '''
@@ -104,7 +104,14 @@ xml_del_host_option = '''
 @note: ExpectedResult
 ---------------------------------------------------------------------------------------------------
 '''
-expected_status_code_migrate_vm = 200
-expected_status_code_cancel_migration = 200
+expected_status_code_cancel_migration_fail = 409
+expected_info_cancel_migration_fail = '''
+<action>
+    <fault>
+        <reason>Operation Failed</reason>
+        <detail>[Cannot cancel migration for non migrating VM.]</detail>
+    </fault>
+</action>
+'''
 
 

@@ -1,5 +1,5 @@
 #encoding:utf-8
-from Utils.Util import wait_until
+
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
@@ -20,6 +20,7 @@ from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 from Utils.PrintLog import LogPrint
+from Utils.Util import wait_until
 
 def smart_create_vm(vm_name, xml_vm_info, status_code=201):
     '''
