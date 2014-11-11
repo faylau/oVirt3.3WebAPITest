@@ -28,18 +28,14 @@ disk_info='''
 '''
 @note: TestData
 '''
-del_disk_option_detach='''
-<action>
-    <detach>true</detach>
-</action>
-'''
 
-del_disk_option_remove='''
-<action>
-    <detach>false</detach>
-</action>
-'''
 '''
 @note: ExpectedData
 '''
-expected_status_code = 200
+expected_status_code = 409
+expected_info = '''
+<fault>
+    <reason>Operation Failed</reason>
+    <detail>[Cannot remove Virtual Machine Disk. At least one of the VMs is not down.]</detail>
+</fault>
+'''

@@ -28,18 +28,16 @@ disk_info='''
 '''
 @note: TestData
 '''
-del_disk_option_detach='''
+move_option='''
 <action>
-    <detach>true</detach>
+    <storage_domain>
+        <name>%s</name>
+    </storage_domain>
+    <async>false</async>
 </action>
-'''
-
-del_disk_option_remove='''
-<action>
-    <detach>false</detach>
-</action>
-'''
+'''%ModuleData.data2_nfs_name
 '''
 @note: ExpectedData
 '''
 expected_status_code = 200
+

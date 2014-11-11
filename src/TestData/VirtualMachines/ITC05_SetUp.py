@@ -133,10 +133,10 @@ xml_storage_info = '''
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-vm_name = 'vm-ITC05'
+vm_name = 'KE-ITC05'
 vm_info='''
 <vm>
-        <name>vm-ITC05</name>
+        <name>KE-ITC05</name>
         <description>Virtual Machine 2</description>
         <type>server</type>
         <memory>536870912</memory>
