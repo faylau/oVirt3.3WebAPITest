@@ -73,6 +73,7 @@ data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=c
 eclipse.preferences.version=1
 encoding//src/Configs/GlobalConfig.py=utf-8
 encoding//src/TestCases/Cluster.py=utf-8
+encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/VirtualMachines.py=utf-8
 encoding//src/TestRun/TestCenter.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
