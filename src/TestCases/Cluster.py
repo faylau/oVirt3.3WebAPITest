@@ -1,6 +1,4 @@
 #encoding:utf-8
-import TestData
-import TestAPIs
 
 
 __authors__ = ['"wei keke" <keke.wei@cs2c.com.cn>']
@@ -27,8 +25,12 @@ from Utils.HTMLTestRunner import HTMLTestRunner
 from TestData.Cluster import ITC02_Setup as ModuleData
 from TestAPIs.HostAPIs import HostAPIs,smart_create_host,smart_del_host
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs
+import TestData
+import TestAPIs
 
 import xmltodict
+
+
 class ITC02_Setup(BaseTestCase):
     '''
     @summary: “集群管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）
