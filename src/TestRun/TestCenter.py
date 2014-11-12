@@ -53,7 +53,7 @@ import xmltodict
 from Utils.HTMLTestRunner import HTMLTestRunner
 
 reload(sys)
-# sys.setdefaultencoding('utf-8')
+sys.setdefaultencoding('utf-8')
 
 def get_project_dir():
     '''
@@ -133,22 +133,21 @@ def get_testcases_from_module(module_name):
     for line in f.readlines(): # 遍历每个用例的模块，找出所有的类的名字
         if re.match("^class", line) and "(BaseTestCase)" in line:
             tc_name = line.split(' ')[1].split('(BaseTestCase)')[0]
-            test_cases.append("TestCase.%s.%s" % (module_name[:-3], tc_name))
-#             test_cases.append("TestCase.%s.%s" % (module_name[:-3], line[6:-16]))
+            test_cases.append("TestCases.%s.%s" % (module_name[:-3], tc_name))
     f.close()
 
-_log_level = None
-
-def get_log_level():
-    '''
-    @summary: 从GlobalConf文件中获取当前的log_level值
-    '''
-    global _log_level
-    
-    if _log_level is None:
-        dict_data = load_global_config()
-        _log_level = int(dict_data['globalconf']['loglevel']['value'])
-    return _log_level
+# _log_level = None
+# 
+# def get_log_level():
+#     '''
+#     @summary: 从GlobalConf文件中获取当前的log_level值
+#     '''
+#     global _log_level
+#     
+#     if _log_level is None:
+#         dict_data = load_global_config()
+#         _log_level = int(dict_data['globalconf']['loglevel']['value'])
+#     return _log_level
 
 def load_global_config(): 
     '''
@@ -174,7 +173,7 @@ def get_test_result_path():
     '''
     cur_time = time.localtime(time.time())
     format_time = time.strftime('%Y-%m-%d_%H%M%S', cur_time)
-    return get_project_dir() + 'result' + os.path.sep + format_time +\
+    return get_project_dir() + 'Results' + os.path.sep + format_time +\
         '_' + get_exec_type() + '_' + str(len(test_cases)) + '.html'
 
 def get_exec_type():
@@ -237,18 +236,18 @@ def exectueTest():
     print test_cases
 
        
-#     testSuite = load_tests() 
-#     result_file = get_test_result_path()
-#     fp = file(result_file, 'wb')
-#     runner = HTMLTestRunner(
-#         stream=fp, 
-#         title=u"中标麒麟虚拟化管理平台HTTP接口自动化测试报告",
-#         description=(
-#             u"中标麒麟虚拟化管理平台HTTP接口自动化测试报告\n"
-#             u'测试执行方式：%s' % exec_type
-#         )
-#     )
-#     runner.run(testSuite)
+    testSuite = load_tests() 
+    result_file = get_test_result_path()
+    fp = file(result_file, 'wb')
+    runner = HTMLTestRunner(
+        stream=fp, 
+        title=u"中标麒麟虚拟化管理平台HTTP接口自动化测试报告",
+        description=(
+            u"中标麒麟虚拟化管理平台HTTP接口自动化测试报告\n"
+            u'测试执行方式：%s' % exec_type
+        )
+    )
+    runner.run(testSuite)
 
 if __name__ == "__main__":
     exectueTest()

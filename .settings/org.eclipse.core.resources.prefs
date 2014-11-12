@@ -1,3 +1,4 @@
+=\=\=\=\=\=\=
 --><span=class\="path-divider">/</span><\!--
 --><strong><a=href\="/faylau/oVirt3.3WebAPITest" class\="js-current-repository js-repo-home-link" data-pjax-container-selector\="\#js-repo-pjax-container">oVirt3.3WebAPITest</a></strong>
 0=
@@ -19,6 +20,7 @@
 </table>=
 </tr>=
 </ul>=
+<<<<<<<=HEAD
 <a=href\="\#" class\="octicon octicon-x flash-close js-ajax-error-dismiss" aria-label\="Dismiss error"></a>
 <body=class\="logged_out  env-production windows vis-public page-blob">
 <button=type\="submit" class\="button">Go</button>
@@ -51,6 +53,7 @@
 <tr>=
 <ul=class\="site-footer-links">
 <ul>=
+>>>>>>>=origin/master
 Clone=in Desktop
 Download=ZIP
 Fetching=contributors&hellip;
@@ -71,13 +74,7 @@ data-repo-scope-placeholder="Search"
 data-skip-pjax="true"
 data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=clone">
 eclipse.preferences.version=1
-<<<<<<< HEAD
 encoding//src/Configs/GlobalConfig.py=utf-8
-encoding//src/TestCases/Cluster.py=utf-8
-encoding//src/TestCases/Disk.py=utf-8
-encoding//src/TestCases/VirtualMachines.py=utf-8
-encoding//src/TestRun/TestCenter.py=utf-8
-=======
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
 encoding//src/TestCases/Cluster.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
@@ -88,6 +85,7 @@ encoding//src/TestCases/Profile.py=utf-8
 encoding//src/TestCases/StorageDomain.py=utf-8
 encoding//src/TestCases/Template.py=utf-8
 encoding//src/TestCases/VirtualMachine.py=utf-8
+encoding//src/TestData/DataCenter/ITC01_SetUp.py=utf-8
 encoding//src/TestData/StorageDomain/ITC0401030106_CreateNfsSd_NoRequiredParams.py=utf-8
 encoding//src/TestData/Template/ITC070102_GetTemplateInfo.py=utf-8
 encoding//src/TestData/Template/ITC0701030101_CreateTemplate.py=utf-8
@@ -167,7 +165,7 @@ encoding//src/TestData/VirtualMachine/ITC050406_DeactiveVmNic.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05040701_DeleteVmNic_vmdown_plugged.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05040702_DeleteVmNic_vmrun_plugged.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05_SetUp.py=utf-8
->>>>>>> origin/master
+encoding//src/TestRun/TestCenter.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.
