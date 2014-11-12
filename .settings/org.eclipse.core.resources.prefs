@@ -71,6 +71,8 @@ data-repo-scope-placeholder="Search"
 data-skip-pjax="true"
 data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=clone">
 eclipse.preferences.version=1
+encoding//src/Configs/GlobalConfig.py=utf-8
+encoding//src/TestAPIs/StorageConnectionAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
 encoding//src/TestCases/Cluster.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
