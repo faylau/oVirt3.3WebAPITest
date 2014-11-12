@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<globalconf>
+    <!--
+        exec_type:
+        all:        Execute all test cases in the TestCase folder.
+        module:     Execute all test cases in the module whose 'run' parameter is 'True'
+        config:     Execute test cases whose 'run' parameter is 'True' in BasicSuite.xml
+        bvt:        Execute BVT (Build Verification Test) only
+        smoke:      Execute smoke testing only
+        autotest:   Execute test cases that transported from testopia
+	-->
+    <exec_type>module</exec_type>
+    
+    <!--
+        loglevel:
+        0  debug
+        1  normal(default)
+        2  only warning, error & fail
+    -->
+    <loglevel>0</loglevel>
+</globalconf>

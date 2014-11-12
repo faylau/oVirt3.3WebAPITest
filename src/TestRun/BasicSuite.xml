@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCases>
+	<TestCase name="TC060201_TC060202_TC060204_WrongLogin" id="060201">
+        <description>06-02-01-用户名为空，无法登录web管理平台</description>
+        <operation modulename="UserLogin" classname="TC060201_TC060202_TC060204_WrongLogin"/>
+        <run>True</run>
+    </TestCase>
+
+    <TestCase name="TC0902010102_AddOneVMforOther" id="0902010102">
+        <description>09-02-01-01-02-添加单台虚拟机，选择属主用户为其他用户，其他项设置均合法</description>
+        <operation modulename="VM" classname="TC0902010102_AddOneVMforOther"/>
+        <run>True</run>
+    </TestCase>
+</TestCases>
