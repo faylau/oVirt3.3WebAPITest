@@ -89,6 +89,25 @@ def smart_start_vm(vm_name, xml_start_vm_option=None, status_code=200):
     else:
         LogPrint().error("INFO-FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % vm_name)
         return False
+ 
+def smart_stop_vm(vm_name, status_code=200):
+    '''
+    @summary: 智能断电虚拟机（等待变为down状态）
+    '''
+    vm_api = VirtualMachineAPIs()
+    r = vm_api.stopVm(vm_name)
+    def is_vm_down():
+        return vm_api.getVmStatus(vm_name)=='down'
+    if wait_until(is_vm_down, 300, 5):
+        if r['status_code'] == 200:
+            LogPrint().info("INFO-PASS: Stop vm '%s' SUCCESS." % vm_name)
+            return True
+        else:
+            LogPrint().error("INFO-FAIL: Stop vm '%s' FAILED. Returned status code is INCORRECT." % vm_name)
+            return False
+    else:
+        LogPrint().error("INFO-FAIL: Stop vm '%s' FAILED. It's final state is not 'Down'." % vm_name)
+        return False    
     
 def smart_suspend_vm(vm_name, status_code=202):
     '''
@@ -193,12 +212,12 @@ def smart_deactive_vmdisk(vm_name,disk_id,status_code=200):
 def smart_create_vmnic(vm_name,nic_info,nic_name,status_code=201):
     vmnic_api=VmNicAPIs()
     r=vmnic_api.createVmNic(vm_name, nic_info)
-    print r
     if r['status_code']==status_code:
         LogPrint().info("Create vmnic success.")
         return True
     else:
-        LogPrint().error("Create vmnic fail.")
+        LogPrint().error("Create vmnic FAILED. Returned status code is '%s'."%r['status_code'] )
+        print r['result']
         return False
 def smart_delete_vmnic(vm_name,nic_name,status_code=200):
     try:
@@ -643,7 +662,6 @@ class VmDiskAPIs(VirtualMachineAPIs):
         api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_disks, disk_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        print r.text
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def getVmDiskStatus(self, vm_name, disk_alias=None, disk_id=None):
