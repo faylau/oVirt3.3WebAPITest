@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCases>
+	<TestCase name="TC060101_OpenLoginPage" id="060101">
+		<description>06-01-01-进入安全云操作系统管理平台登录界面</description>
+		<operation modulename="UserLogin" classname="TC060101_OpenLoginPage"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC060201_TC060202_TC060204_WrongLogin" id="060201">
+		<description>06-02-01-用户名为空，无法登录web管理平台, 06-02-02-密码为空，无法登录web管理平台, 06-02-04-用户名或密码或验证码错误，无法登录web管理平台</description>
+		<operation modulename="UserLogin" classname="TC060201_TC060202_TC060204_WrongLogin"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC060501_ViewAbout" id="060501">
+		<description>06-05-01-查看【关于】信息</description>
+		<operation modulename="UserLogin" classname="TC060501_ViewAbout"></operation>
+		<run>True</run>
+	</TestCase>
+	
+	<TestCase name="TC060601_ViewLicense" id="060601">
+		<description>06-06-01-查看【授权信息】</description>
+		<operation modulename="UserLogin" classname="TC060601_ViewLicense"></operation>
+		<run>True</run>
+	</TestCase>
+
+
+
+	<TestCase name="TC07030401_AddOneUser" id="07030401">
+		<description>07-03-04-01-成功创建用户</description>
+		<operation modulename="UserMgmt" classname="TC07030401_AddOneUser"></operation>
+		<run>True</run>
+	</TestCase>
+	
+	<TestCase name="TC07030702_deleteUSer" id="07030702">
+		<description>07-03-07-02-删除没有占用资源的用户</description>
+		<operation modulename="UserMgmt" classname="TC07030702_deleteUSer"></operation>
+		<run>True</run>
+	</TestCase>
+
+
+
+	<TestCase name="TC08010405_AddHostClusterPublicResouse" id="08010405">
+		<description>08-01-04-05-添加主机资源池-公共资源项测试</description>
+		<operation modulename="ClusterMgmt" classname="TC08010405_AddHostClusterPublicResouse"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC08010601_DeleteAEmptyHostCluster" id="08010601">
+		<description>08-01-06-01-删除一个空主机资源池</description>
+		<operation modulename="ClusterMgmt" classname="TC08010601_DeleteAEmptyHostCluster"></operation>
+		<run>True</run>
+	</TestCase>
+
+
+
+
+
+
+
+	<TestCase name="TC08040207_AddImgSystemPublic" id="08040207">
+		<description>08-04-02-07-添加公共资源类型系统盘映像</description>
+		<operation modulename="ImgMgmt" classname="TC08040207_AddImgSystemPublic"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC08040215_AddImgDataPublicNew" id="08040215">
+		<description>08-04-02-15-添加空数据块方式添加公共资源的数据盘映像</description>
+		<operation modulename="ImgMgmt" classname="TC08040215_AddImgDataPublicNew"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC08040301_DeleteImg" id="08040301">
+		<description>08-04-03-01-删除状态为非已用的映像</description>
+		<operation modulename="ImgMgmt" classname="TC08040301_DeleteImg"></operation>
+		<run>True</run>
+	</TestCase>
+	
+
+
+	<TestCase name="TC08030203_AddVNetPublicAndRanged" id="08030203">
+		<description>08-03-02-03-添加虚拟网络（该网络为公共资源、RANGED类型）</description>
+		<operation modulename="NetworkMgmt" classname="TC08030203_AddVNetPublicAndRanged"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC08030205_AddVNetPulicAndFixed" id="08030205">
+		<description>08-03-02-05-添加虚拟网络（该网络为公共资源、FIXED类型）</description>
+		<operation modulename="NetworkMgmt" classname="TC08030205_AddVNetPulicAndFixed"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC08030302_DeleteVNet" id="08030302">
+		<description>08-03-03-02-删除一个已用租期为0的虚拟网络</description>
+		<operation modulename="NetworkMgmt" classname="TC08030302_DeleteVNet"></operation>
+		<run>True</run>
+	</TestCase>
+
+
+
+	<TestCase name="TC0902010101_AddOneVMforMe" id="0902010101">
+		<description>09-02-01-01-01-添加单台虚拟机,选择属主用户“我自己”,其他项设置均合法</description>
+		<operation modulename="VM" classname="TC0902010101_AddOneVMforMe"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC090801_ShutoffRunningVM" id="090801">
+		<description>09-08-01-关闭一台状态为正在运行的虚拟机</description>
+		<operation modulename="VM" classname="TC090801_ShutoffRunningVM"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC090901_OpenVM" id="090901">
+		<description>09-09-01-打开一台状态为已关机的虚拟机</description>
+		<operation modulename="VM" classname="TC090901_OpenVM"></operation>
+		<run>True</run>
+	</TestCase>
+
+	<TestCase name="TC092601_DeleteOneVM" id="092601">
+		<description>09-26-01-删除一台虚拟机</description>
+		<operation modulename="VM" classname="TC092601_DeleteOneVM"></operation>
+		<run>True</run>
+	</TestCase>
+</TestCases>
