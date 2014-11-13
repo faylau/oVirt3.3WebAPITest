@@ -16,7 +16,6 @@ from BaseTestCase import BaseTestCase
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
 from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain, smart_detach_storage_domain, smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
-<<<<<<< HEAD:src/TestCases/VirtualMachine.py
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
     smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
 smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic,\
@@ -31,13 +30,11 @@ from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNic
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
 
-=======
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs, smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
     smart_start_vm, smart_create_vmnic,smart_delete_vmnic, smart_deactive_vmdisk, smart_suspend_vm
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs, smart_create_template, smart_create_tempnic, smart_delete_template, smart_delete_tempnic
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
->>>>>>> 65140ff39ad4836e4fa2fd928757482217780f99:src/TestCases/VirtualMachines.py
 from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 import TestData.VirtualMachine.ITC05_SetUp as ModuleData
@@ -57,7 +54,7 @@ class ITC05_SetUp(BaseTestCase):
     @note: （2）创建一个集群；
     @note: （3）创建一个主机，并等待其变为UP状态；
     @note: （4）创建4个存储域（data1/data2/Export/ISO）；
-    @note: （5）将 data1 附加到数据中心；
+    @note: （5）将 四个存储域都附加到数据中心；
     @note: （6）创建一个虚拟机
     '''
     def setUp(self):
@@ -87,7 +84,7 @@ class ITC05_SetUp(BaseTestCase):
             self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
         create_storage_domains()
         
-        # 将创建的的data1、data2和export域附加到NFS/ISCSI数据中心里。
+        # 将创建的的data1、data2和export、iso域附加到NFS/ISCSI数据中心里。
         LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data2_nfs_name))
@@ -107,7 +104,8 @@ class ITC05_TearDown(BaseTestCase):
     @summary: “虚拟机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
     @note: （1）删除虚拟机
     @note: （2）将导出域设置为Maintenance状态；分离导出域；
-    @note: （3）将数据中心里的Data域（data1）设置为Maintenance状态；
+    @note: （3）将数据中心里的Data域（data1）设置为Maintenance状态,并从数据中心内分离；
+    @note: （4）将data2域设置为Maintenance状态；
     @note: （4）删除数据中心dc（非强制）；
     @note: （5）删除所有unattached状态的存储域（data1/data2/export/iso）；
     @note: （6）删除主机host1；
@@ -126,15 +124,24 @@ class ITC05_TearDown(BaseTestCase):
         vmapi.delVm(self.dm.vm_name)
         dcapi = DataCenterAPIs()
         capi = ClusterAPIs()
-        # Step2：将export存储域设置为Maintenance状态,然后从数据中心分离
+        # Step2：将export和iso存储域设置为Maintenance状态,然后从数据中心分离
         LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.export1_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
         LogPrint().info("Post-Module-Test-1: Detach storage domains '%s'." % self.dm.export1_name)
         self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        # Step3：将data1存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.iso1_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        LogPrint().info("Post-Module-Test-1: Detach storage domains '%s'." % self.dm.iso1_name)
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        # Step3：将data1存储域设置为Maintenance状态，然后从数据中心分离
         LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        LogPrint().info("Post-Module-Test-1: Detach data storage domains '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
         
+        # Step3：将data2存储域设置为Maintenance状态，然后从数据中心分离
+        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data2_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data2_nfs_name))
         # Step4：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
         if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
             LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
@@ -1531,12 +1538,9 @@ class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
    
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-<<<<<<< HEAD:src/TestCases/VirtualMachine.py
 
 
-=======
->>>>>>> 65140ff39ad4836e4fa2fd928757482217780f99:src/TestCases/VirtualMachines.py
-       
+  
 class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性
@@ -2310,10 +2314,7 @@ class ITC05020403_SuspendVm_Suspended(BaseTestCase):
         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name))  
 
-<<<<<<< HEAD:src/TestCases/VirtualMachine.py
 
-=======
->>>>>>> 65140ff39ad4836e4fa2fd928757482217780f99:src/TestCases/VirtualMachines.py
 class ITC05040401_UpdateVmNic_normal(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-04编辑网络接口-01正常编辑
@@ -2842,11 +2843,8 @@ class ITC05020602_CancelMigration_NotDuringMigration(BaseTestCase):
         LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
 
-<<<<<<< HEAD:src/TestCases/VirtualMachine.py
 class ITC05040602_DeactiveVmNic_vmdown(BaseTestCase):
-=======
-class ITC050406_DeactiveVmNic(BaseTestCase):
->>>>>>> 65140ff39ad4836e4fa2fd928757482217780f99:src/TestCases/VirtualMachines.py
+
     '''
     @summary: 05虚拟机管理-04网络接口-06取消激活网络接口
     '''
@@ -2989,13 +2987,11 @@ class ITC05040601_DeactiveVmNic_vmrun(BaseTestCase):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
 
 if __name__ == "__main__":
-<<<<<<< HEAD:src/TestCases/VirtualMachine.py
-    #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["VirtualMachine.ITC05040601_DeactiveVmNic_vmrun"]
-=======
 
-    test_cases = ["VirtualMachines.ITC05040702_DeleteVmNic_vmrun"]
->>>>>>> 65140ff39ad4836e4fa2fd928757482217780f99:src/TestCases/VirtualMachines.py
+    #import sys;sys.argv = ['', 'Test.testName']
+    test_cases = ["VirtualMachine.ITC05_TearDown"]
+
+
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
