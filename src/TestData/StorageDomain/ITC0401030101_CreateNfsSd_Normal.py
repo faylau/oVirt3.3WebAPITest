@@ -23,7 +23,7 @@ from TestAPIs.HostAPIs import HostAPIs
 '''
 data1 = DataStorages['nfs']['data2']
 iso2 = IsoStorages['ISO-Storage2']
-export2 = ExportStorages['Export-Storage2']
+export2 = ExportStorages['Export-Storage3']
 data1_ip = data1['ip']
 data1_path = data1['path']
 iso2_ip = iso2['ip']

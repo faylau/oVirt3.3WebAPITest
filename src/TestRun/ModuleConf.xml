@@ -16,13 +16,13 @@
     <module name="Host" id="03">
         <description>虚拟化主机管理</description>
         <filename>Host.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="StorageDomain" id="04">
         <description>存储域管理</description>
         <filename>StorageDomain.py</filename>
-        <run>False</run>
+        <run>True</run>
     </module>
 
     <module name="VirtualMachine" id="05">

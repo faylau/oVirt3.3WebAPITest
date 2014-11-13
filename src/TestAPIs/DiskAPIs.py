@@ -9,8 +9,11 @@ __version__ = "V0.1"
 # Version        Date            Desc                            Author
 #---------------------------------------------------------------------------------
 # V0.1           2014/09/16    初始版本                                                             wei keke
+#---------------------------------------------------------------------------------
 # V0.2           2014/11/03    将searchDiskByName修改为
-#                              searchDiskByAlias                fei liu
+#                              searchDiskByAlias                Liu Fei
+#---------------------------------------------------------------------------------
+# V0.3           2014/11/13    *修改smart_delete_disk方法                    Liu Fei
 #---------------------------------------------------------------------------------
 '''
 
@@ -63,7 +66,8 @@ def smart_delete_disk(disk_id, status_code=200):
             return False
         else: 
             r = disk_api.deleteDisk(disk_id)
-            if r['status_code']==status_code:
+            # 2014/11/13: Modified by LiuFei: add 'int' before status_code.
+            if r['status_code'] == int(status_code):
                 LogPrint().info("TearDown: Delete disk SUCCESS.")
                 return True
             else:
