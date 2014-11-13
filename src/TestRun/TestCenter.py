@@ -52,8 +52,6 @@ import xmltodict
 
 from Utils.HTMLTestRunner import HTMLTestRunner
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 def get_project_dir():
     '''
@@ -64,8 +62,12 @@ def get_project_dir():
 
 # 将本项目路径加入到sys.path中
 project_path = get_project_dir()
+
 if get_project_dir() not in sys.path:
     sys.path.append(get_project_dir())
+    
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 tc_list = []        # 由xml文件解析出的配置文件中的信息

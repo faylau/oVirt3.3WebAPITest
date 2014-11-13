@@ -39,6 +39,8 @@ class BaseTestCase(unittest.TestCase):
         '''
         curPath = os.path.abspath(os.path.dirname(__file__))
         module_name = str(self.__module__)
+        if len(module_name.split('.')) == 2:
+            module_name = module_name.split('.')[1]
         if test_case is None:
             test_case = str(self.__class__.__name__)
         dataPath = os.path.dirname(curPath) + os.path.sep + "TestData" + os.path.sep + module_name
