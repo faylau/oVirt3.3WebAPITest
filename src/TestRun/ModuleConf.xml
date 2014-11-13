@@ -4,7 +4,7 @@
 	<module name="DataCenter" id="01">
 		<description>数据中心管理</description>
 		<filename>DataCenter.py</filename>
-		<run>True</run>
+		<run>False</run>
 	</module>
 
     <module name="Cluster" id="02">
@@ -16,7 +16,7 @@
     <module name="Host" id="03">
         <description>虚拟化主机管理</description>
         <filename>Host.py</filename>
-        <run>False</run>
+        <run>True</run>
     </module>
 
     <module name="StorageDomain" id="04">
