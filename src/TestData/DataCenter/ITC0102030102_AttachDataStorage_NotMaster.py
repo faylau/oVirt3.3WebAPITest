@@ -13,7 +13,6 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import Hosts
 from TestData.DataCenter import ITC01_SetUp as ModuleData
 
 '''

@@ -1,16 +1,17 @@
 #encoding:utf-8
 
 
-
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
-__version__ = "V0.1"
+__version__ = "V0.2"
 
 '''
 # ChangeLog:
 #---------------------------------------------------------------------------------
-# Version        Date                Desc                            Author
+# Version        Date                Desc                                Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/09/23          初始版本                                                            Liu Fei 
+# V0.1           2014/09/23          初始版本                                                                    Liu Fei 
+#---------------------------------------------------------------------------------
+# V0.2           2014/11/14          *对部分用例内容格式进行了修正和补充              Liu Fei
 #---------------------------------------------------------------------------------
 '''
 
@@ -19,8 +20,8 @@ import unittest
 import xmltodict
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain, smart_detach_storage_domain,\
-    smart_active_storage_domain
+from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, \
+    smart_deactive_storage_domain, smart_detach_storage_domain, smart_active_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.HostAPIs import smart_create_host, smart_del_host
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs, smart_create_storage_domain, smart_del_storage_domain
@@ -40,7 +41,7 @@ class ITC01_SetUp(BaseTestCase):
     '''
     def setUp(self):
         '''
-        @summary: 模块测试环境初始化（获取测试数据
+        @summary: 模块测试环境初始化（获取测试数据）
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
@@ -87,12 +88,18 @@ class ITC010101_GetDCList(BaseTestCase):
     @summary: ITC-01数据中心管理-01数据中心操作-01获取数据中心列表
     '''
     def test_GetDataCentersList(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）获取全部数据中心列表；
+        @note: （2）操作成功，验证接口返回的状态码是否正确。
+        '''
         dcapi = DataCenterAPIs()
+        LogPrint().info("Test: Get all DataCenters lists.")
         r = dcapi.getDataCentersList()
         if r['status_code']==200:
-            LogPrint().info('Get DataCenters list SUCCESS.')
+            LogPrint().info('PASS: Get DataCenters list SUCCESS.')
         else:
-            LogPrint().error('Get DataCenters list FAIL.')
+            LogPrint().error('FAIL: Get DataCenters list FAIL. Returned status code "%s" is WRONG.' % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -109,25 +116,30 @@ class ITC010102_GetDCInfo(BaseTestCase):
         
         # 准备1：创建一个数据中心
         self.dcapi = DataCenterAPIs()
+        LogPrint().info("Pre-Test: Create a DataCenter '%s' for this TC." % self.dm.dc_name)
         self.dcapi.createDataCenter(self.dm.dc_info)
         
     def test_GetDataCenterInfo(self):
         '''
         @summary: 测试用例执行步骤
+        @note: （1）获取数据中心的信息；
+        @note: （2）操作成功，验证接口返回的状态码、DC信息是否正确。
         '''
         # 测试1：获取数据中心的信息，并与期望结果进行对比
+        LogPrint().info("Test: Get DataCenter '%s' info." % self.dm.dc_name)
         r = self.dcapi.getDataCenterInfo(self.dm.dc_name)
-        if r['status_code']==200:
+        if r['status_code'] == 200:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.dc_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("Get DataCenter '%s' info SUCCESS." % self.dm.dc_name)
+                LogPrint().info("PASS: Get DataCenter '%s' info SUCCESS." % self.dm.dc_name)
+                self.flag = True
             else:
-                LogPrint().error("Get DataCenter '%s' info INCORRECT.")
+                LogPrint().error("FAIL: Get DataCenter '%s' info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("Get/Create DataCenter '%s' FAILED. " % self.dm.dc_name)
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -135,6 +147,7 @@ class ITC010102_GetDCInfo(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test: Delete DataCenter '%s' if exists." % self.dm.dc_name)
         if self.dcapi.searchDataCenterByName(self.dm.dc_name):
             self.dcapi.delDataCenter(self.dm.dc_name)
 
@@ -155,22 +168,25 @@ class ITC01010301_CreateDC(BaseTestCase):
     def test_CreateDC(self):
         '''
         @summary: 测试用例执行步骤
+        @note: （1）创建数据中心（各种条件）；
+        @note: （2）操作成功，验证接口返回的状态码、DC信息是否正确。
         '''     
         # 使用数据驱动，根据测试数据文件循环创建多个数据中心
         @BaseTestCase.drive_data(self, self.dm.dc_info)
         def do_test(xml_info):
-            self.flag = True
             dc_name = xmltodict.parse(xml_info)['data_center']['name']
+            LogPrint().info("Test: Create DC '%s'." % dc_name)
             r = self.dcapi.createDataCenter(xml_info)
-            if r['status_code']==self.dm.status_code:
+            if r['status_code'] == self.dm.status_code:
                 dictCompare = DictCompare()
                 if dictCompare.isSubsetDict(xmltodict.parse(xml_info), r['result']):
-                    LogPrint().info("Create DataCenter '%s' SUCCESS." % dc_name)
+                    LogPrint().info("PASS: Create DataCenter '%s' SUCCESS." % dc_name)
+                    self.flag = True
                 else:
-                    LogPrint().error("Create DataCenter '%s' SUCCESS, but DataCenter info INCORRECT." % dc_name)
+                    LogPrint().error("FAIL: Create DataCenter '%s' SUCCESS, but DataCenter info INCORRECT." % dc_name)
                     self.flag = False
             else:
-                LogPrint().error("Create DataCenter '%s' FAILED. " % dc_name)
+                LogPrint().error("FAIL: Retunred status code '%s' is WRONG." % r['status_code'])
                 self.flag = False
             self.assertTrue(self.flag)
             
@@ -181,6 +197,7 @@ class ITC01010301_CreateDC(BaseTestCase):
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
         for dc in self.dm.dc_name:
+            LogPrint().info("Post-Test: Delete DC '%s' if exist." % dc)
             if self.dcapi.searchDataCenterByName(dc):
                 self.dcapi.delDataCenter(dc)
                 
@@ -196,22 +213,26 @@ class ITC01010302_CreateExistDC(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        self.dcapi = DataCenterAPIs()
         
     def test_CreateExistDC(self):
         '''
-        @summary: 创建重名数据中心（Default），检查接口返回的状态码以及提示信息是否符合预期。
+        @summary: 测试步骤
+        @note: （1）创建重名数据中心（Default）；
+        @note: （2）操作失败，验证接口返回的状态码以及提示信息是否符合预期。
         '''
-        r = self.dcapi.createDataCenter(self.dm.dc_info)
-        if r['status_code']==self.dm.expected_status_code:
+        dcapi = DataCenterAPIs()
+        LogPrint().info("Test: Create a DC with duplicate name.")
+        r = dcapi.createDataCenter(self.dm.dc_info)
+        if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(r['result'], xmltodict.parse(self.dm.expected_info)):
-                LogPrint().info("PASS: The returned status code and messages are CORRECT when create exist DC.")
+                LogPrint().info("PASS: Returned status code and messages are CORRECT when create DC with duplicate name.")
+                self.flag = True
             else:
-                LogPrint().error("FAIL: The returned messages are INCORRECCT when create exist DC.")
+                LogPrint().error("FAIL: Returned messages are INCORRECCT when create exist DC.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL: The returned status code is '%s', INCORRECT. " % r['status_code'])
+            LogPrint().error("FAIL: Returned status code is '%s', INCORRECT. " % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -219,7 +240,7 @@ class ITC01010302_CreateExistDC(BaseTestCase):
         '''
         @summary: 资源清理（本次测试没有需要清理的资源）
         '''
-        BaseTestCase.tearDown(self)
+        pass
         
 class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
     '''
@@ -232,28 +253,31 @@ class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        self.dcapi = DataCenterAPIs()
         
     def test_CreateDCWithoutRequiredParams(self):
         '''
-        @summary: 创建数据中心，缺少必需要的参数（数据中心有3个必需参数：名称、存储域、兼容版本），检查接口返回的状态码以及提示信息是否符合预期。
+        @summary: 测试步骤
+        @note: （1）创建数据中心，缺少必需要的参数（数据中心有3个必需参数：名称、存储域、兼容版本）；
+        @note: （2）操作失败，验证接口返回的状态码以及提示信息是否符合预期。
         '''
+        dcapi = DataCenterAPIs()
         # 本用例有3种测试情况，所以期望结果也有3种，这个变量代表期望结果的索引值
         self.expected_result_index = 0
         # 使用数据驱动，根据测试数据文件循环创建多个数据中心
         @BaseTestCase.drive_data(self, self.dm.dc_info)
         def do_test(xml_info):
             self.flag = True
-            r = self.dcapi.createDataCenter(xml_info)
-            if r['status_code']==self.dm.expected_status_code:
+            LogPrint().info("Test: Create a DC.")
+            r = dcapi.createDataCenter(xml_info)
+            if r['status_code'] == self.dm.expected_status_code:
                 dictCompare = DictCompare()
                 if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.expected_result_index]), r['result']):
-                    LogPrint().info("PASS: The returned status code and messages are CORRECT.")
+                    LogPrint().info("PASS: Returned status code and messages are CORRECT.")
                 else:
-                    LogPrint().error("FAIL: The returned messages are INCORRECT.")
+                    LogPrint().error("FAIL: Returned messages are INCORRECT.")
                     self.flag = False
             else:
-                LogPrint().error("FAIL: The returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
+                LogPrint().error("FAIL: Returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
                 self.flag = False
             self.assertTrue(self.flag)
             self.expected_result_index += 1
@@ -264,7 +288,7 @@ class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
         '''
         @summary: 资源清理（本次测试没有需要清理的资源）
         '''
-        BaseTestCase.tearDown(self)   
+        pass
         
 class ITC0101030302_CreateDC_VerifyName(BaseTestCase):
     '''
@@ -277,28 +301,30 @@ class ITC0101030302_CreateDC_VerifyName(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        self.dcapi = DataCenterAPIs()
         
     def test_CreateDC_VerifyName(self):
         '''
-        @summary: 创建数据中心，验证数据中心名称参数有效性
+        @summary: 测试步骤
+        @note: （1）创建数据中心，输入各种不合法的名称（验证数据中心名称参数有效性）；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
         '''
+        dcapi = DataCenterAPIs()
         # 本用例有多种测试情况，所以期望结果也有多种，这个变量代表期望结果的索引值
         self.expected_result_index = 0
         # 使用数据驱动，根据测试数据文件循环创建多个数据中心
         @BaseTestCase.drive_data(self, self.dm.dc_info)
         def do_test(xml_info):
             self.flag = True
-            r = self.dcapi.createDataCenter(xml_info)
+            r = dcapi.createDataCenter(xml_info)
             if r['status_code']==self.dm.expected_status_code:
                 dictCompare = DictCompare()
                 if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.expected_result_index]), r['result']):
-                    LogPrint().info("PASS: The returned status code and messages are CORRECT.")
+                    LogPrint().info("PASS: Returned status code and messages are CORRECT.")
                 else:
-                    LogPrint().error("FAIL: The returned messages are INCORRECT.")
+                    LogPrint().error("FAIL: Returned messages are INCORRECT.")
                     self.flag = False
             else:
-                LogPrint().error("FAIL: The returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
+                LogPrint().error("FAIL: Returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
                 self.flag = False
             self.assertTrue(self.flag)
             self.expected_result_index += 1
@@ -323,6 +349,7 @@ class ITC01010401_UpdateUninitializedDC(BaseTestCase):
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
         self.dcapi = DataCenterAPIs()
+        # 前提1：创建一个数据中心
         LogPrint().info("Pre-Test: Create a DataCenter '%s'." % self.dm.pre_dc_name)
         self.dcapi.createDataCenter(self.dm.pre_dc_info)
         
@@ -331,21 +358,21 @@ class ITC01010401_UpdateUninitializedDC(BaseTestCase):
         @summary: 测试用例执行步骤
         STEP 1：编辑Uninitialized数据中心
         STEP 2：验证接口返回状态码以及检查编辑后的数据中心信息是否正确
-        '''     
-
-        self.flag = True
+        '''
+        LogPrint().info("Test: Edit the Uninitialized DC include name/description/type/version.")
         r = self.dcapi.updateDataCenter(self.dm.pre_dc_name, self.dm.test_dc_info)
 #         print r['status_code']
 #         print xmltodict.unparse(r['result'], pretty=True)
-        if r['status_code']==self.dm.expected_status_code:
+        if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(xmltodict.parse(self.dm.test_dc_info), r['result']):
                 LogPrint().info("PASS: Update DataCenter SUCCESS.")
+                self.flag = True
             else:
-                LogPrint().error("FAIL: Update DataCenter FAIL, the actual dc info not equals to expected.")
+                LogPrint().error("FAIL: Update DataCenter FAIL, the actual DC info not equals to expected.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL: The returned status code of update operation INCORRECT.")
+            LogPrint().error("FAIL: Returned status code '%s' of update operation INCORRECT." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -369,31 +396,31 @@ class ITC01010403_UpdateDC_DupName(BaseTestCase):
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
         self.dcapi = DataCenterAPIs()
+        # 前提1：创建两个数据中心
         LogPrint().info("Pre-Test: Create 2 DataCenters '%s and %s'." % (self.dm.dc_name_list[0], self.dm.dc_name_list[1]))
-        
         @BaseTestCase.drive_data(self, self.dm.pre_dc_info)
         def do_test(xml_info):
             self.dcapi.createDataCenter(xml_info)
-            
         do_test()
         
     def test_UpdateUninitializedDC(self):
         '''
         @summary: 测试用例执行步骤
-        STEP 1：将一个DC名称编辑为另一个已存在的DC名称
-        STEP 2：验证接口返回状态码以及检查编辑后的数据中心信息是否正确
+        @note: （1）将一个DC名称编辑为另一个已存在的DC名称
+        @note: （2）操作失败，验证接口返回状态码以及提示信息是否正确
         '''     
-        self.flag = True
+        LogPrint().info("Test: Edit DC with a duplicate name.")
         r = self.dcapi.updateDataCenter(self.dm.target_dc_name, self.dm.test_dc_info)
-        if r['status_code']==self.dm.expected_status_code:
+        if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(r['result'], xmltodict.parse(self.dm.expected_info)):
                 LogPrint().info("PASS: Returned status code and messages are CORRECT when Update DC with a Dup name.")
+                self.flag = True
             else:
                 LogPrint().error("FAIL: Returned messages are INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL: Operation FAIL, The returned status code is INCORRECT.")
+            LogPrint().error("FAIL: Operation FAIL, returned status code '%s' is INCORRECT." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -405,7 +432,7 @@ class ITC01010403_UpdateDC_DupName(BaseTestCase):
             if self.dcapi.searchDataCenterByName(dc_name)['result']['data_centers']:
                 LogPrint().info("Post-Test: Delete the created/updated DataCenter '%s'." % dc_name)
                 self.dcapi.delDataCenter(dc_name)
-                
+
 class ITC01010404_UpdateDCVersion_HighToLow(BaseTestCase):
     '''
     @summary: ITC-01数据中心管理-01数据中心操作-04编辑-04兼容版本由高到低
@@ -423,20 +450,21 @@ class ITC01010404_UpdateDCVersion_HighToLow(BaseTestCase):
     def test_UpdateDCVersion_HighToLow(self):
         '''
         @summary: 测试用例执行步骤
-        STEP 1：将一个低版本的数据中心修改为高版本
-        STEP 2：操作失败，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
+        @note: （1）将一个低版本的数据中心修改为高版本；
+        @note: （2）操作失败，验证接口返回状态码以及检查编辑后的数据中心信息是否正确。
         '''     
-        self.flag = True
+        LogPrint().info("Test: Edit DC's version from High to Low.")
         r = self.dcapi.updateDataCenter(self.dm.dc_name, self.dm.update_dc_info)
-        if r['status_code']==self.dm.expected_status_code:
+        if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(r['result'], xmltodict.parse(self.dm.expected_info)):
                 LogPrint().info("PASS: Returned status code and messages are CORRECT when Update DC to lower version.")
+                self.flag = True
             else:
                 LogPrint().error("FAIL: Returned messages are INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL: Operation FAIL. The returned status code is INCORRECT.")
+            LogPrint().error("FAIL: Operation FAIL. The returned status code '%s' is INCORRECT." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -460,26 +488,27 @@ class ITC01010501_DelDC_Uninitialized(BaseTestCase):
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
         self.dcapi = DataCenterAPIs()
+        # 前提1：创建一个数据中心，其状态为Uninitialized
         LogPrint().info("Pre-Test: Create a DataCenter '%s'." % self.dm.dc_name)
-        # PreStep-01：创建一个数据中心，其状态为Uninitialized
         self.dcapi.createDataCenter(self.dm.pre_dc_info)
         
     def test_DelDC_Uninitialized(self):
         '''
         @summary: 测试用例执行步骤
-        STEP 1：删除一个Uninitialized状态的数据中心
-        STEP 2：操作成功，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
-        '''     
-        self.flag = True
+        @note: （1）删除一个Uninitialized状态的数据中心
+        @note: （2）操作成功，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
+        '''
+        LogPrint().info("Test: Delete DC '%s' in normal way." % self.dm.dc_name)
         r = self.dcapi.delDataCenter(self.dm.dc_name)
-        if r['status_code']==self.dm.expected_status_code:
+        if r['status_code'] == self.dm.expected_status_code:
             if self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers'] is None:
-                LogPrint().info("PASS: Returned status code is CORRECT and Delete DC SUCCESS.")
+                LogPrint().info("PASS: Returned status code is CORRECT and Delete DC '%s' SUCCESS." % self.dm.dc_name)
+                self.flag = True
             else:
-                LogPrint().error("FAIL: Delete DC FAILED, the DC still exists.")
+                LogPrint().error("FAIL: Delete DC '%s' FAILED, it still exists." % self.dm.dc_name)
                 self.flag = False
         else:
-            LogPrint().error("FAIL: Operation FAIL. The returned status code is INCORRECT.")
+            LogPrint().error("FAIL: Operation FAIL. Returned status code '%s' is INCORRECT." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -490,7 +519,7 @@ class ITC01010501_DelDC_Uninitialized(BaseTestCase):
         if self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers']:
             LogPrint().info("Post-Test: Delete the created/updated DataCenter '%s'." % self.dm.dc_name)
             self.dcapi.delDataCenter(self.dm.dc_name)
-      
+
 class ITC01010502_DelDC_Force(BaseTestCase):
     '''
     @summary: ITC-01数据中心管理-01数据中心操作-05删除-02强制删除
@@ -503,26 +532,27 @@ class ITC01010502_DelDC_Force(BaseTestCase):
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
         self.dcapi = DataCenterAPIs()
-        LogPrint().info("Pre-Test: Create a DataCenter '%s'." % self.dm.dc_name)
-        # PreStep-01：创建一个数据中心，其状态为Uninitialized
+        # 前提1：创建一个数据中心，其状态为Uninitialized
+        LogPrint().info("Pre-Test: Create a DataCenter '%s' with Uninitialized state." % self.dm.dc_name)
         self.dcapi.createDataCenter(self.dm.pre_dc_info)
         
     def test_DelDC_Uninitialized(self):
         '''
         @summary: 测试用例执行步骤
-        STEP 1：强制删除一个Uninitialized状态的数据中心
-        STEP 2：操作成功，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
-        '''     
-        self.flag = True
+        @note: （1）强制删除一个Uninitialized状态的数据中心
+        @note: （2）操作成功，验证接口返回状态码以及检查编辑后的数据中心信息是否正确
+        '''
+        LogPrint().info("Test: Force delete DC '%s'." % self.dm.dc_name)
         r = self.dcapi.delDataCenter(self.dm.dc_name, self.dm.del_dc_option)
-        if r['status_code']==self.dm.expected_status_code:
+        if r['status_code'] == self.dm.expected_status_code:
             if not self.dcapi.searchDataCenterByName(self.dm.dc_name)['result']['data_centers']:
-                LogPrint().info("PASS: Force-Delete DC SUCCESS. Returned status code is CORRECT.")
+                LogPrint().info("PASS: Force-Delete DC '%s' SUCCESS." % self.dm.dc_name)
+                self.flag = True
             else:
-                LogPrint().error("FAIL: Force-Delete DC FAILED, the DC still exists.")
+                LogPrint().error("FAIL: Force-Delete DC '%s' FAILED, it still exists." % self.dm.dc_name)
                 self.flag = False
         else:
-            LogPrint().error("FAIL: Operation FAIL. The returned status code is INCORRECT.")
+            LogPrint().error("FAIL: Operation FAIL. Returned status code '%s' is INCORRECT." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -552,7 +582,7 @@ class ITC010201_GetStorageDomainsOfDC(BaseTestCase):
         @note: （2）操作成功，验证接口返回的状态码是否正确。
         '''
         dc_api = DataCenterAPIs()
-        LogPrint().info("Test: Get storage domains list for data center '%s'." % ModuleData.dc_nfs_name)
+        LogPrint().info("Test: Get storage domains list for DataCenter '%s'." % ModuleData.dc_nfs_name)
         r = dc_api.getDCStorageDomainsList(ModuleData.dc_nfs_name)
         if r['status_code'] == 200:
             LogPrint().info("PASS: Get storage domains list for data center '%s' SUCCESS." % ModuleData.dc_nfs_name)
@@ -586,7 +616,7 @@ class ITC010202_GetStorageDomainInfoInDC(BaseTestCase):
         @note: （2）操作成功，验证接口返回的状态码、存储域信息是否正确。
         '''
         dc_api = DataCenterAPIs()
-        LogPrint().info("Test: Get storage domain '%s' info from data center '%s'." % (ModuleData.data1_nfs_name, ModuleData.dc_nfs_name))
+        LogPrint().info("Test: Get storage domain '%s' info from DataCenter '%s'." % (ModuleData.data1_nfs_name, ModuleData.dc_nfs_name))
         r = dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name)
         if r['status_code'] == self.dm.expected_status_code_get_sd_info:
             d1 = xmltodict.parse(self.dm.xml_sd_info)
@@ -621,19 +651,19 @@ class ITC0102030101_AttachDataStorage_Master(BaseTestCase):
         self.cluster_api = ClusterAPIs()
         
         # 前提1：创建一个新的NFS数据中心
-        LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
+        LogPrint().info("Pre-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
         self.assertTrue(self.dc_api.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
         
         # 前提2：创建一个新的集群
-        LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
+        LogPrint().info("Pre-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
         self.assertTrue(self.cluster_api.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
         
         # 前提3：创建一个新的主机
-        LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host_name, self.dm.cluster_nfs_name))
+        LogPrint().info("Pre-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host_name, self.dm.cluster_nfs_name))
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.xml_host_info))
         
         # 前提4：准备一个unattached状态的data域（模块测试环境中的data2可以使用）
-        LogPrint().info("Pre-Module-Test-4: Use unattached data storage '%s' for testing." % ModuleData.data2_nfs_name)
+        LogPrint().info("Pre-Test-4: Use unattached data storage '%s' for testing." % ModuleData.data2_nfs_name)
 
     def test_AttachDataStorage_Master(self):
         '''
@@ -654,24 +684,23 @@ class ITC0102030101_AttachDataStorage_Master(BaseTestCase):
     def tearDown(self):
         '''
         @summary: 资源清理
-        @note: （1）
         '''
         # Step1：将data1存储域设置为Maintenance状态
-        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % ModuleData.data2_nfs_name)
+        LogPrint().info("Post-Test-1: Deactivate data storage domains '%s'." % ModuleData.data2_nfs_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, ModuleData.data2_nfs_name))
         
         # Step2：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
         if self.dc_api.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
-            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            LogPrint().info("Post-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
             self.assertTrue(self.dc_api.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
         # Step3：删除主机（host2）
-        LogPrint().info("Post-Module-Test-3: Delete host '%s'." % self.dm.host_name)
+        LogPrint().info("Post-Test-3: Delete host '%s'." % self.dm.host_name)
         self.assertTrue(smart_del_host(self.dm.host_name, self.dm.xml_del_host_option))
         
         # Step4：删除集群cluster2
         if self.cluster_api.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
-            LogPrint().info("Post-Module-Test-4: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            LogPrint().info("Post-Test-4: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
             self.assertTrue(self.cluster_api.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
 class ITC0102030102_AttachDataStorage_NotMaster(BaseTestCase):
@@ -689,6 +718,7 @@ class ITC0102030102_AttachDataStorage_NotMaster(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 验证目标存储域是否存在
+        LogPrint().info("Pre-Test: Verify if the StorageDomain '%s' exists." % ModuleData.dc_nfs_name)
         self.assertTrue(StorageDomainAPIs().searchStorageDomainByName(ModuleData.dc_nfs_name))
         
     def test_AttachDataStorage_NotMaster(self):
@@ -729,11 +759,10 @@ class ITC0102030201_AttachIsoStorage(BaseTestCase):
     def setUp(self):
         '''
         @summary: 初始化测试数据、测试环境。
+        @note: 初始化测试环境，使用模块级测试环境（dc_nfs/iso1）
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        
-        # 初始化测试环境，使用模块级测试环境（dc_nfs/iso1）
     
     def test_ITC0102030201_AttachIsoStorage(self):
         '''
@@ -782,12 +811,19 @@ class ITC0102030202_AttachIsoStorage_Second(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # Pre-Test-1：将模块测试环境中的ISO1附加到数据中心
+        LogPrint().info("Pre-Test-1: Attach ISO storage '%s' to DataCenter '%s'." % (ModuleData.iso1_name, ModuleData.dc_nfs_name))
         self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
         
         # Pre-Test-2：创建一个新的ISO域（ISO2）
+        LogPrint().info("Pre-Test-2: Create a new ISO storage '%s'." % self.dm.iso2_name)
         self.assertTrue(smart_create_storage_domain(self.dm.iso2_name, self.dm.xml_iso2_info))
         
     def test_AttachIsoStorage_Second(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）附加多个ISO域到同一个数据中心；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
         dc_api = DataCenterAPIs()
         # Test-1: 将ISO2附加到数据中心（预期操作失败）
         LogPrint().info("Test: Attach more than 1 iso storages to DataCenter.")
@@ -805,12 +841,15 @@ class ITC0102030202_AttachIsoStorage_Second(BaseTestCase):
         self.assertTrue(self.flag)
     
     def tearDown(self):
-        # 将ISO1维护、分离
+        '''
+        @summary: 资源清理
+        '''
+        # 步骤1：将ISO1维护、分离
         LogPrint().info("Post-Test-1: Deactivate and Detach the Module iso storage '%s' from DataCenter." % ModuleData.iso1_name)
         self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
         self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
         
-        # 将ISO2删除
+        # 步骤2：将ISO2删除
         LogPrint().info("Post-Test-2: Delete iso storage '%s' from DataCenter." % self.dm.iso2_name)
         self.assertTrue(smart_del_storage_domain(self.dm.iso2_name, self.dm.xml_del_iso_option, ModuleData.host1_name))
 
@@ -821,11 +860,10 @@ class ITC0102030301_AttachExportStorage(BaseTestCase):
     def setUp(self):
         '''
         @summary: 初始化测试数据、测试环境。
+        @note: 初始化测试环境，使用模块级测试环境（dc_nfs/export1）
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        
-        # 初始化测试环境，使用模块级测试环境（dc_nfs/export1）
     
     def test__AttachExportStorage(self):
         '''
@@ -834,7 +872,7 @@ class ITC0102030301_AttachExportStorage(BaseTestCase):
         @note: （2）操作成功，验证接口返回状态码、存储域所属DC信息是否正确。
         '''
         dc_api = DataCenterAPIs()
-        LogPrint().info("Test: Begin to attach the Export storage '%s' to Data Center '%s'." % (ModuleData.export1_name, ModuleData.dc_nfs_name))
+        LogPrint().info("Test: Attach the Export storage '%s' to Data Center '%s'." % (ModuleData.export1_name, ModuleData.dc_nfs_name))
         r = dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, ModuleData.export1_name)
         if r['status_code'] == self.dm.expected_status_code_attach_sd:
             export_info = dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.export1_name)['result']
@@ -905,6 +943,9 @@ class ITC0102030302_AttachExportStorage_Second(BaseTestCase):
         self.assertTrue(self.flag)
     
     def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
         # 将export1维护、分离
         LogPrint().info("Post-Test-1: Deactivate and Detach the Module Export storage '%s' from DataCenter." % ModuleData.export1_name)
         self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
@@ -1139,8 +1180,10 @@ class ITC0102040302_DetachStorage_Data_One(BaseTestCase):
         
     def tearDown(self):
         '''
-        @summary: 资源清理
+        @summary: 资源清理（恢复）
         '''
+        # 重新激活Data存储域
+        LogPrint().info("Post-Test: Active storage domain '%s'." % ModuleData.data1_nfs_name)
         self.assertTrue(smart_active_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))     
 
 class ITC01020501_ActivateStorage_Normal(BaseTestCase):
@@ -1245,6 +1288,7 @@ class ITC010301_GetClustersInDataCenter(BaseTestCase):
         @note: （2）操作成功，验证接口返回的状态码是否正确。
         '''
         dc_api = DataCenterAPIs()
+        LogPrint().info("Test: Get clusters list in DataCenter '%s'." % ModuleData.dc_nfs_name)
         r = dc_api.getDCClustersList(ModuleData.dc_nfs_name)
         if r['status_code'] == self.dm.expected_status_code_get_clusters_in_dc:
             LogPrint().info("PASS: Get clustes list in DataCenter '%s' SUCCESS." % ModuleData.dc_nfs_name)
@@ -1277,6 +1321,9 @@ class ITC01_TearDown(BaseTestCase):
         self.dm = self.initData('ITC01_SetUp')
         
     def test_TearDown(self):
+        '''
+        @summary: 模块级资源清理步骤（参照class的summary描述）
+        '''
         dcapi = DataCenterAPIs()
         capi = ClusterAPIs()
         
@@ -1296,7 +1343,7 @@ class ITC01_TearDown(BaseTestCase):
             smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
         
         # Step4：删除主机（host1）
-        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
+        LogPrint().info("Post-Module-Test-4: Delete host '%s'." % self.dm.host1_name)
         self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
         
         # Step5：删除集群cluster1
@@ -1314,8 +1361,3 @@ if __name__ == "__main__":
     testSuite.addTests(tests)
  
     unittest.TextTestRunner(verbosity=2).run(testSuite)
-
-#     fileName = r"d:\result.html"
-#     fp = file(fileName, 'wb')
-#     runner = HTMLTestRunner(stream=fp, title=u"测试结果", description=u"测试报告")
-#     runner.run(testSuite)

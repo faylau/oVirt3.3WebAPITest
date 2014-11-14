@@ -51,9 +51,9 @@ class ITC03_SetUp(BaseTestCase):
         '''
         dcapi = DataCenterAPIs()
         capi = ClusterAPIs()
-        LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % self.dm.dc_name)
+        LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_name)
         dcapi.createDataCenter(self.dm.dc_info)
-        LogPrint().info("Module Test Case: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_name, self.dm.dc_name))
+        LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_name, self.dm.dc_name))
         capi.createCluster(self.dm.cluster_info)
         
 class ITC030101_GetHostsList(BaseTestCase):
@@ -61,15 +61,21 @@ class ITC030101_GetHostsList(BaseTestCase):
     @summary: ITC-03主机管理-01主机操作-01获取主机列表
     '''
     def test_GetDataCentersList(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）获取全部主机列表；
+        @note: （2）操作成功，验证接口返回的状态码是否正确。
+        '''
         host_api = HostAPIs()
+        LogPrint().info("Test: Get all hosts list in all DataCenters.")
         r = host_api.getHostsList()
-        if r['status_code']==200:
+        if r['status_code'] == 200:
             LogPrint().info('PASS: Get Hosts list SUCCESS.')
         else:
-            LogPrint().error('FAIL: Get Hosts list FAILED. Returned status code "%s" is incorrect.' % r['status_code'])
+            LogPrint().error('FAIL: Get Hosts list FAILED. Returned status code "%s" is INCORRECT.' % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
-        
+
 class ITC030102_GetHostInfo(BaseTestCase):
     '''
     @summary: ITC-03主机管理-01主机操作-02查看主机信息
@@ -82,14 +88,14 @@ class ITC030102_GetHostInfo(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 创建一个主机，并等待其变为UP状态。
-        LogPrint().info("Pre-Test1: Create a host '%s' for this test case." % self.dm.host_name)
+        LogPrint().info("Pre-Test: Create a host '%s' for this test case." % self.dm.host_name)
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.xml_host_info))
         
     def test_GetHostInfo(self):
         '''
         @summary: 测试用例执行步骤
-        @note: 查询指定主机信息
-        @note: 验证接口返回状态验证码、结果是否正确
+        @note: （1）查询指定主机信息
+        @note: （2）验证接口返回状态验证码、结果是否正确
         '''
         self.host_api = HostAPIs()
         self.flag = True

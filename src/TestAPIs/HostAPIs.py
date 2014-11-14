@@ -34,13 +34,13 @@ def smart_create_host(host_name, xml_host_info):
         return host_api.getHostStatus(host_name)=='up'
     if wait_until(is_host_up, 200, 5):
         if r['status_code'] == 201:
-            LogPrint().info("PASS: Create host '%s' SUCCESS." % host_name)
+            LogPrint().info("INFO-PASS: Create host '%s' SUCCESS." % host_name)
             return True
         else:
-            LogPrint().error("FAIL: Create host '%s' FAILED. Returned status code is INCORRECT." % host_name)
+            LogPrint().error("INFO-FAIL: Create host '%s' FAILED. Returned status code is INCORRECT." % host_name)
             return False
     else:
-        LogPrint().error("FAIL: Create host '%s' FAILED. It's final state is not 'UP'." % host_name)
+        LogPrint().error("INFO-FAIL: Create host '%s' FAILED. It's final state is not 'UP'." % host_name)
         return False
 
 def smart_del_host(host_name, xml_host_del_option):
@@ -56,20 +56,20 @@ def smart_del_host(host_name, xml_host_del_option):
     if host_api.searchHostByName(host_name)['result']['hosts']:
         host_state = host_api.getHostStatus(host_name)
         # 当主机状态为UP时，先设置为“维护”，然后再删除
-        if host_state=='up' or host_state=='non_responsive':
-            LogPrint().info("Post-Test: Deactive host '%s' from up to maintenance state." % host_name)
+        if host_state == 'up' or host_state == 'non_responsive':
+            LogPrint().info("INFO: Deactivate host '%s' from 'up' to 'maintenance' state." % host_name)
             r = host_api.deactiveHost(host_name)
             if wait_until(is_host_maintenance, 120, 5):
-                LogPrint().info("Post-Test: Delete host '%s' from cluster." % host_name)
+                LogPrint().info("INFO: Delete host '%s' from cluster." % host_name)
                 r = host_api.delHost(host_name, xml_host_del_option)
                 return r['status_code']==200
         # 当主机状态为maintenance或install_failed时，直接删除
         elif host_state=='maintenance' or host_state=='install_failed':
-            LogPrint().info("Post-Test: Delete host '%s' from cluster." % host_name)
+            LogPrint().info("INFO: Delete host '%s' from cluster." % host_name)
             r = host_api.delHost(host_name, xml_host_del_option)
             return r['status_code']==200
     else:
-        LogPrint().info("Post-Test: Host '%s' not exist." % host_name)
+        LogPrint().warning("INFO-WARN: Host '%s' not exist." % host_name)
         return True
 
 class HostAPIs(BaseAPIs):

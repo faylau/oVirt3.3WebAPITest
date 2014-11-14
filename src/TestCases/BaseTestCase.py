@@ -1,25 +1,21 @@
 #encoding:utf-8
 
-'''
-Created on 2014-09-23
-@summary: The base class for all test case classes.
-@author: fei.liu@cs2c.com.cn
-@version: v0.1
-'''
-import xmltodict
-from collections import OrderedDict
+__authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
+__version__ = "V0.1"
 
 '''
 # ChangeLog:
-# Version    Date            Desc                Author
-# --------------------------------------------------------
-# V0.1       09/23/2014      初始版本                                Liu Fei
-# --------------------------------------------------------
+# Version    Date            Desc                                Author
+# -----------------------------------------------------------------------------
+# V0.1       09/23/2014      初始版本                                                                    Liu Fei
+# -----------------------------------------------------------------------------
 '''
 
 import os
 import unittest
 import importlib
+import xmltodict
+from collections import OrderedDict
 
 from Utils.PrintLog import LogPrint
 
