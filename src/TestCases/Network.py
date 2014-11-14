@@ -19,10 +19,6 @@ from BaseTestCase import BaseTestCase
 from TestAPIs.NetworkAPIs import NetworkAPIs, NetworkProfilesAPIs, smart_create_network, smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-<<<<<<< HEAD
-=======
-#from Utils.HTMLTestRunner import HTMLTestRunner
->>>>>>> origin/master
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 from TestData.Network import ITC05_Setup as ModuleData
@@ -38,7 +34,7 @@ class ITC05_Setup(BaseTestCase):
         '''
         @summary: 模块测试环境初始化（获取测试数据
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
 
     def test_Create_DC(self):
@@ -48,11 +44,6 @@ class ITC05_Setup(BaseTestCase):
         dcapi = DataCenterAPIs()
         LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % self.dm.dc_name)
         dcapi.createDataCenter(self.dm.dc_info)
-<<<<<<< HEAD
-=======
-    
-
->>>>>>> origin/master
 
 class ITC050101_GetNetworkList(BaseTestCase):
     '''
@@ -65,6 +56,7 @@ class ITC050101_GetNetworkList(BaseTestCase):
         @note: （2）验证接口返回的状态码是否正确。
         '''
         self.nwapi = NetworkAPIs()
+        LogPrint().info("Test: Get all networks list.")
         r = self.nwapi.getNetworksList()
         if r['status_code']==200:
             LogPrint().info('PASS: Get Network list SUCCESS.')
@@ -83,7 +75,7 @@ class ITC050102_GetNetworkInfo(BaseTestCase):
         '''
         @summary: 测试用例执行前的环境初始化（前提）
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
         self.nwapi = NetworkAPIs()
         # 准备1：创建一个网络
@@ -502,13 +494,9 @@ class ITC050202_GetNetworkProfileInfo(BaseTestCase):
         '''
         @summary: 清除该网络及配置集
         '''
-<<<<<<< HEAD
         LogPrint().info("Post-Test: Delete network '%s' and it's profiles." % self.dm.nw_name)
-        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))    
-        
-=======
-        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))       
->>>>>>> origin/master
+        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))        
+
 class ITC05_TearDown(BaseTestCase):
     '''
     @summary: “集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
@@ -518,12 +506,8 @@ class ITC05_TearDown(BaseTestCase):
         dcapi = DataCenterAPIs()
         if dcapi.searchDataCenterByName(ModuleData.dc_name)['result']['data_centers']:
             LogPrint().info("Post-Module-Test: Delete DataCenter '%s'." % ModuleData.dc_name)
-<<<<<<< HEAD
             dcapi.delDataCenter(ModuleData.dc_name)   
 
-=======
-            dcapi.delDataCenter(ModuleData.dc_name)
->>>>>>> origin/master
 if __name__ == "__main__":
 
     test_cases = ["Network.ITC05010305_CreateNetwork_DupVlan"]
