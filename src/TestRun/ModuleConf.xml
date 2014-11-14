@@ -10,7 +10,7 @@
     <module name="Cluster" id="02">
         <description>集群管理</description>
         <filename>Cluster.py</filename>
-        <run>False</run>
+        <run>True</run>
     </module>
 
     <module name="Host" id="03">
@@ -22,7 +22,7 @@
     <module name="StorageDomain" id="04">
         <description>存储域管理</description>
         <filename>StorageDomain.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="VirtualMachine" id="05">

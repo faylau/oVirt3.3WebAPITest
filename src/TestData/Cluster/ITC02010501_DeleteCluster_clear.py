@@ -15,4 +15,4 @@ cluster_info = '''
 </cluster>
 ''' %(cluster_name,dc_id)
 
-staus_code = 200
+status_code = 200

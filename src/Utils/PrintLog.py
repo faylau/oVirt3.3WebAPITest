@@ -22,7 +22,7 @@ class LogPrint():
 #     src_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 #     log_file_path = src_dir + os.path.sep + 'Results'
     
-    def __init__(self, log_file="log.txt", log_level=logging.DEBUG):
+    def __init__(self, log_file="log.txt", log_level=logging.INFO):
         pass
         logging.basicConfig(level=log_level,
                             format='%(asctime)s %(levelname)s\t| %(filename)s[line:%(lineno)d]\t| %(message)s',

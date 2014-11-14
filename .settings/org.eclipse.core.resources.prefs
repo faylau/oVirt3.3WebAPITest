@@ -91,6 +91,7 @@ encoding//src/TestCases/Profile.py=utf-8
 encoding//src/TestCases/StorageDomain.py=utf-8
 encoding//src/TestCases/Template.py=utf-8
 encoding//src/TestCases/VirtualMachine.py=utf-8
+encoding//src/TestData/Cluster/ITC02010501_DeleteCluster_clear.py=utf-8
 encoding//src/TestData/DataCenter/ITC01020601_DeactivateStorage_Normal.py=utf-8
 encoding//src/TestData/DataCenter/ITC01_SetUp.py=utf-8
 encoding//src/TestData/Host/ITC03010307_CreateHost_NoRequiredParams.py=utf-8
@@ -179,6 +180,7 @@ encoding//src/TestData/VirtualMachine/ITC05040701_DeleteVmNic_vmdown_plugged.py=
 encoding//src/TestData/VirtualMachine/ITC05040702_DeleteVmNic_vmrun_plugged.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05_SetUp.py=utf-8
 encoding//src/TestRun/TestCenter.py=utf-8
+encoding//src/Utils/PrintLog.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.

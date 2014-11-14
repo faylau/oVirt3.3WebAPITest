@@ -21,12 +21,8 @@ from TestAPIs.ClusterAPIs import ClusterAPIs,smart_create_cluster,smart_delete_c
 from TestAPIs.NetworkAPIs import NetworkAPIs,smart_create_network,smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-from Utils.HTMLTestRunner import HTMLTestRunner
 from TestData.Cluster import ITC02_Setup as ModuleData
-from TestAPIs.HostAPIs import HostAPIs,smart_create_host,smart_del_host
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs
-import TestData
-import TestAPIs
+from TestAPIs.HostAPIs import smart_create_host,smart_del_host
 
 import xmltodict
 
@@ -50,17 +46,6 @@ class ITC02_Setup(BaseTestCase):
         dcapi = DataCenterAPIs()
         LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % self.dm.dc_name)
         dcapi.createDataCenter(self.dm.dc_info)
-    
-class ITC02_TearDown(BaseTestCase):
-    '''
-    @summary: “集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
-    @note: 删除数据中心；
-    '''
-    def test_TearDown(self):
-        dcapi = DataCenterAPIs()
-        if dcapi.searchDataCenterByName(ModuleData.dc_name)['result']['data_centers']:
-            LogPrint().info("Post-Module-Test: Delete DataCenter '%s'." % ModuleData.dc_name)
-            dcapi.delDataCenter(ModuleData.dc_name)
             
 class ITC020101_GetClustersList(BaseTestCase):
     '''
@@ -120,7 +105,6 @@ class ITC020102_GetClusterInfo(BaseTestCase):
         '''
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
     
-
 class ITC02010301_CreateCluster(BaseTestCase):
     '''
     @summary: ITC-02集群管理-01集群操作-03创建一个集群-01创建成功
@@ -232,7 +216,6 @@ class ITC02010303_CreateClusterNoRequired(BaseTestCase):
         @summary: 无需清理
         '''
         
-
 class ITC02010401_UpdateCluster_nohost(BaseTestCase):
     '''
     @summary: ITC-02集群管理-01集群操作-04编辑集群-01集群内无主机
@@ -410,7 +393,6 @@ class ITC02010501_DeleteCluster_clear(BaseTestCase):
         # 准备1：创建一个集群
         self.clusterapi = ClusterAPIs()
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        
         
     def test_DeleteCluster(self):
         '''
@@ -680,7 +662,16 @@ class ITC020205_UpdateNetworkofCluster(BaseTestCase):
         self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name)) 
 
-
+class ITC02_TearDown(BaseTestCase):
+    '''
+    @summary: “集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: 删除数据中心；
+    '''
+    def test_TearDown(self):
+        dcapi = DataCenterAPIs()
+        if dcapi.searchDataCenterByName(ModuleData.dc_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test: Delete DataCenter '%s'." % ModuleData.dc_name)
+            dcapi.delDataCenter(ModuleData.dc_name)
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
