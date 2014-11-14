@@ -8,14 +8,13 @@ from TestAPIs.DiskAPIs import DiskAPIs
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
-from Utils.HTMLTestRunner import HTMLTestRunner
+#from Utils.HTMLTestRunner import HTMLTestRunner
 from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain,\
-smart_detach_storage_domain,smart_active_storage_domain
+smart_detach_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs
+from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs
 from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
-    TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
-    smart_delete_tempnic
+    TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain
 
@@ -97,58 +96,6 @@ class ITC07_SetUp(BaseTestCase):
             LogPrint().error("Attach Disk to vm fail.Status-code is wrong.")
             self.assertTrue(False)
             
-class ITC07_TearDown(BaseTestCase):
-    '''
-    @summary: “模板管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
-    @note: （1）删除虚拟机（删除磁盘）
-    @note: （2）将导出域设置为Maintenance状态；分离导出域；
-    @note: （3）将数据中心里的Data域（data1）设置为Maintenance状态；
-    @note: （4）删除数据中心dc（非强制）；
-    @note: （5）删除所有unattached状态的存储域（data1/data2）；
-    @note: （6）删除主机host1；
-    @note: （7）删除集群cluster1。
-    '''
-    def setUp(self):
-        '''
-        @summary: 模块测试环境初始化（获取测试数据
-        '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
-        self.dm = self.initData('ITC07_SetUp')
-        
-    def test_TearDown(self):
-        vmapi=VirtualMachineAPIs()
-        #Step1：删除虚拟机
-        vmapi.delVm(self.dm.vm_name)
-        dcapi = DataCenterAPIs()
-        capi = ClusterAPIs()
-        # Step2：将export存储域设置为Maintenance状态,然后从数据中心分离
-        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.export1_name)
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        LogPrint().info("Post-Module-Test-1: Detach storage domains '%s'." % self.dm.export1_name)
-        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        # Step3：将data1存储域设置为Maintenance状态
-        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
-        
-        # Step4：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
-        if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
-            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
-            self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
-                
-        # Step5：删除3个Unattached状态存储域（data1/data2/export1）
-        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
-        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name,self.dm.export1_name]
-        for sd in dict_sd_to_host:
-            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
-        
-        # Step6：删除主机（host1）
-        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
-        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
-        
-        # Step7：删除集群cluster1
-        if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
-            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
-            self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
 
 class ITC070101_GetTemplateList(BaseTestCase):
@@ -211,8 +158,8 @@ class ITC0701030101_CreateTemplate(BaseTestCase):
             self.expected_result_index += 1
         do_test()
     def tearDown(self):
-       for index in range(0,4):
-           self.assertTrue(smart_delete_template(self.dm.temp_name[index]))
+        for index in range(0,4):
+            self.assertTrue(smart_delete_template(self.dm.temp_name[index]))
         
             
 class ITC0701030102_CreateTemplate_SD(BaseTestCase):
@@ -799,6 +746,58 @@ class ITC070305_DeleteTemplateNic(BaseTestCase):
         self.assertTrue(self.flag)
     def tearDown(self):
         self.assertTrue(smart_delete_template(self.dm.temp_name))   
+class ITC07_TearDown(BaseTestCase):
+    '''
+    @summary: “模板管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: （1）删除虚拟机（删除磁盘）
+    @note: （2）将导出域设置为Maintenance状态；分离导出域；
+    @note: （3）将数据中心里的Data域（data1）设置为Maintenance状态；
+    @note: （4）删除数据中心dc（非强制）；
+    @note: （5）删除所有unattached状态的存储域（data1/data2）；
+    @note: （6）删除主机host1；
+    @note: （7）删除集群cluster1。
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = self.initData('ITC07_SetUp')
+        
+    def test_TearDown(self):
+        vmapi=VirtualMachineAPIs()
+        #Step1：删除虚拟机
+        vmapi.delVm(self.dm.vm_name)
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        # Step2：将export存储域设置为Maintenance状态,然后从数据中心分离
+        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.export1_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        LogPrint().info("Post-Module-Test-1: Detach storage domains '%s'." % self.dm.export1_name)
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        # Step3：将data1存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        
+        # Step4：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
+        if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
+                
+        # Step5：删除3个Unattached状态存储域（data1/data2/export1）
+        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
+        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name,self.dm.export1_name]
+        for sd in dict_sd_to_host:
+            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
+        
+        # Step6：删除主机（host1）
+        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
+        self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
+        
+        # Step7：删除集群cluster1
+        if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
+            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
                                              
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

@@ -21,8 +21,16 @@ from TestAPIs.ClusterAPIs import ClusterAPIs,smart_create_cluster,smart_delete_c
 from TestAPIs.NetworkAPIs import NetworkAPIs,smart_create_network,smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
+<<<<<<< HEAD
+#from Utils.HTMLTestRunner import HTMLTestRunner
 from TestData.Cluster import ITC02_Setup as ModuleData
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host
+
+
+=======
+from TestData.Cluster import ITC02_Setup as ModuleData
+from TestAPIs.HostAPIs import smart_create_host,smart_del_host
+>>>>>>> 60da96344c7edf9034ed054bf9f356e18d702761
 
 import xmltodict
 
@@ -46,6 +54,11 @@ class ITC02_Setup(BaseTestCase):
         dcapi = DataCenterAPIs()
         LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % self.dm.dc_name)
         dcapi.createDataCenter(self.dm.dc_info)
+<<<<<<< HEAD
+    
+
+=======
+>>>>>>> 60da96344c7edf9034ed054bf9f356e18d702761
             
 class ITC020101_GetClustersList(BaseTestCase):
     '''
