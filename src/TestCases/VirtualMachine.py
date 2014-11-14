@@ -15,32 +15,15 @@ __version__ = "V0.1"
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain, smart_detach_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
-    smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
-smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic,\
+from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs, VmDiskAPIs, VmNicAPIs, smart_create_vmdisk, \
+    smart_delete_vmdisk, smart_create_vm, smart_del_vm, smart_create_vmnic,smart_delete_vmnic, \
     smart_start_vm, smart_deactive_vmdisk, smart_suspend_vm,smart_stop_vm
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
-    TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
-    smart_delete_tempnic
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host
-from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain,\
-    StorageDomainAPIs
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template, smart_delete_tempnic
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
-
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs, smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
-    smart_start_vm, smart_create_vmnic,smart_delete_vmnic, smart_deactive_vmdisk, smart_suspend_vm
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs, smart_create_template, smart_create_tempnic, smart_delete_template, smart_delete_tempnic
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
-from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
-from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 import TestData.VirtualMachine.ITC05_SetUp as ModuleData
-
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
-from Utils.HTMLTestRunner import HTMLTestRunner
 
 import unittest
 import xmltodict
