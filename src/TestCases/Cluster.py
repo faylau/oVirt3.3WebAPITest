@@ -17,20 +17,12 @@ import unittest
 
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-from TestAPIs.ClusterAPIs import ClusterAPIs,smart_create_cluster,smart_delete_cluster
-from TestAPIs.NetworkAPIs import NetworkAPIs,smart_create_network,smart_delete_network
+from TestAPIs.ClusterAPIs import ClusterAPIs, smart_create_cluster, smart_delete_cluster
+from TestAPIs.NetworkAPIs import NetworkAPIs, smart_create_network, smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-<<<<<<< HEAD
-#from Utils.HTMLTestRunner import HTMLTestRunner
 from TestData.Cluster import ITC02_Setup as ModuleData
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host
-
-
-=======
-from TestData.Cluster import ITC02_Setup as ModuleData
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host
->>>>>>> 60da96344c7edf9034ed054bf9f356e18d702761
+from TestAPIs.HostAPIs import smart_create_host, smart_del_host
 
 import xmltodict
 
@@ -54,24 +46,25 @@ class ITC02_Setup(BaseTestCase):
         dcapi = DataCenterAPIs()
         LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % self.dm.dc_name)
         dcapi.createDataCenter(self.dm.dc_info)
-<<<<<<< HEAD
-    
-
-=======
->>>>>>> 60da96344c7edf9034ed054bf9f356e18d702761
             
 class ITC020101_GetClustersList(BaseTestCase):
     '''
     @summary: ITC-02集群管理-01基本操作-01获取集群列表
     '''
     def test_GetClustersList(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）获取全部集群列表；
+        @note: （2）验证接口返回的状态码是否正确。
+        '''
         clusterapi = ClusterAPIs()
+        LogPrint().info("Test: Get all clusters list.")
         r = clusterapi.getClustersList()
         if r['status_code']==200:
-            LogPrint().info('Get Clusters list SUCCESS.')
+            LogPrint().info('PASS: Get Clusters list SUCCESS.')
             self.flag = True
         else:
-            LogPrint().error('Get Clusters list FAIL.')
+            LogPrint().error('FAIL: Get Clusters list FAIL. Returned status code "%s" is WRONG.' % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -85,30 +78,33 @@ class ITC020102_GetClusterInfo(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
+        
+        # 前提1： 创建一个集群
+        LogPrint().info("Pre-Test: Create a cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         
     def test_GetClusterInfo(self):
         '''
         @summary: 测试用例执行步骤
+        @note: （1）获取指定集群的信息；
+        @note: （2）验证接口返回的状态码、集群信息是否正确。
         '''
         # 测试1：获取集群的信息，并与期望结果进行对比
         self.clusterapi = ClusterAPIs()
+        LogPrint().info("Test: Get cluster's ('%s') info." % self.dm.cluster_name)
         r = self.clusterapi.getClusterInfo(self.dm.cluster_name)
-        print r['status_code']
         if r['status_code']==self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.cluster_info)
-            print dict_expected
-            print dict_actual
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("Get Cluster '%s' info SUCCESS." % self.dm.cluster_name)
-#                 return True
+                LogPrint().info("PASS: Get Cluster '%s' info SUCCESS." % self.dm.cluster_name)
+                self.flag = True
             else:
-                LogPrint().error("Get Cluster '%s' info INCORRECT.")
+                LogPrint().error("FAIL: Get Cluster '%s' info INCORRECT." % self.dm.cluster_name)
                 self.flag = False
         else:
-            LogPrint().error("Get Cluster '%s' info FAILED. " % self.dm.cluster_name)
+            LogPrint().error("FAIL: Get Cluster '%s' info FAILED. Returned status code '%s' is WRONG." % (self.dm.cluster_name, r['status_code']))
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -116,6 +112,7 @@ class ITC020102_GetClusterInfo(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test: Delete cluster '%s'." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
     
 class ITC02010301_CreateCluster(BaseTestCase):
@@ -126,24 +123,30 @@ class ITC02010301_CreateCluster(BaseTestCase):
         '''
         @summary: 测试用例执行前的环境初始化（前提）
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
         self.clusterapi = ClusterAPIs()
         
     def test_CreateCluster(self):
-        r=self.clusterapi.createCluster(self.dm.cluster_info)
+        '''
+        @summary: 测试步骤
+        @note: （1）创建一个集群；
+        @note: （2）操作成功，验证接口返回的状态码、集群信息是否正确。
+        '''
+        LogPrint().info("Test: Create a cluster '%s'." % self.dm.cluster_name)
+        r = self.clusterapi.createCluster(self.dm.cluster_info)
         if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.cluster_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("Create Cluster '%s' SUCCESS." % self.dm.cluster_name)
-#                 return True
+                LogPrint().info("PASS: Create Cluster '%s' SUCCESS." % self.dm.cluster_name)
+                self.flag = True
             else:
-                LogPrint().error("Create Cluster '%s'  INCORRECT.")
+                LogPrint().error("FAIL: Create Cluster '%s'  INCORRECT." % self.dm.cluster_name)
                 self.flag = False
         else:
-            LogPrint().error("Get/Create Cluster '%s' FAILED. " % self.dm.cluster_name)
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -151,6 +154,7 @@ class ITC02010301_CreateCluster(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test: Delete cluster '%s'." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
                
 class ITC02010302_CreateCluster_Dup(BaseTestCase):
@@ -159,27 +163,33 @@ class ITC02010302_CreateCluster_Dup(BaseTestCase):
     '''
     def setUp(self):
         '''
-        @summary: 测试用例执行前的环境初始化（前提）
+        @summary: 初始化测试数据、测试环境。
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        self.clusterapi = ClusterAPIs()
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         
     def test_CreateCluster_Dup(self):
-        r=self.clusterapi.createCluster(self.dm.cluster_info)
+        '''
+        @summary: 测试步骤
+        @note: （1）创建一个重名的Cluster；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        clusterapi = ClusterAPIs()
+        LogPrint().info("Test: Create a cluster with dup name.")
+        r = clusterapi.createCluster(self.dm.cluster_info)
         if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.error_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("Test of CreateCluster_dup '%s' SUCCESS." % self.dm.cluster_name)
-#                 return True
+                LogPrint().info("PASS: Returned status code and info are CORRECT while creating cluster with dup name.")
+                self.flag = True
             else:
-                LogPrint().error("Test of CreateCluster_dup '%s'  INCORRECT.")
+                LogPrint().error("FAIL: Returned info are INCORRECT while creating cluster with dup name.")
                 self.flag = False
         else:
-            LogPrint().error("Test of CreateCluster_dup '%s' FAILED. " % self.dm.cluster_name)
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG. " % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -187,6 +197,7 @@ class ITC02010302_CreateCluster_Dup(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test: Delete cluster '%s'." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
 
 class ITC02010303_CreateClusterNoRequired(BaseTestCase):
@@ -198,26 +209,31 @@ class ITC02010303_CreateClusterNoRequired(BaseTestCase):
         '''
         @summary: 测试用例执行前的环境初始化（前提）
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        self.clusterapi = ClusterAPIs()
         
     def test_CreateClusterNoRequired(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）创建一个集群，缺少必填参数；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        clusterapi = ClusterAPIs()
         self.expected_result_index = 0
         # 使用数据驱动，根据测试数据文件循环创建多个数据中心
         @BaseTestCase.drive_data(self, self.dm.cluster_info)
         def do_test(xml_info):
             self.flag = True
-            r = self.clusterapi.createCluster(xml_info)
+            r = clusterapi.createCluster(xml_info)
             if r['status_code']==self.dm.expected_status_code:
                 dictCompare = DictCompare()
                 if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.expected_result_index]), r['result']):
-                    LogPrint().info("PASS: The returned status code and messages are CORRECT.")
+                    LogPrint().info("PASS: Returned status code and messages are CORRECT.")
                 else:
-                    LogPrint().error("FAIL: The returned messages are INCORRECT.")
+                    LogPrint().error("FAIL: Returned messages are INCORRECT.")
                     self.flag = False
             else:
-                LogPrint().error("FAIL: The returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
+                LogPrint().error("FAIL: Returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
                 self.flag = False
             self.assertTrue(self.flag)
             self.expected_result_index += 1
@@ -228,6 +244,7 @@ class ITC02010303_CreateClusterNoRequired(BaseTestCase):
         '''
         @summary: 无需清理
         '''
+        pass
         
 class ITC02010401_UpdateCluster_nohost(BaseTestCase):
     '''
@@ -235,41 +252,48 @@ class ITC02010401_UpdateCluster_nohost(BaseTestCase):
     '''
     def setUp(self):
         '''
-        @summary: 测试用例执行前的环境初始化（前提）
+        @summary: 初始化测试数据、测试环境。
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        # 首先创建一个集群
-        self.clusterapi = ClusterAPIs()
+        
+        # 前提1：创建一个集群
+        LogPrint().info("Pre-Test: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         
     def test_UpdateCluster(self):
+        '''
+        @summary: 测试步骤
+        '''
+        clusterapi = ClusterAPIs()
         self.expected_result_index = 0
         # 使用数据驱动，根据测试数据文件循环创建多个数据中心
         @BaseTestCase.drive_data(self, self.dm.cluster_info_new)
         def do_test(xml_info):
             self.flag = True
-            r=self.clusterapi.updateCluster(self.dm.cluster_name,xml_info)
-            if r['status_code'] ==self.dm.status_code:
+            r = clusterapi.updateCluster(self.dm.cluster_name, xml_info)
+            if r['status_code'] == self.dm.status_code:
                 dict_actual = r['result']
                 dict_expected = xmltodict.parse(xml_info)
                 dictCompare = DictCompare()
                 if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                    LogPrint().info("PASS:ITC02010401_UpdateCluster_nohost SUCCESS." )
-#                 return True
+                    LogPrint().info("PASS: ITC02010401_UpdateCluster_nohost SUCCESS." )
+                    self.flag = True
                 else:
-                    LogPrint().error("FAIL:ITC02010401_UpdateCluster_nohost.Error-info  INCORRECT.")
+                    LogPrint().error("FAIL: ITC02010401_UpdateCluster_nohost.Error-info  INCORRECT.")
                     self.flag = False
             else:
-                LogPrint().error("FAIL:ITC02010401_UpdateCluster_nohost FAILED.Status-code WRONG. " )
+                LogPrint().error("FAIL: ITC02010401_UpdateCluster_nohost FAILED.Status-code WRONG. " )
                 self.flag = False
             self.assertTrue(self.flag)
             self.expected_result_index += 1
         do_test()
+    
     def tearDown(self):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test: Delete cluster '%s'." % self.dm.cluster_name_new)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name_new))
 
 class ITC0201040201_UpdateCluster_host_cputype(BaseTestCase):
@@ -278,30 +302,36 @@ class ITC0201040201_UpdateCluster_host_cputype(BaseTestCase):
     '''
     def setUp(self):
         '''
-        @summary: 测试用例执行前的环境初始化（前提）
+        @summary: 初始化测试数据、测试环境。
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        # 首先创建一个集群
-        self.clusterapi = ClusterAPIs()
+        # 前提1：创建一个集群
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        # 创建一个主机
+        # 前提2：创建一个主机
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+        
     def test_UpdateCluster_host(self):
-        r=self.clusterapi.updateCluster(self.dm.cluster_name,self.dm.cluster_info_new)
-        print r
-        if r['status_code'] ==self.dm.status_code:
+        '''
+        @summary: 测试步骤
+        @note: （1）更改含有主机的集群CPU类型；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        clusterapi = ClusterAPIs()
+        LogPrint().info("Test: Edit cluster's cpu type if there are hosts in this cluster.")
+        r = clusterapi.updateCluster(self.dm.cluster_name, self.dm.cluster_info_new)
+        if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.expected_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("PASS:ITC0201040201_test_UpdateCluster_host_cputype SUCCESS." )
-#                 return True
+                LogPrint().info("PASS: ITC0201040201_test_UpdateCluster_host_cputype SUCCESS." )
+                self.flag = True
             else:
-                LogPrint().error("FAIL:ITC0201040201_test_UpdateCluster_host_cputype .Error-info INCORRECT.")
+                LogPrint().error("FAIL: ITC0201040201_test_UpdateCluster_host_cputype .Error-info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL:ITC0201040201_test_UpdateCluster_host_cputype.Status_code WRONG")
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -309,7 +339,9 @@ class ITC0201040201_UpdateCluster_host_cputype(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test-1: Delete host '%s'." % self.dm.host_name)
         self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
+        LogPrint().info("Post-Test-2: Delete cluster '%s'." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
 
 class ITC0201040202_UpdateCluster_host_upcpu(BaseTestCase):
@@ -322,26 +354,32 @@ class ITC0201040202_UpdateCluster_host_upcpu(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        # 首先创建一个集群
-        self.clusterapi = ClusterAPIs()
+        # 前提1：创建一个集群
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        # 创建一个主机
+        # 前提2：创建一个主机
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+        
     def test_UpdateCluster_host(self):
-        r=self.clusterapi.updateCluster(self.dm.cluster_name,self.dm.cluster_info_new)
-        print r
-        if r['status_code'] ==self.dm.status_code:
+        '''
+        @summary: 测试步骤
+        @note: （1）
+        @note: （2）
+        '''
+        clusterapi = ClusterAPIs()
+        LogPrint().info("Test: Improve cluster's CPU level while there are hosts in cluster.")
+        r = clusterapi.updateCluster(self.dm.cluster_name, self.dm.cluster_info_new)
+        if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.expected_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("PASS:ITC0201040202_test_UpdateCluster_host_upcpu SUCCESS." )
-#                 return True
+                LogPrint().info("PASS: ITC0201040202_test_UpdateCluster_host_upcpu SUCCESS." )
+                self.flag = True
             else:
-                LogPrint().error("FAIL:ITC0201040202_test_UpdateCluster_host_upcpu. Error-info INCORRECT.")
+                LogPrint().error("FAIL: ITC0201040202_test_UpdateCluster_host_upcpu. Error-info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL:ITC0201040202_test_UpdateCluster_host_upcpu.Status_code is wrong. ")
+            LogPrint().error("FAIL: Returned tatus_code '%s' is WRONG." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -349,7 +387,9 @@ class ITC0201040202_UpdateCluster_host_upcpu(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test-1: Delete host '%s'." % self.dm.host_name)
         self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
+        LogPrint().info("Post-Test-2: Delete cluster '%s'." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
 
 class ITC0201040203_UpdateCluster_host_name(BaseTestCase):
@@ -360,28 +400,34 @@ class ITC0201040203_UpdateCluster_host_name(BaseTestCase):
         '''
         @summary: 测试用例执行前的环境初始化（前提）
         '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        # 首先创建一个集群
-        self.clusterapi = ClusterAPIs()
+        # 前提1：首先创建一个集群
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        # 创建一个主机
+        # 前提2：创建一个主机
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+        
     def test_UpdateCluster_host(self):
-        r=self.clusterapi.updateCluster(self.dm.cluster_name,self.dm.cluster_info_new)
-        print r
-        if r['status_code'] ==self.dm.status_code:
+        '''
+        @summary: 测试步骤
+        @note: （1）
+        @note: （2）
+        '''
+        clusterapi = ClusterAPIs()
+        LogPrint().info("Test: Edit cluster's name while there are hosts in cluster.")
+        r = clusterapi.updateCluster(self.dm.cluster_name, self.dm.cluster_info_new)
+        if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.cluster_info_new)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("PASS:ITC0201040203_test_UpdateCluster_host_name SUCCESS." )
-#                 return True
+                LogPrint().info("PASS: ITC0201040203_test_UpdateCluster_host_name SUCCESS." )
+                self.flag = True
             else:
-                LogPrint().error("FAIL:ITC0201040203_test_UpdateCluster_host_name. Error-info INCORRECT.")
+                LogPrint().error("FAIL: ITC0201040203_test_UpdateCluster_host_name. Error-info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL:ITC0201040203_test_UpdateCluster_host_name.Status_code is wrong. ")
+            LogPrint().error("FAIL: ITC0201040203_test_UpdateCluster_host_name.Status_code is wrong. ")
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -389,7 +435,9 @@ class ITC0201040203_UpdateCluster_host_name(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test-1: Delete host '%s'." % self.dm.host_name)
         self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
+        LogPrint().info("Post-Test-2: Delete cluster '%s'." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name_new))
 
 class ITC02010501_DeleteCluster_clear(BaseTestCase):
@@ -404,25 +452,29 @@ class ITC02010501_DeleteCluster_clear(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 准备1：创建一个集群
-        self.clusterapi = ClusterAPIs()
+        LogPrint().info("Pre-Test: Create a cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         
     def test_DeleteCluster(self):
         '''
         @summary: 测试用例执行步骤
+        @note: （1）删除一个干净的集群；
+        @note: （2）操作成功，验证接口返回的状态码是否正确，验证被删除的集群不再存在。
         '''
+        clusterapi = ClusterAPIs()
         # 测试1：获取集群的信息，并与期望结果进行对比
-        r = self.clusterapi.delCluster(self.dm.cluster_name)
-        if r['status_code']==self.dm.status_code:
-            print self.clusterapi.searchClusterByName(self.dm.cluster_name)['result']['clusters']
+        LogPrint().info("Test: Delete the clean cluster '%s'." % self.dm.cluster_name)
+        r = clusterapi.delCluster(self.dm.cluster_name)
+        if r['status_code'] == self.dm.status_code:
+#             print self.clusterapi.searchClusterByName(self.dm.cluster_name)['result']['clusters']
             if not self.clusterapi.searchClusterByName(self.dm.cluster_name)['result']['clusters']:
-                LogPrint().info("Delete Cluster '%s' info SUCCESS." % self.dm.cluster_name)
-#                 return True
+                LogPrint().info("PASS: Delete Cluster '%s' info SUCCESS." % self.dm.cluster_name)
+                self.flag = True
             else:
-                LogPrint().error("Delete Cluster '%s' info INCORRECT.")
+                LogPrint().error("FAIL: Delete Cluster '%s' info INCORRECT." % self.dm.cluster_name)
                 self.flag = False
         else:
-            LogPrint().error("Delete Cluster '%s' FAILED. " % self.dm.cluster_name)
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -430,6 +482,7 @@ class ITC02010501_DeleteCluster_clear(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test: Delete cluster '%s'." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
         
 class ITC02010502_DeleteCluster_host(BaseTestCase):
@@ -442,26 +495,33 @@ class ITC02010502_DeleteCluster_host(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        # 首先创建一个集群
-        self.clusterapi = ClusterAPIs()
+        # 前提1：创建一个集群
+        LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        # 创建一个主机
+        # 前提2：创建一个主机
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
+        
     def test_DeleteCluster_host(self):
-        r=self.clusterapi.delCluster(self.dm.cluster_name)
-        print r
+        '''
+        @summary: 
+        @note: （1）
+        '''
+        clusterapi = ClusterAPIs()
+        LogPrint().info("Test: ")
+        r = clusterapi.delCluster(self.dm.cluster_name)
+#         print r
         if r['status_code'] ==self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.expected_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("PASS:ITC02010502_DeleteCluster_host SUCCESS." )
-#                 return True
+                LogPrint().info("PASS: ITC02010502_DeleteCluster_host SUCCESS." )
+                self.flag = True
             else:
-                LogPrint().error("FAIL:ITC02010502_DeleteCluster_host. Error-info INCORRECT.")
+                LogPrint().error("FAIL: ITC02010502_DeleteCluster_host. Error-info INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL:ITC02010502_DeleteCluster_host.Status_code is wrong. ")
+            LogPrint().error("FAIL: ITC02010502_DeleteCluster_host.Status_code is wrong. ")
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -469,7 +529,9 @@ class ITC02010502_DeleteCluster_host(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test-1: ")
         self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
+        LogPrint().info("Post-Test-1: ")
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name)) 
               
 class ITC020201_GetClusterNetworkList(BaseTestCase):
@@ -696,8 +758,3 @@ if __name__ == "__main__":
     testSuite.addTests(tests)
  
     unittest.TextTestRunner(verbosity=2).run(testSuite)
-    
-    #fileName = r"e:\result.html"
-    #fp = file(fileName, 'wb')
-    #runner = HTMLTestRunner(stream=fp, title=u"测试结果", description=u"测试报告")
-    #runner.run(testSuite)
