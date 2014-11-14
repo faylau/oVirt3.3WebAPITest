@@ -15,9 +15,9 @@ __version__ = "V0.1"
 from Configs import GlobalConfig
 import ITC03_SetUp as DM
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Pre-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 # 配置电源管理选项的host的相关信息
 host = GlobalConfig.Hosts['node1']
 host_name = 'node-ITC03011001'
@@ -34,9 +34,9 @@ xml_host_info = '''
        host['password'], \
        DM.cluster_name)
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Test-Data
-'''
+-----------------------------------------------------------------------------------------'''
 iscsi_server = GlobalConfig.DataStorages['iscsi']['data1-iscsi']
 xml_iscsi_info_list = '''
 <data_driver>
@@ -55,9 +55,9 @@ xml_iscsi_info_list = '''
 </data_driver>
 ''' % (iscsi_server['ip'], iscsi_server['port'])
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Post-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 # 资源清理时删除host所用的选项（强制删除/同步）
 xml_host_del_option = '''
 <action>
@@ -66,9 +66,9 @@ xml_host_del_option = '''
 </action>
 '''
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: ExpectedResult
-'''
+-----------------------------------------------------------------------------------------'''
 expected_status_code_create_host = 201          # 创建主机操作的期望状态码
 expected_status_code_discovery_iscsi_fail = 400 # 探测iscsi服务器失败，返回状态码
 expected_info_discovery_iscsi_fail = '''

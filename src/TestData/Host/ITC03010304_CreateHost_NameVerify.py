@@ -12,14 +12,14 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Pre-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Test-Data
-'''
+-----------------------------------------------------------------------------------------'''
 # 主机名称：（1）包含特殊字符；（2）超过255个字符.
 host_name_list = ['node-ITC03010304-~!@#$%^',
                   'node-ITC03010304-abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz01234'
@@ -39,9 +39,9 @@ xml_host_info = '''
 </data_driver>
 ''' % (host_name_list[0], host_name_list[1])
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Post-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 xml_del_option = '''
 <action>
     <force>true</force>
@@ -49,9 +49,9 @@ xml_del_option = '''
 </action>
 '''
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: ExpectedResult
-'''
+-----------------------------------------------------------------------------------------'''
 expected_status_code = 400
 expected_info_list = [
 '''
