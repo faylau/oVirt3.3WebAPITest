@@ -95,6 +95,7 @@ encoding//src/TestData/Cluster/ITC02010501_DeleteCluster_clear.py=utf-8
 encoding//src/TestData/DataCenter/ITC01020601_DeactivateStorage_Normal.py=utf-8
 encoding//src/TestData/DataCenter/ITC01_SetUp.py=utf-8
 encoding//src/TestData/Host/ITC03010307_CreateHost_NoRequiredParams.py=utf-8
+encoding//src/TestData/Network/ITC050201_GetNetworkProfileList.py=utf-8
 encoding//src/TestData/StorageDomain/ITC0401030101_CreateNfsSd_Normal.py=utf-8
 encoding//src/TestData/StorageDomain/ITC0401030106_CreateNfsSd_NoRequiredParams.py=utf-8
 encoding//src/TestData/StorageDomain/ITC04010601_DestroySd_Unattached.py=utf-8

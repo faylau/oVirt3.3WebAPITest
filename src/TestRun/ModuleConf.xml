@@ -10,7 +10,7 @@
     <module name="Cluster" id="02">
         <description>集群管理</description>
         <filename>Cluster.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="Host" id="03">
@@ -34,7 +34,7 @@
     <module name="Network" id="06">
         <description>逻辑网络管理</description>
         <filename>Network.py</filename>
-        <run>False</run>
+        <run>True</run>
     </module>
 
     <module name="Profile" id="07">
