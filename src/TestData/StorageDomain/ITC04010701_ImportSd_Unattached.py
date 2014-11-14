@@ -21,7 +21,7 @@ from TestAPIs.HostAPIs import HostAPIs
 @note: Pre-Test-Data
 -------------------------------------------------------------------------------------------------
 '''
-iso = IsoStorages['ISO-Storage1']
+iso = IsoStorages['ISO-Storage2']
 iso_ip = iso['ip']
 iso_path = iso['path']
 host_id = HostAPIs().getHostIdByName(ModuleData.host1_name)

@@ -4,13 +4,13 @@
 	<module name="DataCenter" id="01">
 		<description>数据中心管理</description>
 		<filename>DataCenter.py</filename>
-		<run>True</run>
+		<run>False</run>
 	</module>
 
     <module name="Cluster" id="02">
         <description>集群管理</description>
         <filename>Cluster.py</filename>
-        <run>False</run>
+        <run>True</run>
     </module>
 
     <module name="Host" id="03">

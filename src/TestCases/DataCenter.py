@@ -1185,8 +1185,8 @@ class ITC01020501_ActivateStorage_Normal(BaseTestCase):
         @summary: 资源清理
         '''
         LogPrint().info("Post-Test: Deactivate and Detach storage '%s' from DataCenter '%s'." % (ModuleData.data2_nfs_name, ModuleData.dc_nfs_name))
-        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
-        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+        self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+        self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
 
 class ITC01020601_DeactivateStorage_Normal(BaseTestCase):
     '''

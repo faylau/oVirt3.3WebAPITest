@@ -7,9 +7,13 @@ __version__ = "V0.1"
 '''
 # ChangeLog:
 #---------------------------------------------------------------------------------
-# Version        Date                Desc                            Author
+# Version        Date                Desc                                Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/10/17          初始版本                                                            Liu Fei 
+# V0.1           2014/10/17          初始版本                                                                    Liu Fei 
+#---------------------------------------------------------------------------------
+# V0.2           2014/11/13          *将SetUp和TearDown分别置于首尾
+#                                    *修改存在问题的TC及数据文件，包括
+#                                     ITC0401030101_CreateNfsSd_Normal等   Liu Fei 
 #---------------------------------------------------------------------------------
 '''
 
@@ -92,66 +96,6 @@ class ITC04_SetUp(BaseTestCase):
         @summary: 资源清理
         '''
         pass
-        
-class ITC04_TearDown(BaseTestCase):
-    '''
-    @summary: “主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
-    @note: （1）将数据中心里的Data域全部设置为Maintenance状态；
-    @note: （2）删除数据中心（非强制）；
-    @note: （3）删除unattached状态的Data存储域；
-    @note: （4）删除主机；
-    @note: （5）删除集群；
-    @note: （6）删除数据中心。 
-    '''
-    def setUp(self):
-        '''
-        @summary: 模块测试环境初始化（获取测试数据
-        '''
-        # 调用父类方法，获取该用例所对应的测试数据模块
-        self.dm = self.initData('ITC04_SetUp')
-        
-    def test_TearDown(self):
-        dcapi = DataCenterAPIs()
-        capi = ClusterAPIs()
-        
-        # Step1：将ISO域和Export域设置为Maintenance状态
-        LogPrint().info("Post-Module-Test-1: Deactivate ISO and Export storage domains.")
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        
-        # Step2：将ISO域和Export域从对应的数据中心分离（detach）
-        LogPrint().info("Post-Module-Test-2: Deattch ISO and Export storage domains.")
-        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
-        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        
-        # Step3：将Data存储域设置为Maintenance状态
-        LogPrint().info("Post-Module-Test-3: Deactivate all data storage domains.")
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_iscsi_name, self.dm.data1_iscsi_name))
-        
-        # 删除3个数据中心（非强制，之后存储域变为Unattached状态）
-        for dc in self.dm.dc_name_list:
-            if dcapi.searchDataCenterByName(dc)['result']['data_centers']:
-                LogPrint().info("Post-Module-Test-4: Delete DataCenter '%s'." % dc)
-                self.assertTrue(dcapi.delDataCenter(dc)['status_code']==self.dm.expected_status_code_del_dc)
-                
-        # 删除3个Unattached状态的Data存储域和ISO/Export域（如果没有配置FC，则删除2个）
-        LogPrint().info("Post-Module-Test-5: Delete all storage domains.")
-        dict_sd_to_host = {self.dm.data1_nfs_name:self.dm.host1_name, self.dm.data1_iscsi_name:self.dm.host4_name, 
-                           self.dm.iso1_name:self.dm.host1_name, self.dm.export1_name:self.dm.host1_name}
-        for sd in dict_sd_to_host:
-            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=dict_sd_to_host[sd])
-        
-        # 删除主机（host1和host4）
-        LogPrint().info("Post-Module-Test-6: Delete all hosts.")
-        for host_name in [self.dm.host1_name, self.dm.host4_name]:
-            self.assertTrue(smart_del_host(host_name, self.dm.xml_del_host_option))
-        
-        # 删除3个集群
-        for cluster in self.dm.cluster_name_list:
-            if capi.searchClusterByName(cluster)['result']['clusters']:
-                LogPrint().info("Post-Module-Test-7: Delete Cluster '%s'." % cluster)
-                self.assertTrue(capi.delCluster(cluster)['status_code']==self.dm.expected_status_code_del_dc)
 
 class ITC040101_GetStorageDomainsList(BaseTestCase):
     '''
@@ -257,77 +201,77 @@ class ITC0401030101_CreateNfsSd_Normal(BaseTestCase):
         for sd_name in self.dm.data1_name:
             self.assertTrue(smart_del_storage_domain(sd_name, self.dm.xml_del_sd_option))
 
-class ITC0401030102_CreateNfsSd_DupName(BaseTestCase):
-    '''
-    @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-02重名
-    '''
-    def setUp(self):
-        '''
-        @summary: 初始化测试数据、测试环境。
-        @note: 前提是已经存在一个存储域（在模块级测试环境中已经有一个存储域了）
-        @todo: 涉及到存储连接的问题，此用例暂时不要运行。
-        '''
-        # 初始化测试数据
-        self.dm = super(self.__class__, self).setUp()
-        self.sd_api = StorageDomainAPIs()
-        
-    def test_CreateNfsSd_DupName(self):
-        '''
-        @summary: 测试步骤
-        @note: （1）创建一个同名的存储域sd2
-        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-        '''
-        LogPrint().info("Test: Create a StorageDomain with Dup name '%s'." % self.dm.data1_name)
-        r = self.sd_api.createStorageDomain(self.dm.data1_info_xml)
-        print xmltodict.unparse(r['result'], pretty=True)
-        if r['status_code'] == self.dm.expected_status_code_create_sd_dup_name:
-            dictCompare = DictCompare()
-            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_create_sd_dup_name), r['result']):
-                LogPrint().info("PASS: Returned status_code and messages are CORRECT while creating StorageDomain with Dup Name.")
-                self.flag = True
-            else:
-                LogPrint().error("FAIL: Returned messages are INCORRECT: '%s'." % xmltodict.unparse(r['result'], pretty=True))
-                self.flag = False
-        else:
-            LogPrint().error("FAIL: Returned status code '%s' is INCORRECT." % r['status_code'])
-            self.flag = False
-        self.assertTrue(self.flag)
+# class ITC0401030102_CreateNfsSd_DupName(BaseTestCase):
+#     '''
+#     @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-02重名
+#     '''
+#     def setUp(self):
+#         '''
+#         @summary: 初始化测试数据、测试环境。
+#         @note: 前提是已经存在一个存储域（在模块级测试环境中已经有一个存储域了）
+#         @todo: 涉及到存储连接的问题，此用例暂时不要运行。
+#         '''
+#         # 初始化测试数据
+#         self.dm = super(self.__class__, self).setUp()
+#         self.sd_api = StorageDomainAPIs()
+#         
+#     def test_CreateNfsSd_DupName(self):
+#         '''
+#         @summary: 测试步骤
+#         @note: （1）创建一个同名的存储域sd2
+#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+#         '''
+#         LogPrint().info("Test: Create a StorageDomain with Dup name '%s'." % self.dm.data1_name)
+#         r = self.sd_api.createStorageDomain(self.dm.data1_info_xml)
+#         print xmltodict.unparse(r['result'], pretty=True)
+#         if r['status_code'] == self.dm.expected_status_code_create_sd_dup_name:
+#             dictCompare = DictCompare()
+#             if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_create_sd_dup_name), r['result']):
+#                 LogPrint().info("PASS: Returned status_code and messages are CORRECT while creating StorageDomain with Dup Name.")
+#                 self.flag = True
+#             else:
+#                 LogPrint().error("FAIL: Returned messages are INCORRECT: '%s'." % xmltodict.unparse(r['result'], pretty=True))
+#                 self.flag = False
+#         else:
+#             LogPrint().error("FAIL: Returned status code '%s' is INCORRECT." % r['status_code'])
+#             self.flag = False
+#         self.assertTrue(self.flag)
+# 
+#     def tearDown(self):
+#         '''
+#         @summary: 资源清理
+#         @note: （1）删除创建的存储域
+#         '''
+#         pass
 
-    def tearDown(self):
-        '''
-        @summary: 资源清理
-        @note: （1）删除创建的存储域
-        '''
-        pass
-
-class ITC0401030103_CreateNfsSd_NameVerify(BaseTestCase):
-    '''
-    @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-03名称有效性验证
-    @todo: 未完成，涉及到存储连接无法删除的问题。
-    '''
-    def setUp(self):
-        '''
-        @summary: 初始化测试数据、测试环境。
-        '''
-        self.dm = super(self.__class__, self).setUp()
-    
-    def test_CreateNfsSd_NameVerify(self):
-        '''
-        @summary: 测试步骤
-        @note: （1）验证创建Storage Domain时输入名称的有效性；
-        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-        '''
-        sd_api = StorageDomainAPIs()
-        r = sd_api.createStorageDomain(self.dm.sd_info_list)
-        print r['status_code']
-        print xmltodict.unparse(r['result'], pretty=True)
-        
-    def tearDown(self):
-        '''
-        @summary: 资源清理
-        '''
-        for sd in self.dm.sd_name_list:
-            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, self.dm.expected_status_code_del_sd)
+# class ITC0401030103_CreateNfsSd_NameVerify(BaseTestCase):
+#     '''
+#     @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-03名称有效性验证
+#     @todo: 未完成，涉及到存储连接无法删除的问题。
+#     '''
+#     def setUp(self):
+#         '''
+#         @summary: 初始化测试数据、测试环境。
+#         '''
+#         self.dm = super(self.__class__, self).setUp()
+#     
+#     def test_CreateNfsSd_NameVerify(self):
+#         '''
+#         @summary: 测试步骤
+#         @note: （1）验证创建Storage Domain时输入名称的有效性；
+#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+#         '''
+#         sd_api = StorageDomainAPIs()
+#         r = sd_api.createStorageDomain(self.dm.sd_info_list)
+#         print r['status_code']
+#         print xmltodict.unparse(r['result'], pretty=True)
+#         
+#     def tearDown(self):
+#         '''
+#         @summary: 资源清理
+#         '''
+#         for sd in self.dm.sd_name_list:
+#             smart_del_storage_domain(sd, self.dm.xml_del_sd_option, self.dm.expected_status_code_del_sd)
 
 class ITC0401030104_CreateNfsSd_IpVerify(BaseTestCase):
     '''
@@ -419,51 +363,51 @@ class ITC0401030105_CreateNfsSd_PathVerify(BaseTestCase):
         '''
         smart_del_storage_domain(self.dm.sd_name, self.dm.xml_del_sd_option)
 
-class ITC0401030106_CreateNfsSd_NoRequiredParams(BaseTestCase):
-    '''
-    @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-06缺少必需项
-    @todo: 存在storage connection的问题，该用例暂时无法正常运行。
-    '''
-    def setUp(self):
-        '''
-        @summary: 初始化测试数据、测试环境。
-        '''
-        # 初始化测试数据
-        self.dm = super(self.__class__, self).setUp()
-        
-    def test_CreateNfsSd_NoRequiredParams(self):
-        '''
-        @summary: 测试步骤
-        @note: （1）必填项包括name/type/host/storage(type/address/path)；
-        @note: （2）分别验证缺少必填项时接口返回的状态码、提示信息是否正确。
-        '''
-        sd_api = StorageDomainAPIs()
-        self.index = 0
-        LogPrint().info("Test: Verify the returned status code and messages while creating data storage without required parameters.")
-        @BaseTestCase.drive_data(self, self.dm.xml_sd_info_list)
-        def do_test(xml_info):
-            r = sd_api.createStorageDomain(xml_info)
-#             print r['status_code']
-#             print xmltodict.unparse(r['result'], pretty=True)
-            if r['status_code'] == self.dm.expected_return_info_list[self.index][0]:
-                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_return_info_list[self.index][1]), r['result']):
-                    LogPrint().info("PASS: Returned status code and messages are CORRECT while creating data storage without required parameters.")
-                    self.flag = True
-                else:
-                    LogPrint().error("FAIL: Returned messages are INCORRECT.")
-                    self.flag = False
-            else:
-                LogPrint().error("FAIL: Returned status code '%s' INCORRECT." % r['status_code'])
-                self.flag = False
-            self.index += 1
-            self.assertTrue(self.flag)
-        do_test()
-        
-    def tearDown(self):
-        '''
-        @summary: 资源清理
-        '''
-        self.assertTrue(smart_del_storage_domain(self.dm.sd_name, self.dm.xml_del_sd_option))
+# class ITC0401030106_CreateNfsSd_NoRequiredParams(BaseTestCase):
+#     '''
+#     @summary: ITC-04存储域管理-01存储域操作-03创建-01NFS-06缺少必需项
+#     @todo: 存在storage connection的问题，该用例暂时无法正常运行。
+#     '''
+#     def setUp(self):
+#         '''
+#         @summary: 初始化测试数据、测试环境。
+#         '''
+#         # 初始化测试数据
+#         self.dm = super(self.__class__, self).setUp()
+#         
+#     def test_CreateNfsSd_NoRequiredParams(self):
+#         '''
+#         @summary: 测试步骤
+#         @note: （1）必填项包括name/type/host/storage(type/address/path)；
+#         @note: （2）分别验证缺少必填项时接口返回的状态码、提示信息是否正确。
+#         '''
+#         sd_api = StorageDomainAPIs()
+#         self.index = 0
+#         LogPrint().info("Test: Verify the returned status code and messages while creating data storage without required parameters.")
+#         @BaseTestCase.drive_data(self, self.dm.xml_sd_info_list)
+#         def do_test(xml_info):
+#             r = sd_api.createStorageDomain(xml_info)
+# #             print r['status_code']
+# #             print xmltodict.unparse(r['result'], pretty=True)
+#             if r['status_code'] == self.dm.expected_return_info_list[self.index][0]:
+#                 if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_return_info_list[self.index][1]), r['result']):
+#                     LogPrint().info("PASS: Returned status code and messages are CORRECT while creating data storage without required parameters.")
+#                     self.flag = True
+#                 else:
+#                     LogPrint().error("FAIL: Returned messages are INCORRECT.")
+#                     self.flag = False
+#             else:
+#                 LogPrint().error("FAIL: Returned status code '%s' INCORRECT." % r['status_code'])
+#                 self.flag = False
+#             self.index += 1
+#             self.assertTrue(self.flag)
+#         do_test()
+#         
+#     def tearDown(self):
+#         '''
+#         @summary: 资源清理
+#         '''
+#         self.assertTrue(smart_del_storage_domain(self.dm.sd_name, self.dm.xml_del_sd_option))
             
 class ITC0401030201_CreateIscsiSd_Normal(BaseTestCase):
     '''
@@ -902,9 +846,69 @@ class ITC040301_GetFilesFromIsoStorage(BaseTestCase):
         '''
         pass
 
+class ITC04_TearDown(BaseTestCase):
+    '''
+    @summary: “主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: （1）将数据中心里的Data域全部设置为Maintenance状态；
+    @note: （2）删除数据中心（非强制）；
+    @note: （3）删除unattached状态的Data存储域；
+    @note: （4）删除主机；
+    @note: （5）删除集群；
+    @note: （6）删除数据中心。 
+    '''
+    def setUp(self):
+        '''
+        @summary: 模块测试环境初始化（获取测试数据
+        '''
+        # 调用父类方法，获取该用例所对应的测试数据模块
+        self.dm = self.initData('ITC04_SetUp')
+        
+    def test_TearDown(self):
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        
+        # Step1：将ISO域和Export域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-1: Deactivate ISO and Export storage domains.")
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        
+        # Step2：将ISO域和Export域从对应的数据中心分离（detach）
+        LogPrint().info("Post-Module-Test-2: Deattch ISO and Export storage domains.")
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        
+        # Step3：将Data存储域设置为Maintenance状态
+        LogPrint().info("Post-Module-Test-3: Deactivate all data storage domains.")
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_iscsi_name, self.dm.data1_iscsi_name))
+        
+        # 删除3个数据中心（非强制，之后存储域变为Unattached状态）
+        for dc in self.dm.dc_name_list:
+            if dcapi.searchDataCenterByName(dc)['result']['data_centers']:
+                LogPrint().info("Post-Module-Test-4: Delete DataCenter '%s'." % dc)
+                self.assertTrue(dcapi.delDataCenter(dc)['status_code']==self.dm.expected_status_code_del_dc)
+                
+        # 删除3个Unattached状态的Data存储域和ISO/Export域（如果没有配置FC，则删除2个）
+        LogPrint().info("Post-Module-Test-5: Delete all storage domains.")
+        dict_sd_to_host = {self.dm.data1_nfs_name:self.dm.host1_name, self.dm.data1_iscsi_name:self.dm.host4_name, 
+                           self.dm.iso1_name:self.dm.host1_name, self.dm.export1_name:self.dm.host1_name}
+        for sd in dict_sd_to_host:
+            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=dict_sd_to_host[sd])
+        
+        # 删除主机（host1和host4）
+        LogPrint().info("Post-Module-Test-6: Delete all hosts.")
+        for host_name in [self.dm.host1_name, self.dm.host4_name]:
+            self.assertTrue(smart_del_host(host_name, self.dm.xml_del_host_option))
+        
+        # 删除3个集群
+        for cluster in self.dm.cluster_name_list:
+            if capi.searchClusterByName(cluster)['result']['clusters']:
+                LogPrint().info("Post-Module-Test-7: Delete Cluster '%s'." % cluster)
+                self.assertTrue(capi.delCluster(cluster)['status_code']==self.dm.expected_status_code_del_dc)
+
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["StorageDomain.ITC040301_GetFilesFromIsoStorage"]
+    test_cases = ["StorageDomain.ITC04_TearDown"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

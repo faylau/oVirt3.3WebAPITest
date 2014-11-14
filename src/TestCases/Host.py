@@ -1,7 +1,6 @@
 #encoding:utf-8
 
 
-
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -12,6 +11,10 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # V0.1           2014/10/09          初始版本                                                            Liu Fei 
 #---------------------------------------------------------------------------------
+# V0.2           2014/11/13          *调整代码格式                                                  Liu Fei
+#                                    *修正ITC03010307中的问题                        
+#                                    *注释掉了未完成的2个TC             
+#---------------------------------------------------------------------------------
 '''
 
 import unittest
@@ -19,12 +22,10 @@ import unittest
 import xmltodict
 
 from BaseTestCase import BaseTestCase
-from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain,\
-    smart_deactive_storage_domain
+from TestAPIs.DataCenterAPIs import DataCenterAPIs, smart_attach_storage_domain, smart_deactive_storage_domain
 from TestAPIs.HostAPIs import HostAPIs, HostNicAPIs, smart_create_host, smart_del_host
 from TestAPIs.ClusterAPIs import ClusterAPIs
-from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,\
-    smart_del_storage_domain
+from TestAPIs.StorageDomainAPIs import smart_create_storage_domain, smart_del_storage_domain
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from Utils.Util import wait_until
@@ -55,22 +56,6 @@ class ITC03_SetUp(BaseTestCase):
         LogPrint().info("Module Test Case: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_name, self.dm.dc_name))
         capi.createCluster(self.dm.cluster_info)
         
-class ITC03_TearDown(BaseTestCase):
-    '''
-    @summary: “主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
-    @note: （1）删除集群；
-    @note: （2）删除数据中心；
-    '''
-    def test_TearDown(self):
-        dcapi = DataCenterAPIs()
-        capi = ClusterAPIs()
-        if capi.searchClusterByName(ModuleData.cluster_name)['result']['clusters']:
-            LogPrint().info("Post-Module-Test: Delete Cluster '%s'." % ModuleData.cluster_name)
-            capi.delCluster(ModuleData.cluster_name)
-        if dcapi.searchDataCenterByName(ModuleData.dc_name)['result']['data_centers']:
-            LogPrint().info("Post-Module-Test: Delete DataCenter '%s'." % ModuleData.dc_name)
-            dcapi.delDataCenter(ModuleData.dc_name)
-
 class ITC030101_GetHostsList(BaseTestCase):
     '''
     @summary: ITC-03主机管理-01主机操作-01获取主机列表
@@ -429,7 +414,7 @@ class ITC03010307_CreateHost_NoRequiredParams(BaseTestCase):
         self.expected_result_index = 0
         
         # 使用数据驱动，根据测试数据文件循环创建多个缺少必要参数的主机
-        @BaseTestCase.drive_data(self, self.dm.xml_sd_info_list)
+        @BaseTestCase.drive_data(self, self.dm.xml_host_info)
         def do_test(xml_info):
             self.flag = True
             r = self.host_api.createHost(xml_info)
@@ -1195,25 +1180,85 @@ class ITC03010802_InstallHost_Up(BaseTestCase):
         host_name = self.dm.host_name
         self.assertTrue(smart_del_host(host_name, self.dm.xml_host_del_option))
 
-class ITC0301090201_FenceHost_Stop_HostMaintenance(BaseTestCase):
-    '''
-    @summary: ITC-03主机管理-01主机操作-09电源管理-02关闭-01主机Maintenance状态
-    @todo: 未完成
-    '''
-    def setUp(self):
-        '''
-        @summary: 初始化测试数据、测试环境
-        @note: （1）新建两个主机host1和host2，其中host2配置了电源管理；
-        @note: （2）将host2设置为Maintenance状态。
-        '''
-        # 初始化测试数据
-        self.dm = super(self.__class__, self).setUp()
-        
-        # 前提1：创建2个主机（host1、host2），其中host2有电源管理。
-        self.host_api = HostAPIs()
-        dict_hosts = {self.dm.host1_name:self.dm.xml_host1_info, self.dm.host2_name:self.dm.xml_host2_info}
-        for host_name in dict_hosts:
-            self.assertTrue(smart_create_host(host_name, dict_hosts[host_name]))
+# class ITC0301090201_FenceHost_Stop_HostMaintenance(BaseTestCase):
+#     '''
+#     @summary: ITC-03主机管理-01主机操作-09电源管理-02关闭-01主机Maintenance状态
+#     @todo: 未完成
+#     '''
+#     def setUp(self):
+#         '''
+#         @summary: 初始化测试数据、测试环境
+#         @note: （1）新建两个主机host1和host2，其中host2配置了电源管理；
+#         @note: （2）将host2设置为Maintenance状态。
+#         '''
+#         # 初始化测试数据
+#         self.dm = super(self.__class__, self).setUp()
+#         
+#         # 前提1：创建2个主机（host1、host2），其中host2有电源管理。
+#         self.host_api = HostAPIs()
+#         dict_hosts = {self.dm.host1_name:self.dm.xml_host1_info, self.dm.host2_name:self.dm.xml_host2_info}
+#         for host_name in dict_hosts:
+#             self.assertTrue(smart_create_host(host_name, dict_hosts[host_name]))
+# #             r = self.host_api.createHost(dict_hosts[host_name])
+# #             def is_host_up():
+# #                 return self.host_api.getHostStatus(host_name)=='up'
+# #             if wait_until(is_host_up, 200, 5):
+# #                 if r['status_code'] == self.dm.expected_status_code_create_host:
+# #                     LogPrint().info("PASS: Create host '%s' SUCCESS." % host_name)
+# #                     self.flag = True
+# #                 else:
+# #                     LogPrint().error("FAIL: Create host '%s' FAILED. Returned status code is INCORRECT." % host_name)
+# #                     self.flag = False
+# #             else:
+# #                 LogPrint().error("FAIL: Create host '%s' with Power Management FAILED. It's state is not 'UP'." % host_name)
+# #                 self.flag = False
+# #             self.assertTrue(self.flag)
+#         
+#         # 前提2：将主机host2设置为Maintenance状态
+#         self.host_api.deactiveHost(self.dm.host2_name)
+#         def is_host_maintenance():
+#                 return self.host_api.getHostStatus(self.dm.host2_name)=='maintenance'
+#         LogPrint().info("Pre-Test-Step2: Deactive host '%s'." % self.dm.host2_name)
+#         if wait_until(is_host_maintenance, 120, 5):
+#             LogPrint().info("Pre-Test2-PASS: Deactive host '%s'SUCCESS." % self.dm.host2_name)
+#         else:
+#             LogPrint().error("Pre-Test2-FAIL: Deactive host '%s'FAILED." % self.dm.host2_name)
+#             self.flag = False
+#         self.assertTrue(self.flag)
+#         
+#     def test_FenceHost_Stop_HostMaintenance(self):
+#         '''
+#         @summary: 测试步骤
+#         @note: （1）对处于Maintenance状态的host2通过电源管理执行stop操作；
+#         @note: （2）操作成功，验证接口返回的状态码、信息以及host2的最终状态是否正确。
+#         '''
+#         r = self.host_api.fenceHost(self.dm.host2_name, self.dm.xml_fence_option)
+#         print r['status_code']
+#         print xmltodict.unparse(r['result'], pretty=True)
+#         
+#     def tearDown(self):
+#         '''
+#         @summary: 资源清理
+#         '''
+
+# class ITC0301090202_FenceHost_Stop_HostUp(BaseTestCase):
+#     '''
+#     @summary: ITC-03主机管理-01主机操作-09电源管理-02关闭-02主机UP状态Stop失败
+#     @note: 当主机处于非Maintenance状态时，验证通过电源管理执行stop操作失败。
+#     @todo: 未完成
+#     '''
+#     def setUp(self):
+#         '''
+#         @summary: 初始化测试数据、测试环境
+#         @note: （1）新建两个主机host1和host2，其中host2配置了电源管理。
+#         '''
+#         # 初始化测试数据
+#         self.dm = super(self.__class__, self).setUp()
+#         
+#         # Pre-Test-Step1：创建2个主机（host1、host2），其中host2有电源管理。
+#         self.host_api = HostAPIs()
+#         dict_hosts = {self.dm.host1_name:self.dm.xml_host1_info, self.dm.host2_name:self.dm.xml_host2_info}
+#         for host_name in dict_hosts:
 #             r = self.host_api.createHost(dict_hosts[host_name])
 #             def is_host_up():
 #                 return self.host_api.getHostStatus(host_name)=='up'
@@ -1228,110 +1273,50 @@ class ITC0301090201_FenceHost_Stop_HostMaintenance(BaseTestCase):
 #                 LogPrint().error("FAIL: Create host '%s' with Power Management FAILED. It's state is not 'UP'." % host_name)
 #                 self.flag = False
 #             self.assertTrue(self.flag)
-        
-        # 前提2：将主机host2设置为Maintenance状态
-        self.host_api.deactiveHost(self.dm.host2_name)
-        def is_host_maintenance():
-                return self.host_api.getHostStatus(self.dm.host2_name)=='maintenance'
-        LogPrint().info("Pre-Test-Step2: Deactive host '%s'." % self.dm.host2_name)
-        if wait_until(is_host_maintenance, 120, 5):
-            LogPrint().info("Pre-Test2-PASS: Deactive host '%s'SUCCESS." % self.dm.host2_name)
-        else:
-            LogPrint().error("Pre-Test2-FAIL: Deactive host '%s'FAILED." % self.dm.host2_name)
-            self.flag = False
-        self.assertTrue(self.flag)
-        
-    def test_FenceHost_Stop_HostMaintenance(self):
-        '''
-        @summary: 测试步骤
-        @note: （1）对处于Maintenance状态的host2通过电源管理执行stop操作；
-        @note: （2）操作成功，验证接口返回的状态码、信息以及host2的最终状态是否正确。
-        '''
-        r = self.host_api.fenceHost(self.dm.host2_name, self.dm.xml_fence_option)
-        print r['status_code']
-        print xmltodict.unparse(r['result'], pretty=True)
-        
-    def tearDown(self):
-        '''
-        @summary: 资源清理
-        '''
-
-class ITC0301090202_FenceHost_Stop_HostUp(BaseTestCase):
-    '''
-    @summary: ITC-03主机管理-01主机操作-09电源管理-02关闭-02主机UP状态Stop失败
-    @note: 当主机处于非Maintenance状态时，验证通过电源管理执行stop操作失败。
-    @todo: 未完成
-    '''
-    def setUp(self):
-        '''
-        @summary: 初始化测试数据、测试环境
-        @note: （1）新建两个主机host1和host2，其中host2配置了电源管理。
-        '''
-        # 初始化测试数据
-        self.dm = super(self.__class__, self).setUp()
-        
-        # Pre-Test-Step1：创建2个主机（host1、host2），其中host2有电源管理。
-        self.host_api = HostAPIs()
-        dict_hosts = {self.dm.host1_name:self.dm.xml_host1_info, self.dm.host2_name:self.dm.xml_host2_info}
-        for host_name in dict_hosts:
-            r = self.host_api.createHost(dict_hosts[host_name])
-            def is_host_up():
-                return self.host_api.getHostStatus(host_name)=='up'
-            if wait_until(is_host_up, 200, 5):
-                if r['status_code'] == self.dm.expected_status_code_create_host:
-                    LogPrint().info("PASS: Create host '%s' SUCCESS." % host_name)
-                    self.flag = True
-                else:
-                    LogPrint().error("FAIL: Create host '%s' FAILED. Returned status code is INCORRECT." % host_name)
-                    self.flag = False
-            else:
-                LogPrint().error("FAIL: Create host '%s' with Power Management FAILED. It's state is not 'UP'." % host_name)
-                self.flag = False
-            self.assertTrue(self.flag)
-            
-    def test_FenceHost_Stop(self):
-        '''
-        @summary: 测试步骤
-        @note: （1）向主机发送fence-stop请求；
-        @note: （2）操作成功，验证接口返回状态码、提示信息、主机最终状态（down）是否正确。
-        '''
-        dictCompare = DictCompare()
-        r = self.host_api.fenceHost(self.dm.host2_name, self.dm.xml_fence_option)
-        if r['status_code'] == self.dm.expected_status_code_fence_stop_fail:
-            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_fence_stop_fail), r['result']):
-                LogPrint().info("PASS: Returned status code and messages are CORRECT when fence-stop a host with UP state.")
-                self.flag = True
-            else:
-                LogPrint().error("FAIL: Returned messages are INCORRECT when fence-stop a host with UP state.")
-                self.flag = False
-        else:
-            LogPrint().error("FAIL: Returned status code '%s' is INCORRECT when fence-stop a host with UP state.")
-            self.flag = False
-        self.assertTrue(self.flag)
-        
-    def tearDown(self):
-        '''
-        @summary: 资源清理，分别删除两个创建的主机。
-        '''
-        def is_host_maintenance():
-            return self.host_api.getHostStatus(host)=='maintenance'
-        hosts_list = [self.dm.host2_name, self.dm.host1_name]
-        for host in hosts_list:
-            if self.host_api.searchHostByName(host)['result']['hosts'] and is_host_maintenance():
-                LogPrint().info("Post-Test: Delete host '%s'." % host)
-                r = self.host_api.delHost(host, self.dm.xml_host_del_option)
-                if r['status_code'] == self.dm.expected_status_code_del_host:
-                    LogPrint().info("Post-Test_PASS: Delete host '%s' SUCCESS." % host)
-                    self.flag = True
-                else:
-                    LogPrint().error("Post-Test_PASS: Delete host '%s' FAILED." % host)
-                    self.flag = False
-            elif self.host_api.searchHostByName(host)['result']['hosts'] and not is_host_maintenance():
-                LogPrint().info("Post-Test: Deactive the host '%s' to maintenance state." % host)
-                self.host_api.deactiveHost(host)
-                if wait_until(is_host_maintenance, 150, 5):
-                    LogPrint().info("Post-Test: Delete the host '%s'." % host)
-                    self.host_api.delHost(host, self.dm.xml_host_del_option)
+#             
+#     def test_FenceHost_Stop(self):
+#         '''
+#         @summary: 测试步骤
+#         @note: （1）向主机发送fence-stop请求；
+#         @note: （2）操作成功，验证接口返回状态码、提示信息、主机最终状态（down）是否正确。
+#         '''
+#         dictCompare = DictCompare()
+#         r = self.host_api.fenceHost(self.dm.host2_name, self.dm.xml_fence_option)
+#         if r['status_code'] == self.dm.expected_status_code_fence_stop_fail:
+#             if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_fence_stop_fail), r['result']):
+#                 LogPrint().info("PASS: Returned status code and messages are CORRECT when fence-stop a host with UP state.")
+#                 self.flag = True
+#             else:
+#                 LogPrint().error("FAIL: Returned messages are INCORRECT when fence-stop a host with UP state.")
+#                 self.flag = False
+#         else:
+#             LogPrint().error("FAIL: Returned status code '%s' is INCORRECT when fence-stop a host with UP state.")
+#             self.flag = False
+#         self.assertTrue(self.flag)
+#         
+#     def tearDown(self):
+#         '''
+#         @summary: 资源清理，分别删除两个创建的主机。
+#         '''
+#         def is_host_maintenance():
+#             return self.host_api.getHostStatus(host)=='maintenance'
+#         hosts_list = [self.dm.host2_name, self.dm.host1_name]
+#         for host in hosts_list:
+#             if self.host_api.searchHostByName(host)['result']['hosts'] and is_host_maintenance():
+#                 LogPrint().info("Post-Test: Delete host '%s'." % host)
+#                 r = self.host_api.delHost(host, self.dm.xml_host_del_option)
+#                 if r['status_code'] == self.dm.expected_status_code_del_host:
+#                     LogPrint().info("Post-Test_PASS: Delete host '%s' SUCCESS." % host)
+#                     self.flag = True
+#                 else:
+#                     LogPrint().error("Post-Test_PASS: Delete host '%s' FAILED." % host)
+#                     self.flag = False
+#             elif self.host_api.searchHostByName(host)['result']['hosts'] and not is_host_maintenance():
+#                 LogPrint().info("Post-Test: Deactive the host '%s' to maintenance state." % host)
+#                 self.host_api.deactiveHost(host)
+#                 if wait_until(is_host_maintenance, 150, 5):
+#                     LogPrint().info("Post-Test: Delete the host '%s'." % host)
+#                     self.host_api.delHost(host, self.dm.xml_host_del_option)
 
 class ITC0301090401_FenceHost_Status_CorrectIpmi(BaseTestCase):
     '''
@@ -1689,7 +1674,6 @@ class ITC03011301_SelectSpm_Up(BaseTestCase):
         self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_host_del_option))
         LogPrint().info("Post-Test-6: Delete cluster '%s'." % self.dm.cluster1_name)
         self.assertTrue(self.cluster_api.delCluster(self.dm.cluster1_name)['status_code'] == self.dm.expected_status_code_del_cluster)
-        
 
 class ITC030201_GetHostNicList(BaseTestCase):
     '''
@@ -1856,10 +1840,26 @@ class ITC0305_HostStatistics(BaseTestCase):
         # 删除主机
         host_name = self.dm.host_name
         self.assertTrue(smart_del_host(host_name, self.dm.xml_host_del_option))
+        
+class ITC03_TearDown(BaseTestCase):
+    '''
+    @summary: “主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @note: （1）删除集群；
+    @note: （2）删除数据中心；
+    '''
+    def test_TearDown(self):
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+        if capi.searchClusterByName(ModuleData.cluster_name)['result']['clusters']:
+            LogPrint().info("Post-Module-Test: Delete Cluster '%s'." % ModuleData.cluster_name)
+            capi.delCluster(ModuleData.cluster_name)
+        if dcapi.searchDataCenterByName(ModuleData.dc_name)['result']['data_centers']:
+            LogPrint().info("Post-Module-Test: Delete DataCenter '%s'." % ModuleData.dc_name)
+            dcapi.delDataCenter(ModuleData.dc_name)
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Host.ITC03011301_SelectSpm_Up"]
+    test_cases = ["Host.ITC03010307_CreateHost_NoRequiredParams"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
