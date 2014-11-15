@@ -1732,29 +1732,45 @@ class ITC050301_GetVMDiskList(BaseTestCase):
         @note: （2）
         '''
         vmdisk_api = VmDiskAPIs()
+        LogPrint().info("Test: ")
         r = vmdisk_api.getVmDisksList(ModuleData.vm_name)
         if r['status_code'] == 200:
             LogPrint().info("Get VMDiskList success.")
-            self.assertTrue(True)
+            self.flag = True
         else:
             LogPrint().error("Get VMDiskList fail.The status_code is wrong.")
-            self.assertTrue(False)
+            self.falg = False
+        self.assertTrue(self.flag)
         
 class ITC050302_GetVMDiskInfo(BaseTestCase):
+    '''
+    @summary: 
+    '''
     def setUp(self):
+        '''
+        '''
         self.dm = super(self.__class__, self).setUp()
+        LogPrint().info("Pre-Test: ")
         self.assertTrue(smart_create_vmdisk(ModuleData.vm_name,self.dm.disk_info,self.dm.disk_name))
-        self.vmdisk_api = VmDiskAPIs()
+
     def test_GetVMDiskInfo(self):
-        self.flag=True
-        r = self.vmdisk_api.getVmDiskInfo(ModuleData.vm_name, self.dm.disk_name)
+        '''
+        '''
+        vmdisk_api = VmDiskAPIs()
+        LogPrint().info("Test:")
+        r = vmdisk_api.getVmDiskInfo(ModuleData.vm_name, self.dm.disk_name)
         if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("Get GetVMDiskInfo success.")
+            LogPrint().info("PASS: Get GetVMDiskInfo success.")
+            self.flag = True
         else:
-            LogPrint().error("Get GetVMDiskInfo fail.The Template info is wrong.")
+            LogPrint().error("FAIL: Get GetVMDiskInfo fail.The Template info is wrong.")
             self.flag=False
         self.assertTrue(self.flag)
+        
     def tearDown(self):
+        '''
+        '''
+        LogPrint().info("Post-Test: ")
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name,self.dm.disk_name))
        
 class ITC0503030101_CreateVMDisk_normal(BaseTestCase):
@@ -1895,8 +1911,6 @@ class ITC05030401_UpdateVMDisk_vmdown(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name_new))
 
-
-
 class ITC05030402_UpdateVMDisk_vmrun(BaseTestCase):
     '''
     @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行
@@ -2014,7 +2028,7 @@ class ITC05030501_DeleteVMDisk_option(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_disk(self.disk_id)) 
 
-class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):    
+class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):
     '''
     @summary: 05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-02磁盘激活状态，虚拟机运行
     ''' 
@@ -2588,8 +2602,6 @@ class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
 
-
-  
 class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性
@@ -2615,9 +2627,6 @@ class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
    
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-
-
-
 
 class ITC05040401_UpdateVmNic_normal(BaseTestCase):
     '''
@@ -2846,23 +2855,32 @@ class ITC05040701_DeleteVmNic_vmdown_plugged(BaseTestCase):
     @summary: 05虚拟机管理-04网络接口-07删除网络接口-01虚拟机down
     '''
     def setUp(self):
+        '''
+        '''
         self.dm = super(self.__class__, self).setUp()
         self.vmnic_api = VmNicAPIs()
         self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+        
     def test(self):
-        r=self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
+        '''
+        '''
+        r = self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
         if r['status_code'] == self.dm.expected_status_code:
             if not self.vmnic_api.isVmNicExist(ModuleData.vm_name, self.dm.nic_name):
                 LogPrint().info("PASS:Delete vmnic success.")
+                self.flag = True
             else:
                 LogPrint().error("FAIL:Delete vmnic fail.The vmnic is still exist.")
                 self.flag=False
         else:
             LogPrint().error("FAIL:Delete vmnic fail.The status_code is '%s'."%r['status_code'])
-            print xmltodict.unparse(r['result'],pretty=True)
+#             print xmltodict.unparse(r['result'],pretty=True)
             self.flag=False
         self.assertTrue(self.flag)
+        
     def tearDown(self):
+        '''
+        '''
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
 
 class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
@@ -2877,20 +2895,27 @@ class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
         self.assertTrue(r[0])
         self.disk_id = r[1]
         self.assertTrue(smart_start_vm(ModuleData.vm_name))
-    def test(self):
-        r=self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
+        
+    def test_DeleteVmNic_vmrun_plugged(self):
+        '''
+        '''
+        r = self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
         if r['status_code'] == self.dm.expected_status_code:
             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
                 LogPrint().info("PASS:Can not delete plugged nic when vm is running.")
+                self.flag = True
             else:
                 LogPrint().error("FAIL:The error-info is wrong.")
                 self.flag=False
         else:
             LogPrint().error("FAIL:The status_code is '%s'."%r['status_code'])
-            print xmltodict.unparse(r['result'],pretty=True)
+#             print xmltodict.unparse(r['result'],pretty=True)
             self.flag=False
         self.assertTrue(self.flag)
+        
     def tearDown(self):
+        '''
+        '''
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
@@ -2902,8 +2927,6 @@ class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
             self.assertTrue(False)
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-
-
 
 class ITC05_TearDown(BaseTestCase):
     '''
@@ -2977,7 +3000,6 @@ class ITC05_TearDown(BaseTestCase):
 if __name__ == "__main__":
 
     test_cases = ["VirtualMachine.ITC05_TearDown"]
-
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
