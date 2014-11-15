@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TestCases>
-	<TestCase name="TC060201_TC060202_TC060204_WrongLogin" id="060201">
-        <description>06-02-01-用户名为空，无法登录web管理平台</description>
-        <operation modulename="UserLogin" classname="TC060201_TC060202_TC060204_WrongLogin"/>
+	<!-- ********************************************************************************************* -->
+	<TestCase name="ITC01_SetUp" id="ITC01">
+        <description>数据中心模块级测试用例，初始化模块测试环境。</description>
+        <operation modulename="DataCenter" classname="ITC01_SetUp"/>
         <run>True</run>
     </TestCase>
 
-    <TestCase name="TC0902010102_AddOneVMforOther" id="0902010102">
-        <description>09-02-01-01-02-添加单台虚拟机，选择属主用户为其他用户，其他项设置均合法</description>
-        <operation modulename="VM" classname="TC0902010102_AddOneVMforOther"/>
+    <TestCase name="ITC010101_GetDCList" id="ITC010101">
+        <description>ITC-01数据中心管理-01数据中心操作-01获取数据中心列表</description>
+        <operation modulename="DataCenter" classname="ITC010101_GetDCList"/>
         <run>True</run>
     </TestCase>
+    <!-- ********************************************************************************************* -->
+    
+    <!-- ********************************************************************************************* -->
+    
+    <!-- ********************************************************************************************* -->
 </TestCases>

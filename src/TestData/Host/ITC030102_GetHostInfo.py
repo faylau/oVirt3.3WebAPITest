@@ -16,9 +16,9 @@ from Configs.GlobalConfig import Hosts
 from TestData.Host import ITC03_SetUp as ModuleData
 from TestAPIs.ClusterAPIs import ClusterAPIs
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Pre-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 host = Hosts['node1']
 host_name = 'node-ITC030102'
 xml_host_info = '''
@@ -30,9 +30,9 @@ xml_host_info = '''
 </host>
 ''' % (ClusterAPIs().getClusterIdByName(ModuleData.cluster_name), host_name, host['ip'], host['password'])
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Post-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 xml_del_option = '''
 <action>
     <force>true</force>
@@ -41,7 +41,7 @@ xml_del_option = '''
 '''
 
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: ExpectedResult
-'''
+-----------------------------------------------------------------------------------------'''
 status_code = 200

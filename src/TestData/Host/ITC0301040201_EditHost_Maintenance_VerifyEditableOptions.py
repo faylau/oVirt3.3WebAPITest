@@ -13,12 +13,11 @@ __version__ = "V0.1"
 '''
 
 from Configs import GlobalConfig
-from TestAPIs.ClusterAPIs import ClusterAPIs
 import ITC03_SetUp as DM
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Pre-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 host = GlobalConfig.Hosts['node1']
 init_host_name = 'node-ITC0301040201'
 cluster1_name = 'cluster-ITC0301040201'
@@ -45,9 +44,9 @@ xml_cluster1_info = '''
 ''' % (cluster1_name, DM.dc_name)
 
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Test-Data
-'''
+-----------------------------------------------------------------------------------------'''
 new_name = 'node-ITC0301040201-new'
 new_desc = 'new description'
 xml_host_update_info = '''
@@ -60,9 +59,9 @@ xml_host_update_info = '''
 </host>
 ''' % (new_name, new_desc, cluster1_name)
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: Post-TestData
-'''
+-----------------------------------------------------------------------------------------'''
 xml_host_del_option = '''
 <action>
     <force>true</force>
@@ -75,9 +74,9 @@ xml_cluster_del_option = '''
 </action>
 '''
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: ExpectedResult
-'''
+-----------------------------------------------------------------------------------------'''
 expected_status_code_create_host = 201          # 创建主机操作成功，状态码
 expected_status_code_create_cluster = 201       # 创建集群操作成功，状态码
 expected_status_code_edit_host = 200            # 编辑主机操作成功，状态码

@@ -1,46 +1,31 @@
 #coding:utf-8
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>', '"Keke Wei" <keke.wei@cs2c.com.cn>']
-__version__ = "V0.1"
+__version__ = "V0.2"
 
 '''
 # ChangeLog:
-#---------------------------------------------------------------------------------
-# Version        Date            Desc                            Author
-#---------------------------------------------------------------------------------
-# V0.1           2014/11/03      初始版本                                                            Liu Fei / keke wei
-#---------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------
+# Version        Date            Desc                                            Author
+#---------------------------------------------------------------------------------------------------
+# V0.1           2014/11/03      初始版本                                                                                                Liu Fei / keke wei
+#---------------------------------------------------------------------------------------------------
+# V0.2           2014/11/15      *对自己编写的部分进行了统一的日志信息补充                              Liu Fei
+#---------------------------------------------------------------------------------------------------
 '''
 
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,smart_deactive_storage_domain, smart_detach_storage_domain
 from TestAPIs.ClusterAPIs import ClusterAPIs
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs,\
-    smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
-smart_start_vm, smart_deactive_vmdisk,smart_create_vmnic,smart_delete_vmnic,\
+from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs, VmDiskAPIs, VmNicAPIs, smart_create_vmdisk, \
+    smart_delete_vmdisk, smart_create_vm, smart_del_vm, smart_create_vmnic,smart_delete_vmnic, \
     smart_start_vm, smart_deactive_vmdisk, smart_suspend_vm,smart_stop_vm
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs,\
-    TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template,\
-    smart_delete_tempnic
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host
-from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain,\
-    StorageDomainAPIs
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs,smart_create_template,smart_create_tempnic,smart_delete_template, smart_delete_tempnic
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
-
-from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs,VmNicAPIs, smart_create_vmdisk, smart_delete_vmdisk, smart_create_vm, smart_del_vm,\
-    smart_start_vm, smart_create_vmnic,smart_delete_vmnic, smart_deactive_vmdisk, smart_suspend_vm
-from TestAPIs.TemplatesAPIs import TemplatesAPIs, TemplateDisksAPIs, TemplateNicsAPIs, smart_create_template, smart_create_tempnic, smart_delete_template, smart_delete_tempnic
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
-from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
-from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 import TestData.VirtualMachine.ITC05_SetUp as ModuleData
-
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
-from Utils.HTMLTestRunner import HTMLTestRunner
 
 import unittest
 import xmltodict
@@ -97,6 +82,7 @@ class ITC05_SetUp(BaseTestCase):
         else:
             LogPrint().error("Create vm failed.Status-code is wrong.")
             self.assertTrue(False)
+
 class ITC050101_GetVmsList(BaseTestCase):
     '''
     @summary: ITC-05虚拟机管理-01虚拟机操作-01查看虚拟机列表
@@ -126,6 +112,7 @@ class ITC050101_GetVmsList(BaseTestCase):
     
     def tearDown(self):
         '''
+        @summary: 资源清理
         '''
         pass
 
@@ -341,7 +328,6 @@ class ITC05010305_CreateVm_NoRequiredParams(BaseTestCase):
             self.assertTrue(self.flag)
             self.i += 1
 
-    
     def tearDown(self):
         '''
         @summary: 资源清理
@@ -449,7 +435,7 @@ class ITC0501050102_DelVm_Normal_Up(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，并启动。
-        LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
+        LogPrint().info("Pre-Test: Create and Start vm '%s'." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         self.assertTrue(smart_start_vm(self.dm.vm_name))
         
@@ -534,6 +520,7 @@ class ITC05010502_DelVm_WithoutDisk(BaseTestCase):
         self.assertTrue(smart_del_vm(self.dm.vm_name))
         LogPrint().info("Post-Test-2: Delete disk '%s' if it exist." % self.dm.disk_alias)
         self.assertTrue(smart_delete_disk(self.disk_id))
+
 class ITC05010503_DelVm_Force(BaseTestCase):
     '''
     @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-03强制删除
@@ -542,9 +529,11 @@ class ITC05010503_DelVm_Force(BaseTestCase):
         '''
         @summary: 初始化测试数据、测试环境。
         '''
+        # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()        
+        
         # 前提1：创建一个虚拟机vm1
-        LogPrint().info("Pre-Test-1: Create a vm with name '%s'." % self.dm.vm_name)
+        LogPrint().info("Pre-Test: Create a vm with name '%s' for this TC." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_DelVm_WithoutDisk(self):
@@ -574,7 +563,7 @@ class ITC05010503_DelVm_Force(BaseTestCase):
         @note: （1）删除创建的磁盘；
         @note: （1）删除创建的虚拟机。
         '''
-        LogPrint().info("Post-Test-1: Delete vm '%s' if it exist." % self.dm.vm_name)
+        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name, self.dm.xml_del_vm_force))
         
 class ITC05010504_DelVm_DeleteProtect(BaseTestCase):
@@ -589,6 +578,7 @@ class ITC05010504_DelVm_DeleteProtect(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1（设置“删除保护”项）
+        LogPrint().info("Pre-Test: Create vm '%s' with 'Delete Protect' optoin." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_DelVm_DeleteProtect(self):
@@ -637,6 +627,7 @@ class ITC0502010101_StartVm_Down_NoDisk_MultiStartDevices(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，定义多个启动设备（光驱、磁盘等）
+        LogPrint().info("Pre-Test: Create vm '%s' with multi-start-devices." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_StartVm_Down_NoDisk_MultiStartDevices(self):
@@ -646,7 +637,7 @@ class ITC0502010101_StartVm_Down_NoDisk_MultiStartDevices(BaseTestCase):
         @note: （2）操作成功，检查接口返回的状态码、相关信息是否正确。
         '''
         vm_api = VirtualMachineAPIs()
-        LogPrint().info("Test: Start vm '%s' without disk in 'down' state (have multi-start devices)." % self.dm.vm_name)
+        LogPrint().info("Test: Start vm '%s' without disk in 'down' state (which have multi-start devices)." % self.dm.vm_name)
         r = vm_api.startVm(self.dm.vm_name)
         def is_vm_up():
             return vm_api.getVmStatus(self.dm.vm_name)=='up'
@@ -682,6 +673,7 @@ class ITC0502010102_StartVm_Down_NoDisk_StartFromHd(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，定义一个启动设备（硬盘）
+        LogPrint().info("Pre-Test: Create vm '%s' with only one start device (hard disk)." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_StartVm_Down_NoDisk_StartFromHd(self):
@@ -724,9 +716,11 @@ class ITC0502010103_StartVm_Down_StartFromHd(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，定义一个启动设备（硬盘）
+        LogPrint().info("Pre-Test-1: Create vm '%s' with 'hd' as start divice." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
         # 前提2：为虚拟机vm1创建一个虚拟磁盘disk1
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
         
     def test_StartVm_Down_StartFromHd(self):
@@ -772,9 +766,11 @@ class ITC05020102_StartVm_Suspended(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1（第一启动设备为cd-rom）
+        LogPrint().info("Pre-Test-1: Create vm '%s' with 'cd-rom' as 1st start device." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
         # 前提2：启动虚拟机，然后将其设置为suspended状态。
+        LogPrint().info("Pre-Test-2: Start vm '%s' and then make it in 'suspended' state." % self.dm.vm_name)
         self.assertTrue(smart_start_vm(self.dm.vm_name))
         self.assertTrue(smart_suspend_vm(self.dm.vm_name))
         
@@ -821,9 +817,11 @@ class ITC05020103_StartVm_Once(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Tests-1: Create vm '%s' for this TC." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
         # 前提2：为虚拟机vm1创建一个磁盘disk1
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
         
     def test_StartVm_Once(self):
@@ -873,6 +871,7 @@ class ITC05020104_StartVm_Paused(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1（第一启动设备为cdrom）
+        LogPrint().info("Pre-Test; Create vm '%s' with 'cdrom' as 1st start device." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_StartVm_Paused(self):
@@ -918,7 +917,7 @@ class ITC05020201_StopVm_Up(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，并启动。
-        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         LogPrint().info("Pre-Test-2: Start vm '%s' to 'up' state." % self.dm.vm_name)
         self.assertTrue(smart_start_vm(self.dm.vm_name))
@@ -1014,7 +1013,7 @@ class ITC05020203_StopVm_Down(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，处于Down状态。
-        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_StopVm_Down(self):
@@ -1123,7 +1122,7 @@ class ITC05020302_ShutdownVm_Suspended(BaseTestCase):
         vm_api = VirtualMachineAPIs()
         def is_vm_down():
             return vm_api.getVmStatus(self.dm.vm_name)=='down'
-        LogPrint().info("Test: Shutdown vm '%s' from 'up' state." % self.dm.vm_name)
+        LogPrint().info("Test: Shutdown vm '%s' from 'suspended' state." % self.dm.vm_name)
         r = vm_api.shutdownVm(self.dm.vm_name)
         if r['status_code']==self.dm.expected_status_code_shutdown_vm_suspended:
             if wait_until(is_vm_down, 300, 5):
@@ -1157,7 +1156,7 @@ class ITC05020303_ShutdownVm_Down(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，处于Down状态。
-        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_StopVm_Down(self):
@@ -1234,7 +1233,7 @@ class ITC05020401_SuspendVm_Up(BaseTestCase):
         @summary: 资源清理
         '''
         # Post-Test-1：删除虚拟机
-        LogPrint().info("Post-Test-1: Delete vm '%s'." % self.dm.vm_name)
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name)) 
 
 class ITC05020402_SuspendVm_Down(BaseTestCase):
@@ -1249,7 +1248,7 @@ class ITC05020402_SuspendVm_Down(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1，处于Down状态。
-        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
     def test_StopVm_Down(self):
@@ -1349,7 +1348,7 @@ class ITC05020501_MigrateVm_AutoSelectHost(BaseTestCase):
         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
         
         # 前提3：启动虚拟机（缺省运行在host1上）
-        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state on host '%s'." % (self.dm.vm_name, ModuleData.host1_name))
         self.assertTrue(smart_start_vm(self.dm.vm_name))
         
         # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
@@ -1370,10 +1369,10 @@ class ITC05020501_MigrateVm_AutoSelectHost(BaseTestCase):
         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
         if r['status_code'] == self.dm.expected_status_code_migrate_vm:
             if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
-                LogPrint().info("PASS: Migrate vm '%s' from '%s' to '%s' SUCCESS." % (self.dm.vm_name, ModuleData.host1_name, self.dm.host2_name))
+                LogPrint().info("PASS: Migrate vm '%s' from host '%s' to '%s' SUCCESS." % (self.dm.vm_name, ModuleData.host1_name, self.dm.host2_name))
                 self.flag = True
             else:
-                LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or it's not running on '%s'." % (self.dm.vm_name, self.dm.host2_name))
+                LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or vm is not running on host '%s'." % (self.dm.vm_name, self.dm.host2_name))
                 self.flag = False
         else:
             LogPrint().error("FAIL: Migrate vm '%s' FAILED. Returned status code '%s' is WRONG." % (self.dm.vm_name, r['status_code']))
@@ -1528,7 +1527,7 @@ class ITC05020504_MigrateVm_NotAllowMigration(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个虚拟机vm1（设置为不允许迁移）；
-        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        LogPrint().info("Pre-Test-1: Create vm '%s' with 'Migration Not Allowed' option for test." % self.dm.vm_name)
         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
         
         # 前提2：为虚拟机创建磁盘disk1；
@@ -1620,7 +1619,7 @@ class ITC05020601_CancelMigration_DuringMigration(BaseTestCase):
         LogPrint().info("Test-Step-1: Begin to migrate vm '%s'." % self.dm.vm_name)
         r = vm_api.migrateVm(self.dm.vm_name)
         if r['status_code'] == self.dm.expected_status_code_migrate_vm and wait_until(is_vm_migrating, 300, 5):
-            LogPrint().info("Test-Info-1: Vm '%s' is in 'migrating' state." % self.dm.vm_name)
+            LogPrint().info("Test-Step-1-PASS: Vm '%s' is in 'migrating' state." % self.dm.vm_name)
             LogPrint().info("Test-Step-2: Begin 'Cancel-Migration' action.")
             r1 = vm_api.cancelMigration(self.dm.vm_name)
             if r1['status_code']==self.dm.expected_status_code_cancel_migration:
@@ -1635,7 +1634,7 @@ class ITC05020601_CancelMigration_DuringMigration(BaseTestCase):
                 self.flag = False
             self.assertTrue(self.flag)
         else:
-            LogPrint().error("Test-Step1-FAIL: Migrate vm '%s' FAILED. Maybe the vm's state is not 'migrating'." % self.dm.vm_name)
+            LogPrint().error("Test-Step-1-FAIL: Migrate vm '%s' FAILED. Maybe the vm's state is not 'migrating'." % self.dm.vm_name)
             self.flag = False
         self.assertTrue(self.flag)
 
@@ -1717,34 +1716,61 @@ class ITC05020602_CancelMigration_NotDuringMigration(BaseTestCase):
         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
 
 class ITC050301_GetVMDiskList(BaseTestCase):
-
+    '''
+    @summary: 
+    '''
     def setUp(self):
+        '''
+        @summary: 初始化测试数据
+        '''
         self.dm = super(self.__class__, self).setUp()
+        
     def test_GetVMDiskList(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）
+        @note: （2）
+        '''
         vmdisk_api = VmDiskAPIs()
+        LogPrint().info("Test: ")
         r = vmdisk_api.getVmDisksList(ModuleData.vm_name)
         if r['status_code'] == 200:
             LogPrint().info("Get VMDiskList success.")
-            self.assertTrue(True)
+            self.flag = True
         else:
             LogPrint().error("Get VMDiskList fail.The status_code is wrong.")
-            self.assertTrue(False)
+            self.falg = False
+        self.assertTrue(self.flag)
         
 class ITC050302_GetVMDiskInfo(BaseTestCase):
+    '''
+    @summary: 
+    '''
     def setUp(self):
+        '''
+        '''
         self.dm = super(self.__class__, self).setUp()
+        LogPrint().info("Pre-Test: ")
         self.assertTrue(smart_create_vmdisk(ModuleData.vm_name,self.dm.disk_info,self.dm.disk_name))
-        self.vmdisk_api = VmDiskAPIs()
+
     def test_GetVMDiskInfo(self):
-        self.flag=True
-        r = self.vmdisk_api.getVmDiskInfo(ModuleData.vm_name, self.dm.disk_name)
+        '''
+        '''
+        vmdisk_api = VmDiskAPIs()
+        LogPrint().info("Test:")
+        r = vmdisk_api.getVmDiskInfo(ModuleData.vm_name, self.dm.disk_name)
         if r['status_code'] == self.dm.expected_status_code:
-            LogPrint().info("Get GetVMDiskInfo success.")
+            LogPrint().info("PASS: Get GetVMDiskInfo success.")
+            self.flag = True
         else:
-            LogPrint().error("Get GetVMDiskInfo fail.The Template info is wrong.")
+            LogPrint().error("FAIL: Get GetVMDiskInfo fail.The Template info is wrong.")
             self.flag=False
         self.assertTrue(self.flag)
+        
     def tearDown(self):
+        '''
+        '''
+        LogPrint().info("Post-Test: ")
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name,self.dm.disk_name))
        
 class ITC0503030101_CreateVMDisk_normal(BaseTestCase):
@@ -1885,8 +1911,6 @@ class ITC05030401_UpdateVMDisk_vmdown(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name_new))
 
-
-
 class ITC05030402_UpdateVMDisk_vmrun(BaseTestCase):
     '''
     @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行
@@ -2004,7 +2028,7 @@ class ITC05030501_DeleteVMDisk_option(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_disk(self.disk_id)) 
 
-class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):    
+class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):
     '''
     @summary: 05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-02磁盘激活状态，虚拟机运行
     ''' 
@@ -2578,8 +2602,6 @@ class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
 
-
-  
 class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
     '''
     @summary: 05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性
@@ -2605,9 +2627,6 @@ class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
    
     def tearDown(self):
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-
-
-
 
 class ITC05040401_UpdateVmNic_normal(BaseTestCase):
     '''
@@ -2836,23 +2855,32 @@ class ITC05040701_DeleteVmNic_vmdown_plugged(BaseTestCase):
     @summary: 05虚拟机管理-04网络接口-07删除网络接口-01虚拟机down
     '''
     def setUp(self):
+        '''
+        '''
         self.dm = super(self.__class__, self).setUp()
         self.vmnic_api = VmNicAPIs()
         self.assertTrue(smart_create_vmnic(ModuleData.vm_name, self.dm.nic_info, self.dm.nic_name))
+        
     def test(self):
-        r=self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
+        '''
+        '''
+        r = self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
         if r['status_code'] == self.dm.expected_status_code:
             if not self.vmnic_api.isVmNicExist(ModuleData.vm_name, self.dm.nic_name):
                 LogPrint().info("PASS:Delete vmnic success.")
+                self.flag = True
             else:
                 LogPrint().error("FAIL:Delete vmnic fail.The vmnic is still exist.")
                 self.flag=False
         else:
             LogPrint().error("FAIL:Delete vmnic fail.The status_code is '%s'."%r['status_code'])
-            print xmltodict.unparse(r['result'],pretty=True)
+#             print xmltodict.unparse(r['result'],pretty=True)
             self.flag=False
         self.assertTrue(self.flag)
+        
     def tearDown(self):
+        '''
+        '''
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
 
 class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
@@ -2867,20 +2895,27 @@ class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
         self.assertTrue(r[0])
         self.disk_id = r[1]
         self.assertTrue(smart_start_vm(ModuleData.vm_name))
-    def test(self):
-        r=self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
+        
+    def test_DeleteVmNic_vmrun_plugged(self):
+        '''
+        '''
+        r = self.vmnic_api.delVmNic(ModuleData.vm_name, self.dm.nic_name)
         if r['status_code'] == self.dm.expected_status_code:
             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
                 LogPrint().info("PASS:Can not delete plugged nic when vm is running.")
+                self.flag = True
             else:
                 LogPrint().error("FAIL:The error-info is wrong.")
                 self.flag=False
         else:
             LogPrint().error("FAIL:The status_code is '%s'."%r['status_code'])
-            print xmltodict.unparse(r['result'],pretty=True)
+#             print xmltodict.unparse(r['result'],pretty=True)
             self.flag=False
         self.assertTrue(self.flag)
+        
     def tearDown(self):
+        '''
+        '''
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
@@ -2892,8 +2927,6 @@ class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
             self.assertTrue(False)
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
-
-
 
 class ITC05_TearDown(BaseTestCase):
     '''
@@ -2915,54 +2948,58 @@ class ITC05_TearDown(BaseTestCase):
         self.dm = self.initData('ITC05_SetUp')
         
     def test_TearDown(self):
-        vmapi=VirtualMachineAPIs()
-        #Step1：删除虚拟机
-        vmapi.delVm(self.dm.vm_name)
+        '''
+        @summary: 模块级测试资源清理
+        '''
         dcapi = DataCenterAPIs()
         capi = ClusterAPIs()
+        
+        # Step1：删除虚拟机
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        
         # Step2：将export和iso存储域设置为Maintenance状态,然后从数据中心分离
-        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.export1_name)
+        LogPrint().info("Post-Module-Test-2-1: Deactivate storage domains '%s'." % self.dm.export1_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        LogPrint().info("Post-Module-Test-1: Detach storage domains '%s'." % self.dm.export1_name)
+        LogPrint().info("Post-Module-Test-2-2: Detach storage domains '%s'." % self.dm.export1_name)
         self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.iso1_name)
+        LogPrint().info("Post-Module-Test-2-3: Deactivate storage domains '%s'." % self.dm.iso1_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
-        LogPrint().info("Post-Module-Test-1: Detach storage domains '%s'." % self.dm.iso1_name)
+        LogPrint().info("Post-Module-Test-2-4: Detach storage domains '%s'." % self.dm.iso1_name)
         self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.iso1_name))
+        
         # Step3：将data1存储域设置为Maintenance状态，然后从数据中心分离
-        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
+        LogPrint().info("Post-Module-Test-3-1: Deactivate data storage domains '%s'." % self.dm.data1_nfs_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
-        LogPrint().info("Post-Module-Test-1: Detach data storage domains '%s'." % self.dm.data1_nfs_name)
+        LogPrint().info("Post-Module-Test-3-2: Detach data storage domains '%s'." % self.dm.data1_nfs_name)
         self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
         
-        # Step3：将data2存储域设置为Maintenance状态，然后从数据中心分离
-        LogPrint().info("Post-Module-Test-1: Deactivate data storage domains '%s'." % self.dm.data2_nfs_name)
+        # Step4：将data2存储域设置为Maintenance状态，然后从数据中心分离
+        LogPrint().info("Post-Module-Test-4-1: Deactivate data storage domains '%s'." % self.dm.data2_nfs_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data2_nfs_name))
-        # Step4：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
+        
+        # Step5：删除数据中心dc1（非强制，之后存储域变为Unattached状态）
         if dcapi.searchDataCenterByName(self.dm.dc_nfs_name)['result']['data_centers']:
-            LogPrint().info("Post-Module-Test-2: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
+            LogPrint().info("Post-Module-Test-5: Delete DataCenter '%s'." % self.dm.dc_nfs_name)
             self.assertTrue(dcapi.delDataCenter(self.dm.dc_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
                 
-        # Step5：删除3个Unattached状态存储域（data1/data2/export1）
-        LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
+        # Step6：删除3个Unattached状态存储域（data1/data2/export1）
+        LogPrint().info("Post-Module-Test-6: Delete all unattached storage domains.")
         dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name,self.dm.iso1_name,self.dm.export1_name]
         for sd in dict_sd_to_host:
             smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
         
-        # Step6：删除主机（host1）
-        LogPrint().info("Post-Module-Test-6: Delete host '%s'." % self.dm.host1_name)
+        # Step7：删除主机（host1）
+        LogPrint().info("Post-Module-Test-7: Delete host '%s'." % self.dm.host1_name)
         self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_del_host_option))
         
-        # Step7：删除集群cluster1
+        # Step8：删除集群cluster1
         if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
-            LogPrint().info("Post-Module-Test-5: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
+            LogPrint().info("Post-Module-Test-8: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
             self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
 
 if __name__ == "__main__":
 
-    #import sys;sys.argv = ['', 'Test.testName']
     test_cases = ["VirtualMachine.ITC05_TearDown"]
-
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
