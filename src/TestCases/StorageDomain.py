@@ -755,7 +755,7 @@ class ITC040202_GetDiskInfoFromDataStorage(BaseTestCase):
         
         # 前提1：在存储域中创建一个磁盘
         LogPrint().info("Pre-Test: Create disk '%s' for this TC." % self.dm.disk_name)
-        r = smart_create_disk(self.dm.xml_disk_info)
+        r = smart_create_disk(self.dm.xml_disk_info, self.dm.disk_name)
         self.assertTrue(r[0])
         self.disk_id = r[1]
     
