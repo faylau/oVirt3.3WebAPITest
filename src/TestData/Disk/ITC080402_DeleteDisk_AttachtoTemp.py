@@ -9,10 +9,10 @@ import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 sd_name = ModuleData.data1_nfs_name
 cluster_name = ModuleData.cluster_nfs_name
-vm_name = 'vm3'
-vm_info='''
+vm_name = 'vm-ITC08'
+vm_info = '''
 <vm>
-        <name>vm3</name>
+        <name>vm-ITC08</name>
         <description>Virtual Machine 2</description>
         <type>server</type>
         <memory>536870912</memory>
@@ -31,11 +31,11 @@ vm_info='''
         </os>
     </vm>
 '''%cluster_name
-disk_name = 'testkeke'
-disk_info='''
+disk_name = 'DISK-ITC08'
+disk_info = '''
 <disk>
-    <alias>testkeke</alias>
-    <name>testkeke</name>
+    <alias>DISK-ITC08</alias>
+    <name>DISK-ITC08</name>
     <storage_domains>
         <storage_domain>
             <name>%s</name>
@@ -50,10 +50,10 @@ disk_info='''
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
 '''%sd_name
-temp_name = 'template-ke'
-temp_info='''
+temp_name = 'template-ITC08'
+temp_info = '''
 <template>
-    <name>template-ke</name>
+    <name>template-ITC08</name>
     <vm id="%s"/>
 </template>
 '''

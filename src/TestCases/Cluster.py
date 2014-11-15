@@ -21,18 +21,11 @@ from TestAPIs.ClusterAPIs import ClusterAPIs, smart_create_cluster, smart_delete
 from TestAPIs.NetworkAPIs import NetworkAPIs, smart_create_network, smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-<<<<<<< HEAD
+
 
 #from Utils.HTMLTestRunner import HTMLTestRunner
 from TestData.Cluster import ITC02_Setup as ModuleData
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host
-
-from TestData.Cluster import ITC02_Setup as ModuleData
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host
-=======
-from TestData.Cluster import ITC02_Setup as ModuleData
-from TestAPIs.HostAPIs import smart_create_host, smart_del_host
->>>>>>> 798ab24da57943630375eebd84472e93f9a38af8
 
 import xmltodict
 
@@ -481,7 +474,7 @@ class ITC02010501_DeleteCluster_clear(BaseTestCase):
                 LogPrint().info("PASS: Delete Cluster '%s' info SUCCESS." % self.dm.cluster_name)
                 self.flag = True
             else:
-                LogPrint().error("FAIL: Delete Cluster '%s' info INCORRECT." % self.dm.cluster_name)
+                LogPrint().error("FAIL: The Cluster '%s' is still exist ." % self.dm.cluster_name)
                 self.flag = False
         else:
             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
@@ -509,29 +502,31 @@ class ITC02010502_DeleteCluster_host(BaseTestCase):
         LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         # 前提2：创建一个主机
+        LogPrint().info("Pre-Test-2: Create host '%s' for this TC." % self.dm.host_name)
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
         
     def test_DeleteCluster_host(self):
         '''
-        @summary: 
-        @note: （1）
+        @summary: 测试用例执行步骤
+        @note: （1）删除包含主机的集群
+        @note: （2）操作失败，验证返回状态码，验证报错信息
         '''
         clusterapi = ClusterAPIs()
-        LogPrint().info("Test: ")
+        LogPrint().info("Test: Delete cluster %s."% self.dm.cluster_name)
         r = clusterapi.delCluster(self.dm.cluster_name)
 #         print r
-        if r['status_code'] ==self.dm.status_code:
+        if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.expected_info)
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("PASS: ITC02010502_DeleteCluster_host SUCCESS." )
+                LogPrint().info("PASS: Returned status code and messages are CORRECT." )
                 self.flag = True
             else:
-                LogPrint().error("FAIL: ITC02010502_DeleteCluster_host. Error-info INCORRECT.")
+                LogPrint().error("FAIL: Returned message is  INCORRECT.")
                 self.flag = False
         else:
-            LogPrint().error("FAIL: ITC02010502_DeleteCluster_host.Status_code is wrong. ")
+            LogPrint().error("FAIL: Returned status code is wrong. ")
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -539,9 +534,9 @@ class ITC02010502_DeleteCluster_host(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
-        LogPrint().info("Post-Test-1: ")
-        self.assertTrue(smart_del_host(self.dm.host_name,self.dm.host_del_option))
-        LogPrint().info("Post-Test-1: ")
+        LogPrint().info("Post-Test-1: Delete host %s. "% self.dm.host_name)
+        self.assertTrue(smart_del_host(self.dm.host_name, self.dm.host_del_option))
+        LogPrint().info("Post-Test-2: Delete cluster %s. " % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name)) 
               
 class ITC020201_GetClusterNetworkList(BaseTestCase):
@@ -556,16 +551,23 @@ class ITC020201_GetClusterNetworkList(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 准备1：创建一个集群
-        self.clusterapi = ClusterAPIs()
+        LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         
     def test_GetClusterNetworkList(self):
-        r = self.clusterapi.getClusterNetworkList(self.dm.cluster_name)
-        if r['status_code']==self.dm.status_code:
-            LogPrint().info('Get ClusterNetwork list SUCCESS.')
+        '''
+        @summary: 测试用例执行步骤
+        @note: （1）获取集群的网络列表
+        @note: （2）操作成功，验证返回状态码
+        '''
+        clusterapi = ClusterAPIs()
+        LogPrint().info("Test: Get the cluster %s's network list. "% self.dm.cluster_name)
+        r = clusterapi.getClusterNetworkList(self.dm.cluster_name)
+        if r['status_code'] == self.dm.status_code:
+            LogPrint().info('PASS: Get Cluster %s Network list SUCCESS.'% self.dm.cluster_name)
             self.flag = True
         else:
-            LogPrint().error('Get ClusterNetwork list FAIL.')
+            LogPrint().error('FAIL: Get Cluster %s Network list FAIL.'% self.dm.cluster_name)
             self.flag = False
         self.assertTrue(self.flag)
         
@@ -573,6 +575,7 @@ class ITC020201_GetClusterNetworkList(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
+        LogPrint().info("Post-Test-1: Delete cluster %s. "% self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
             
 class ITC020202_GetClusterNetworkInfo(BaseTestCase):
@@ -585,29 +588,32 @@ class ITC020202_GetClusterNetworkInfo(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        self.clusterapi = ClusterAPIs()
+        # step1:创建一个集群
+        LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        # step1：创建一个逻辑网络
-        self.nwapi = NetworkAPIs()
+        # step2：创建一个逻辑网络
+        LogPrint().info("Pre-Test-2: Create network '%s' for this TC." % self.dm.nw_name)
         self.assertTrue(smart_create_network(self.dm.nw_info, self.dm.nw_name))
-        # step2:附加该网络到集群上
+        # step3:附加该网络到集群上
+        LogPrint().info("Pre-Test-3: Attach network '%s'to cluster '%s' for this TC." % (self.dm.nw_name, self.dm.cluster_name))
         self.clusterapi = ClusterAPIs()
         self.clusterapi.attachNetworkToCluster(self.dm.cluster_name, self.dm.nw_info)
         
     def test_GetClusterNetworkInfo(self):
         '''
         @summary: 测试用例执行步骤
+        @note: 操作成功，验证网络信息
         '''
-        # 测试1：获取集群的网络信息
+        LogPrint().info("Test: Get the cluster %s's network info. "% self.dm.cluster_name)
         r= self.clusterapi.getClusterNetworkInfo(self.dm.cluster_name, self.dm.nw_name)
         dict_actual = r
         dict_expected = xmltodict.parse(self.dm.nw_info)
         dictCompare = DictCompare()
         if dictCompare.isSubsetDict(dict_expected, dict_actual):
-            LogPrint().info("Get ClusterNetwork '%s' info SUCCESS." % self.dm.nw_name)
+            LogPrint().info("PASS: Get ClusterNetwork '%s' info SUCCESS." % self.dm.nw_name)
 #                 return True
         else:
-            LogPrint().error("Get ClusterNetwork '%s' FAILED. " % self.dm.nw_name)
+            LogPrint().error("FAIL: Returned message is WRONG. ")
             self.flag = False
         self.assertTrue(self.flag)
     
@@ -615,7 +621,9 @@ class ITC020202_GetClusterNetworkInfo(BaseTestCase):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
-        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
+        LogPrint().info("Post-Test-1: Delete network '%s' for this TC." % self.dm.nw_name)
+        self.assertTrue(smart_delete_network(self.dm.nw_name, self.dm.dc_name))
+        LogPrint().info("Post-Test-2: Delete cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name))
             
 class ITC020203_attachNetworktoCluster(BaseTestCase):
@@ -628,40 +636,45 @@ class ITC020203_attachNetworktoCluster(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        
-        self.clusterapi = ClusterAPIs()
+        #step1:创建一个集群
+        LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        # step1：创建一个逻辑网络
-        self.nwapi = NetworkAPIs()
+        #step2：创建一个逻辑网络
+        LogPrint().info("Pre-Test-2: Create network '%s' for this TC." % self.dm.nw_name)
         self.assertTrue(smart_create_network(self.dm.nw_info, self.dm.nw_name))
         
     def test_attachNetworktoCluster(self):
         '''
         @summary: 测试用例执行步骤
+        @note: （1）测试将网络附加到集群
+        @note: （2）操作成功，验证返回状态码，验证网络是否附加到集群
         '''
-        r = self.clusterapi.attachNetworkToCluster(self.dm.cluster_name, self.dm.nw_info)
-        if r['status_code'] ==self.dm.status_code:
+        LogPrint().info("Test: Attach Network %s to Cluster %s. "%(self.dm.nw_name, self.dm.cluster_name))
+        clusterapi = ClusterAPIs()
+        r = clusterapi.attachNetworkToCluster(self.dm.cluster_name, self.dm.nw_info)
+        print r
+        if r['status_code'] == self.dm.status_code:
             cluster_id = r['result']['network']['cluster']['@id']
-            cluster_name = self.clusterapi.getClusterNameById(cluster_id)
+            cluster_name = clusterapi.getClusterNameById(cluster_id)
             if cluster_name == self.dm.cluster_name:
-                LogPrint().info("attachNetworktoCluster SUCCESS." )
+                LogPrint().info("PASS: Attach Network %s to Cluster %s SUCCESS." %(self.dm.nw_name, self.dm.cluster_name) )
 #                 return True
             else:
-                LogPrint().error("attachNetworktoCluster INCORRECT.")
+                LogPrint().error("FAIL: Attach Network %s to Cluster %s FAIL."%(self.dm.nw_name, self.dm.cluster_name))
                 self.flag = False
         else:
-            LogPrint().error("attachNetworktoCluster 'FAILED. ")
+            LogPrint().error("FAIL: Returned status code is WRONG. ")
             self.flag = False
         self.assertTrue(self.flag)
-            
-        
-    
+             
     def tearDown(self):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
-        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
-        self.assertTrue(smart_delete_cluster(self.dm.cluster_name))      
+        LogPrint().info("Post-Test-1: Delete network '%s' for this TC." % self.dm.nw_name)
+        self.assertTrue(smart_delete_network(self.dm.nw_name, self.dm.dc_name))
+        LogPrint().info("Post-Test-2: Delete cluster '%s' for this TC." % self.dm.cluster_name)
+        self.assertTrue(smart_delete_cluster(self.dm.cluster_name))    
 
 class ITC020204_detachNetworkFromCluster(BaseTestCase):
     '''
@@ -673,35 +686,42 @@ class ITC020204_detachNetworkFromCluster(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        
-        self.clusterapi = ClusterAPIs()
+        # step1:创建一个集群
+        LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        
-        self.nwapi = NetworkAPIs()
+        # step2：创建一个逻辑网络
+        LogPrint().info("Pre-Test-2: Create network '%s' for this TC." % self.dm.nw_name)
         self.assertTrue(smart_create_network(self.dm.nw_info, self.dm.nw_name))
-        
+        # step3:附加该网络到集群上
+        LogPrint().info("Pre-Test-3: Attach network '%s'to cluster '%s' for this TC." % (self.dm.nw_name, self.dm.cluster_name))
+        self.clusterapi = ClusterAPIs()
         self.clusterapi.attachNetworkToCluster(self.dm.cluster_name, self.dm.nw_info)
         
     def test_detachNetworkFromCluster(self):
         '''
         @summary: 测试用例执行步骤
+        @note: 测试将网络从集群中分离
+        @note: 操作成功，验证返回状态码，验证集群中是否有该网络
         '''
+        LogPrint().info("Test: Detach Network %s from Cluster %s. "%(self.dm.nw_name, self.dm.cluster_name))
         r = self.clusterapi.detachNetworkFromCluster(self.dm.cluster_name, self.dm.nw_name)
         if r['status_code'] ==self.dm.status_code:
             #检查集群中网络是否存在
             if not self.clusterapi.getClusterNetworkInfo(self.dm.cluster_name, self.dm.nw_name):
-                LogPrint().info("detachNetworkFromCluster SUCCESS." )
+                LogPrint().info("PASS: Detach Network %s from Cluster %s SUCCESS. "%(self.dm.nw_name, self.dm.cluster_name) )
             else:
-                LogPrint().info("detachNetworkFromCluster INCORRECT." ) 
+                LogPrint().info("FAIL: Cluster %s still has Network %s. "%(self.dm.cluster_name, self.dm.nw_name)) 
         else:
-            LogPrint().info("detachNetworkFromCluster FAILED." )
+            LogPrint().info("FAIL: Returned status code is WRONG.")
               
     def tearDown(self):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
-        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
-        self.assertTrue(smart_delete_cluster(self.dm.cluster_name))  
+        LogPrint().info("Post-Test-1: Delete network '%s' for this TC." % self.dm.nw_name)
+        self.assertTrue(smart_delete_network(self.dm.nw_name, self.dm.dc_name))
+        LogPrint().info("Post-Test-2: Delete cluster '%s' for this TC." % self.dm.cluster_name)
+        self.assertTrue(smart_delete_cluster(self.dm.cluster_name)) 
 
 class ITC020205_UpdateNetworkofCluster(BaseTestCase):
     '''
@@ -713,38 +733,44 @@ class ITC020205_UpdateNetworkofCluster(BaseTestCase):
         '''
         # 调用父类方法，获取该用例所对应的测试数据模块
         self.dm = super(self.__class__, self).setUp()
-        self.clusterapi = ClusterAPIs()
+        # step1:创建一个集群
+        LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
-        
-        self.nwapi = NetworkAPIs()
+        # step2：创建一个逻辑网络
+        LogPrint().info("Pre-Test-2: Create network '%s' for this TC." % self.dm.nw_name)
         self.assertTrue(smart_create_network(self.dm.nw_info, self.dm.nw_name))
-        
+        # step3:附加该网络到集群上
+        LogPrint().info("Pre-Test-3: Attach network '%s'to cluster '%s' for this TC." % (self.dm.nw_name, self.dm.cluster_name))
+        self.clusterapi = ClusterAPIs()
         self.clusterapi.attachNetworkToCluster(self.dm.cluster_name, self.dm.nw_info)
         
     def test_UpdateNetworkofCluster(self):
         '''
         @summary: 测试用例执行步骤
+        @note: 更新集群网络信息
+        @note: 操作成功，验证返回状态码，验证更新信息是否正确
         '''
+        LogPrint().info("Test: Update Network %s of Cluster %s. "%(self.dm.nw_name, self.dm.cluster_name))
         r = self.clusterapi.updateNetworkOfCluster(self.dm.cluster_name, self.dm.nw_name, self.dm.nw_info_new)
         if r['status_code'] ==self.dm.status_code:
             dict_actual = self.clusterapi.getClusterNetworkInfo(self.dm.cluster_name, self.dm.nw_name)
             #dict_expected = {'network':xmltodict.parse(self.dm.nw_info_new)['network']}
             dict_expected = xmltodict.parse(self.dm.nw_info_new)
-            print dict_actual
-            print dict_expected
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("UpdateNetworkofCluster SUCCESS." )
+                LogPrint().info("PASS: Detach Network %s from Cluster %s SUCCESS. "%(self.dm.nw_name, self.dm.cluster_name) )
             else:
-                LogPrint().info("UpdateNetworkofCluster INCORRECT." ) 
+                LogPrint().info("FAIL: Returned message is WRONG. ") 
         else:
-            LogPrint().info("UpdateNetworkofCluster FAILED." )
+            LogPrint().info("FAIL: Returned status code is WRONG." )
               
     def tearDown(self):
         '''
         @summary: 测试结束后的资源清理（恢复初始环境）
         '''
-        self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
+        LogPrint().info("Post-Test-1: Delete network '%s' for this TC." % self.dm.nw_name)
+        self.assertTrue(smart_delete_network(self.dm.nw_name, self.dm.dc_name))
+        LogPrint().info("Post-Test-2: Delete cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_delete_cluster(self.dm.cluster_name)) 
 
 class ITC02_TearDown(BaseTestCase):
@@ -760,8 +786,7 @@ class ITC02_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Cluster.ITC02010503_DeleteCluster_vm"]
-  
+    test_cases = ["Cluster.ITC020203_attachNetworktoCluster"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

@@ -3,12 +3,9 @@ import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 @note: PreData
 '''
-'''
-@note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
-'''
-disk_name = 'Test-DISK'
+disk_name = 'Disk-test'
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
-disk_info='''
+disk_info = '''
 <data_driver>
 <disk>
     <alias>Disk-test</alias>

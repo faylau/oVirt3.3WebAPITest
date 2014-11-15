@@ -7,9 +7,9 @@ import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-disk_name = 'Test-DISK'
+disk_name = 'DISK-ITC08'
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
-disk_info_raw='''
+disk_info_raw = '''
 <disk>
     <alias>%s</alias>
     <name>%s</name>
@@ -24,9 +24,9 @@ disk_info_raw='''
     <shareable>true</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''%(disk_name,disk_name,sd_id)
+'''% (disk_name, disk_name, sd_id)
 
-disk_info_cow='''
+disk_info_cow = '''
 <disk>
     <alias>%s</alias>
     <name>%s</name>
@@ -41,7 +41,7 @@ disk_info_cow='''
     <shareable>false</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''%(disk_name,disk_name,sd_id)
+'''% (disk_name, disk_name, sd_id)
 
 '''
 @note: ExpectedData

@@ -5,8 +5,8 @@ from TestAPIs.DataCenterAPIs import DataCenterAPIs
 更新集群-01成功更改集群的名称和cpu类型
 '''
 dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
-cluster_name = 'test-cluster'
-cluster_name_new = 'test-cluster-new'
+cluster_name = 'cluster-ITC02'
+cluster_name_new = 'cluster-ITC02-new'
 
 '''
 @note: PreData

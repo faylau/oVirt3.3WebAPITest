@@ -18,6 +18,7 @@ __version__ = "V0.1"
 '''
 
 import xmltodict
+import time
 
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
@@ -59,6 +60,8 @@ def smart_delete_disk(disk_id, status_code=200):
     @return: True or False
     '''
     disk_api = DiskAPIs()
+    def is_disk_delete(disk_id):
+        return disk_api.isExist(disk_id) == 'False'
     try:
         disk_api.getDiskInfo(disk_id)
         if disk_api.getDiskStatus(disk_id) != 'ok':
@@ -68,8 +71,9 @@ def smart_delete_disk(disk_id, status_code=200):
             r = disk_api.deleteDisk(disk_id)
             # 2014/11/13: Modified by LiuFei: add 'int' before status_code.
             if r['status_code'] == int(status_code):
-                LogPrint().info("TearDown: Delete disk SUCCESS.")
-                return True
+                if wait_until(is_disk_delete, 60, 10):
+                    LogPrint().info("TearDown: Delete disk SUCCESS.")
+                    return True
             else:
                 LogPrint().error("TearDown: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
                 return False

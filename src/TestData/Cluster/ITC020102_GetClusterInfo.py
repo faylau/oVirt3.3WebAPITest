@@ -7,7 +7,7 @@ from TestAPIs.DataCenterAPIs import DataCenterAPIs
 @note: PreData
 '''
 dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
-cluster_name = 'test111'
+cluster_name = 'cluster-ITC02'
 cluster_info = '''
 <cluster>
         <name>%s</name>

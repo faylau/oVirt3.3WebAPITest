@@ -15,7 +15,7 @@ __version__ = "V0.1"
 '''
 @note: ModuleTestData
 '''
-dc_name = 'DC-ITC02-NFS'
+dc_name = 'DC-ITC05-NFS'
 
 dc_info = '''
 <data_center>

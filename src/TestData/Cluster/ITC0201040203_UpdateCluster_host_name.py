@@ -6,7 +6,7 @@ from Configs.GlobalConfig import Hosts
 更新集群-01集群内有主机时更改cpu类型
 '''
 dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
-cluster_name = 'test-cluster'
+cluster_name = 'cluster-ITC02'
 
 '''
 @note: PreData
@@ -36,7 +36,7 @@ host_info = '''
 '''
 @note: TestData
 '''
-cluster_name_new = 'test-cluster-new'
+cluster_name_new = 'cluster-ITC02-new'
 cluster_info_new = '''
 <cluster>
         <name>%s</name>

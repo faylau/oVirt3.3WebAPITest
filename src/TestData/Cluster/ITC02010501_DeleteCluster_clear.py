@@ -1,7 +1,7 @@
 #encoding:utf-8
 import TestData.Cluster.ITC02_Setup as ModuleData
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-cluster_name = 'test-cluster'
+cluster_name = 'cluster-ITC02'
 
 '''
 @note: PreData

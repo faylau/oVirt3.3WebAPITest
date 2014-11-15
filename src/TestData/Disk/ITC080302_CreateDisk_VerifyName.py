@@ -9,7 +9,7 @@ import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 disk_name = 'Test-DISK%'
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
-disk_info='''
+disk_info = '''
 <disk>
     <alias>%s</alias>
     <name>%s</name>
@@ -24,7 +24,7 @@ disk_info='''
     <shareable>true</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''%(disk_name,disk_name,sd_id)
+'''% (disk_name, disk_name, sd_id)
 
 '''
 @note: ExpectedData

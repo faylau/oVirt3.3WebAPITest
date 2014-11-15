@@ -9,7 +9,7 @@ import TestData.Disk.ITC08_SetUp as ModuleData
 '''
 disk_name = 'Test-DISK'
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
-disk_info='''
+disk_info = '''
 <data_driver>
 <disk>
     <alias>Test-DISK</alias>
@@ -42,7 +42,7 @@ disk_info='''
     <interface>virtio</interface>
 </disk>
 </data_driver>
-'''%(sd_id,sd_id,sd_id)
+'''% (sd_id, sd_id, sd_id)
 
 '''
 @note: ExpectedData

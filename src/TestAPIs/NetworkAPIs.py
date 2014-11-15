@@ -35,7 +35,6 @@ def smart_delete_network(nw_name,dc_name,status_code=200):
 
     nw_api = NetworkAPIs()
     try:
-        print nw_api.getNetworkInfo(nw_name=nw_name,dc_name=dc_name)
         r = nw_api.delNetwork(nw_name,dc_name)
         if r ['status_code'] == status_code:
             LogPrint().info("Post-Test:Delete network '%s'success."%nw_name)

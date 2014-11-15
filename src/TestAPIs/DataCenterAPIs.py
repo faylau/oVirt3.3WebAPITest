@@ -60,6 +60,7 @@ def smart_deactive_storage_domain(dc_name, sd_name, data=None):
     '''
     dc_api = DataCenterAPIs()
     r = dc_api.deactiveDCStorageDomain(dc_name, sd_name)
+    print r
     return (r['status_code'] == 200 and dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='maintenance')
 
 class DataCenterAPIs(BaseAPIs):

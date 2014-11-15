@@ -1,6 +1,6 @@
 #encoding:utf-8
 
-import TestData.Cluster.ITC02_Setup as ModuleData
+import TestData.Network.ITC05_Setup as ModuleData
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
 
