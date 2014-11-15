@@ -5,16 +5,16 @@ __version__ = "V0.1"
 
 '''
 # ChangeLog:
-#---------------------------------------------------------------------------------
-# Version        Date            Desc                            Author
-#---------------------------------------------------------------------------------
-# V0.1           2014/09/16    初始版本                                                             wei keke
-#---------------------------------------------------------------------------------
-# V0.2           2014/11/03    将searchDiskByName修改为
-#                              searchDiskByAlias                Liu Fei
-#---------------------------------------------------------------------------------
-# V0.3           2014/11/13    *修改smart_delete_disk方法                    Liu Fei
-#---------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------
+# Version        Date            Desc                                            Author
+#-----------------------------------------------------------------------------------------
+# V0.1           2014/09/16    初始版本                                                                                                     wei keke
+#-----------------------------------------------------------------------------------------
+# V0.2           2014/11/03    *将searchDiskByName修改为searchDiskByAlias          Liu Fei
+#-----------------------------------------------------------------------------------------
+# V0.3           2014/11/13    *修改smart_delete_disk方法                                                           Liu Fei
+#                              *修改了smart方法中的日志信息内容
+#-----------------------------------------------------------------------------------------
 '''
 
 import xmltodict
@@ -42,13 +42,13 @@ def smart_create_disk(xml_disk_info, disk_alias=None, status_code=202):
         disk_id = r['result']['disk']['@id']
         #如果磁盘状态在给定时间内变为ok状态，则继续验证状态码和磁盘信息
         if wait_until(is_disk_ok, 500, 5):
-            LogPrint().info("SetUp::Create disk '%s' SUCCESS and it's state is 'ok'." % disk_alias)
+            LogPrint().info("INFO: Create disk '%s' SUCCESS and it's state is 'ok'." % disk_alias)
             return [True, disk_id]
         else:
-            LogPrint().error("SetUp::Create Disk FAIED, it's status is not 'ok'." )
+            LogPrint().error("ERROR: Create Disk FAIED, it's status is not 'ok'." )
             return False
     else:
-        LogPrint().error("SetUp:Create Disk FAIED, returned status code '%s' is wrong." % r['status_code'])
+        LogPrint().error("ERROR: Create Disk FAIED, returned status code '%s' is wrong." % r['status_code'])
         return False
     
 def smart_delete_disk(disk_id, status_code=200):
@@ -62,16 +62,16 @@ def smart_delete_disk(disk_id, status_code=200):
     try:
         disk_api.getDiskInfo(disk_id)
         if disk_api.getDiskStatus(disk_id) != 'ok':
-            LogPrint().warning("TearDown: The disk is not 'ok'. It cannot be deleted.")
+            LogPrint().warning("WARN: The disk is not 'ok'. It cannot be deleted.")
             return False
         else: 
             r = disk_api.deleteDisk(disk_id)
             # 2014/11/13: Modified by LiuFei: add 'int' before status_code.
             if r['status_code'] == int(status_code):
-                LogPrint().info("TearDown: Delete disk SUCCESS.")
+                LogPrint().info("INFO: Delete disk SUCCESS.")
                 return True
             else:
-                LogPrint().error("TearDown: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
+                LogPrint().error("ERROR: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
                 return False
     except:
         LogPrint().warning("TearDown: Disk is not exist.")

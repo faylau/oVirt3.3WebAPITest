@@ -85,6 +85,7 @@ encoding//src/Configs/GlobalConfig.py=utf-8
 encoding//src/TestAPIs/DataCenterAPIs.py=utf-8
 encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/HostAPIs.py=utf-8
+encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
 encoding//src/TestCases/BaseTestCase.py=utf-8
 encoding//src/TestCases/Cluster.py=utf-8
