@@ -2,19 +2,21 @@
 
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
-__version__ = "V0.1"
+__version__ = "V0.3"
 
 '''
 # ChangeLog:
-#---------------------------------------------------------------------------------
-# Version        Date                Desc                                Author
-#---------------------------------------------------------------------------------
-# V0.1           2014/10/17          初始版本                                                                    Liu Fei 
-#---------------------------------------------------------------------------------
-# V0.2           2014/11/13          *将SetUp和TearDown分别置于首尾
+#-------------------------------------------------------------------------------------------
+# Version        Date                Desc                                            Author
+#-------------------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                                                                Liu Fei 
+#-------------------------------------------------------------------------------------------
+# V0.2           2014/11/13          *将SetUp和TearDown分别置于首尾                                               Liu Fei
 #                                    *修改存在问题的TC及数据文件，包括
-#                                     ITC0401030101_CreateNfsSd_Normal等   Liu Fei 
-#---------------------------------------------------------------------------------
+#                                     ITC0401030101_CreateNfsSd_Normal等    
+#-------------------------------------------------------------------------------------------
+# V0.3           2014/11/15          *补充了部分用例中的logprint日志信息                                       Liu Fei 
+#-------------------------------------------------------------------------------------------
 '''
 
 import unittest
@@ -102,7 +104,13 @@ class ITC040101_GetStorageDomainsList(BaseTestCase):
     @summary: ITC-04存储域管理-01存储域操作-01查看全部存储域列表
     '''
     def test_GetStorageDomainsList(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）获取全部存储域列表；
+        @note: （2）操作成功，验证接口返回的状态码是否正确。
+        '''
         sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Get all Storage Domains list.")
         r = sd_api.getStorageDomainsList()
         if r['status_code']==200:
             LogPrint().info('PASS: Get StorageDomains list SUCCESS.')
@@ -121,7 +129,6 @@ class ITC040102_GetStorageDomainInfo(BaseTestCase):
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        self.sd_api = StorageDomainAPIs()
     
     def test_GetStorageDomainsInfo(self):
         '''
@@ -129,8 +136,9 @@ class ITC040102_GetStorageDomainInfo(BaseTestCase):
         @note: （1）调用相应接口，获取模块级测试环境中的存储域信息；
         @note: （2）操作成功，验证接口返回的状态码、存储域信息是否正确。
         '''
+        sd_api = StorageDomainAPIs()
         LogPrint().info("Test: Get info of DataStorage '%s'." % self.dm.data_storage_name)
-        r = self.sd_api.getStorageDomainInfo(self.dm.data_storage_name)
+        r = sd_api.getStorageDomainInfo(self.dm.data_storage_name)
         if r['status_code'] == self.dm.expected_statsu_code_get_sd_info:
             dictCompare = DictCompare()
             d1 = self.dm.xml_data_storage_info
@@ -164,7 +172,6 @@ class ITC0401030101_CreateNfsSd_Normal(BaseTestCase):
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        self.sd_api = StorageDomainAPIs()
         
     def test_CreateNfsSd_Normal(self):
         '''
@@ -172,13 +179,14 @@ class ITC0401030101_CreateNfsSd_Normal(BaseTestCase):
         @note: （1）创建一个NFS的Data类型存储域，不附加到任何数据中心；
         @note: （2）操作成功，验证接口返回的状态码、提示信息是否正确。
         '''
+        sd_api = StorageDomainAPIs()
         # 创建NFS的Data类型存储域（unattached状态）
         @BaseTestCase.drive_data(self, self.dm.data1_info_xml)
         def do_test(xml_info):
             dictCompare = DictCompare()
             d1 = xmltodict.parse(xml_info)
             LogPrint().info("Test: Start creating Data/ISO/Export DataStorages '%s' with NFS type." % d1['storage_domain']['name'])
-            r = self.sd_api.createStorageDomain(xml_info)
+            r = sd_api.createStorageDomain(xml_info)
             if r['status_code'] == self.dm.expected_status_code_create_sd:
                 del d1['storage_domain']['host']
                 if dictCompare.isSubsetDict(d1, r['result']):
@@ -199,6 +207,7 @@ class ITC0401030101_CreateNfsSd_Normal(BaseTestCase):
         @note: （1）删除创建的游离存储
         '''
         for sd_name in self.dm.data1_name:
+            LogPrint().info("Post-Test: Delete storage domain '%s'." % sd_name)
             self.assertTrue(smart_del_storage_domain(sd_name, self.dm.xml_del_sd_option))
 
 # class ITC0401030102_CreateNfsSd_DupName(BaseTestCase):
@@ -282,7 +291,6 @@ class ITC0401030104_CreateNfsSd_IpVerify(BaseTestCase):
         @summary: 初始化测试环境
         '''
         self.dm = super(self.__class__, self).setUp()
-        self.sd_api = StorageDomainAPIs()
         
     def test_CreateNfsSd_IpVerify(self):
         '''
@@ -290,10 +298,11 @@ class ITC0401030104_CreateNfsSd_IpVerify(BaseTestCase):
         @note: （1）输入各种不合法的IP，创建存储域；
         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
         '''
+        sd_api = StorageDomainAPIs()
         # 使用数据驱动，根据测试数据文件循环创建多个名称非法的主机
         @BaseTestCase.drive_data(self, self.dm.xml_sd_info_list)
         def do_test(xml_info):
-            r = self.sd_api.createStorageDomain(xml_info)
+            r = sd_api.createStorageDomain(xml_info)
             # 验证接口返回状态码是否正确
             if r['status_code'] == self.dm.expected_status_code_create_sd_fail:
                 # 验证接口返回提示信息是否正确
@@ -316,7 +325,8 @@ class ITC0401030104_CreateNfsSd_IpVerify(BaseTestCase):
         '''
         @summary: 资源清理
         '''
-        smart_del_storage_domain(self.dm.sd_name, self.dm.xml_del_sd_option)
+        LogPrint().info("Post-Test: Delete storage domain '%s'." % self.dm.sd_name)
+        self.assertTrue(smart_del_storage_domain(self.dm.sd_name, self.dm.xml_del_sd_option))
 
 class ITC0401030105_CreateNfsSd_PathVerify(BaseTestCase):
     '''
@@ -327,7 +337,6 @@ class ITC0401030105_CreateNfsSd_PathVerify(BaseTestCase):
         @summary: 初始化测试环境
         '''
         self.dm = super(self.__class__, self).setUp()
-        self.sd_api = StorageDomainAPIs()
         
     def test_CreateNfsSd_PathVerify(self):
         '''
@@ -335,10 +344,11 @@ class ITC0401030105_CreateNfsSd_PathVerify(BaseTestCase):
         @note: （1）输入各种不合法的Path，创建存储域；
         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
         '''
+        sd_api = StorageDomainAPIs()
         # 使用数据驱动，根据测试数据文件循环创建多个Path非法的存储域
         @BaseTestCase.drive_data(self, self.dm.xml_sd_info_list)
         def do_test(xml_info):
-            r = self.sd_api.createStorageDomain(xml_info)
+            r = sd_api.createStorageDomain(xml_info)
             # 验证接口返回状态码是否正确
             if r['status_code'] == self.dm.expected_status_code_create_sd_fail:
                 # 验证接口返回提示信息是否正确
@@ -361,7 +371,8 @@ class ITC0401030105_CreateNfsSd_PathVerify(BaseTestCase):
         '''
         @summary: 资源清理
         '''
-        smart_del_storage_domain(self.dm.sd_name, self.dm.xml_del_sd_option)
+        LogPrint().info("Post-Test: Delete storage domain '%s'." % self.dm.sd_name)
+        self.assertTrue(smart_del_storage_domain(self.dm.sd_name, self.dm.xml_del_sd_option))
 
 # class ITC0401030106_CreateNfsSd_NoRequiredParams(BaseTestCase):
 #     '''
@@ -427,6 +438,7 @@ class ITC0401030201_CreateIscsiSd_Normal(BaseTestCase):
         @note: （2）操作成功，验证接口返回的状态码、存储域信息是否正确。
         '''
         sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Create ISCSI data storage '%s'." % self.dm.data1_name)
         r = sd_api.createStorageDomain(self.dm.data1_info_xml)
         if r['status_code'] == self.dm.expected_status_code_create_sd:
             d1 = xmltodict.parse(self.dm.data1_info_xml)
@@ -450,6 +462,7 @@ class ITC0401030201_CreateIscsiSd_Normal(BaseTestCase):
         '''
         @summary: 资源清理，删除创建的ISCSI存储域。
         '''
+        LogPrint().info("Post-Test: Delete storage domain '%s'." % self.dm.data1_name)
         self.assertTrue(smart_del_storage_domain(self.dm.data1_name, self.dm.xml_del_sd_option))
 
 class ITC0401040102_EditNfsSd_Unattached(BaseTestCase):
@@ -464,7 +477,6 @@ class ITC0401040102_EditNfsSd_Unattached(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个data类型存储域data1
-        self.sd_api = StorageDomainAPIs()
         LogPrint().info("Pre-Test: Create a new NFS Data Storage '%s'." % self.dm.data_name)
         self.assertTrue(smart_create_storage_domain(self.dm.data_name, self.dm.xml_data_info))
         
@@ -474,7 +486,9 @@ class ITC0401040102_EditNfsSd_Unattached(BaseTestCase):
         @note: （1）编辑存储域的名称；
         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
         '''
-        r = self.sd_api.updateStorageDomain(self.dm.data_name, self.dm.xml_data_info_new)
+        sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Edit NFS data storage '%s' in 'Unattached' state." % self.dm.data_name)
+        r = sd_api.updateStorageDomain(self.dm.data_name, self.dm.xml_data_info_new)
         if r['status_code'] == self.dm.expected_status_code_edit_sd_unattached:
             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_edit_sd_unattached), r['result']):
                 LogPrint().info("PASS: Returned status code and messages are INCORRECT while edit storage domain in 'unattached' state.")
@@ -492,6 +506,7 @@ class ITC0401040102_EditNfsSd_Unattached(BaseTestCase):
         @summary: 资源清理，删除创建的存储域。
         '''
         for sd_name in [self.dm.data_name, self.dm.data_name_new]:
+            LogPrint().info("Post-Test: Delete storage domain '%s'." % sd_name)
             self.assertTrue(smart_del_storage_domain(sd_name, self.dm.xml_del_sd_option))
 
 class ITC0401050101_DelNfsSd_Unattached(BaseTestCase):
@@ -506,7 +521,6 @@ class ITC0401050101_DelNfsSd_Unattached(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个NFS类型的Data Storage，处于Unattached状态。
-        self.sd_api = StorageDomainAPIs()
         LogPrint().info("Pre-Test: Create a new NFS Data Storage '%s'." % self.dm.data_name)
         self.assertTrue(smart_create_storage_domain(self.dm.data_name, self.dm.xml_data_info))
         
@@ -516,9 +530,11 @@ class ITC0401050101_DelNfsSd_Unattached(BaseTestCase):
         @note: （1）删除处于Unattached状态的NFS类型Data存储域；
         @note: （2）操作成功，验证接口返回状态码、相关信息是否正确。
         '''
-        r = self.sd_api.delStorageDomain(self.dm.data_name, self.dm.xml_del_sd_option)
+        sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Delete NFS data storage '%s' in 'Unattached' state." % self.dm.data_name)
+        r = sd_api.delStorageDomain(self.dm.data_name, self.dm.xml_del_sd_option)
         if r['status_code'] == self.dm.expected_status_code_del_sd:
-            if not self.sd_api.searchStorageDomainByName(self.dm.data_name)['result']['storage_domains']:
+            if not sd_api.searchStorageDomainByName(self.dm.data_name)['result']['storage_domains']:
                 LogPrint().info("PASS: Delete unattached Storage Domain '%s' SUCCESS." % self.dm.data_name)
                 self.flag = True
             else:
@@ -533,6 +549,7 @@ class ITC0401050101_DelNfsSd_Unattached(BaseTestCase):
         '''
         @summary: 资源清理
         '''
+        LogPrint().info("Post-Test: Delete storage domain '%s'." % self.dm.data_name)
         self.assertTrue(smart_del_storage_domain(self.dm.data_name, self.dm.xml_del_sd_option))
 
 class ITC0401050201_DelIscsiSd_Unattached(BaseTestCase):
@@ -547,7 +564,6 @@ class ITC0401050201_DelIscsiSd_Unattached(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：创建一个NFS类型的Data Storage，处于Unattached状态。
-        self.sd_api = StorageDomainAPIs()
         LogPrint().info("Pre-Test: Create a new ISCSI Data Storage '%s'." % self.dm.data_name)
         self.assertTrue(smart_create_storage_domain(self.dm.data_name, self.dm.xml_data_info))
         
@@ -557,9 +573,11 @@ class ITC0401050201_DelIscsiSd_Unattached(BaseTestCase):
         @note: （1）删除处于Unattached状态的ISCSI类型Data存储域；
         @note: （2）操作成功，验证接口返回状态码、相关信息是否正确。
         '''
-        r = self.sd_api.delStorageDomain(self.dm.data_name, self.dm.xml_del_sd_option)
+        sd_api = StorageDomainAPIs()
+        LogPrint().info("Test: Delete ISCSI data storage '%s' in 'Unattached' state." % self.dm.data_name)
+        r = sd_api.delStorageDomain(self.dm.data_name, self.dm.xml_del_sd_option)
         if r['status_code'] == self.dm.expected_status_code_del_sd:
-            if not self.sd_api.searchStorageDomainByName(self.dm.data_name)['result']['storage_domains']:
+            if not sd_api.searchStorageDomainByName(self.dm.data_name)['result']['storage_domains']:
                 LogPrint().info("PASS: Delete unattached Storage Domain '%s' SUCCESS." % self.dm.data_name)
                 self.flag = True
             else:
@@ -574,6 +592,7 @@ class ITC0401050201_DelIscsiSd_Unattached(BaseTestCase):
         '''
         @summary: 资源清理
         '''
+        LogPrint().info("Post-Test: Delete storage domain '%s'." % self.dm.data_name)
         self.assertTrue(smart_del_storage_domain(self.dm.data_name, self.dm.xml_del_sd_option))
 
 class ITC04010601_DestroySd_Unattached(BaseTestCase):
@@ -586,7 +605,6 @@ class ITC04010601_DestroySd_Unattached(BaseTestCase):
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
-        self.sd_api = StorageDomainAPIs()
         
         # 前提1：创建一个ISO存储域（Unattached状态）
         LogPrint().info("Pre-Test: Create a ISO storage domain '%s' for test." % self.dm.iso_name)
@@ -598,6 +616,7 @@ class ITC04010601_DestroySd_Unattached(BaseTestCase):
         @note: （1）对Unattached状态的ISO存储域进行销毁操作；
         @note: （2）操作成功，验证接口返回的状态码、提示信息是否正确。
         '''
+        self.sd_api = StorageDomainAPIs()
         # 对ISO存储域进行Destroy操作（通过在删除项中设置destroy参数实现）
         LogPrint().info("Test: Destroy the ISO storage domain '%s'." % self.dm.iso_name)
         r = self.sd_api.delStorageDomain(self.dm.iso_name, self.dm.xml_destroy_iso_option)
@@ -693,6 +712,7 @@ class ITC040201_GetDisksFromDataStorage(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：在Data存储域中创建一个磁盘
+        LogPrint().info("Pre-Test: Create disk '%s' in data storage for this TC." % self.dm.disk_name)
         r = smart_create_disk(self.dm.xml_disk_info)
         self.assertTrue(r[0])
         self.disk_id = r[1]
@@ -703,9 +723,9 @@ class ITC040201_GetDisksFromDataStorage(BaseTestCase):
         @note: （1）调用相应接口，获取Data存储域中的disk列表；
         @note: （2）操作成功，验证接口返回的状态码、disk列表是否正确。
         '''
-        self.data_storage_api = DataStorageAPIs()
+        data_storage_api = DataStorageAPIs()
         LogPrint().info("Test: Get disks list of Data Storage '%s'." % self.dm.data1_name)
-        r = self.data_storage_api.getDisksListFromDataStorage(self.dm.data1_name)
+        r = data_storage_api.getDisksListFromDataStorage(self.dm.data1_name)
         if r['status_code'] == self.dm.expected_status_code_get_disk_list_in_data_storage:
             LogPrint().info("PASS: Get the disks list from Data Storage '%s' SUCCESS." % self.dm.data1_name)
             self.flag = True
@@ -734,6 +754,7 @@ class ITC040202_GetDiskInfoFromDataStorage(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：在存储域中创建一个磁盘
+        LogPrint().info("Pre-Test: Create disk '%s' for this TC." % self.dm.disk_name)
         r = smart_create_disk(self.dm.xml_disk_info)
         self.assertTrue(r[0])
         self.disk_id = r[1]
@@ -765,6 +786,7 @@ class ITC040202_GetDiskInfoFromDataStorage(BaseTestCase):
         @summary: 资源清理
         @note: （1）删除创建的磁盘
         '''
+        LogPrint().info("Post-Test: Delete disk '%s'." % self.dm.disk_name)
         self.assertTrue(smart_delete_disk(self.disk_id, self.dm.xml_del_disk_option))
 
 class ITC04020301_DelDiskFromDataStorage_OK(BaseTestCase):
@@ -779,6 +801,7 @@ class ITC04020301_DelDiskFromDataStorage_OK(BaseTestCase):
         self.dm = super(self.__class__, self).setUp()
         
         # 前提1：在Active状态的存储域中创建一个磁盘
+        LogPrint().info("Pre-Test: Create disk '%s' in the active data storage '%s'." % (self.dm.disk_name, self.dm.data1_name))
         r = smart_create_disk(self.dm.xml_disk_info, disk_alias=self.dm.disk_name)
         self.assertTrue(r[0])
         self.disk_id = r[1]
@@ -791,6 +814,7 @@ class ITC04020301_DelDiskFromDataStorage_OK(BaseTestCase):
         '''
         ds_api = DataStorageAPIs()
         disk_api = DiskAPIs()
+        LogPrint().info("Test: Delete  the disk '%s' in 'OK' state." % self.dm.disk_name)
         r = ds_api.delDiskFromDataStorage(self.dm.data1_name, disk_id=self.disk_id)
         if r['status_code']==self.dm.expected_status_code_del_disk:
             try:
@@ -810,6 +834,7 @@ class ITC04020301_DelDiskFromDataStorage_OK(BaseTestCase):
         @summary: 资源清理
         @note: （1）删除磁盘（如果存在的话）
         '''
+        LogPrint().info("Post-Test: Delete disk '%s'." % self.dm.disk_name)
         self.assertTrue(smart_delete_disk(self.disk_id))
 
 class ITC040301_GetFilesFromIsoStorage(BaseTestCase):
@@ -916,8 +941,3 @@ if __name__ == "__main__":
     testSuite.addTests(tests)
  
     unittest.TextTestRunner(verbosity=2).run(testSuite)
-
-#     fileName = r"d:\result.html"
-#     fp = file(fileName, 'wb')
-#     runner = HTMLTestRunner(stream=fp, title=u"测试结果", description=u"测试报告")
-#     runner.run(testSuite)
