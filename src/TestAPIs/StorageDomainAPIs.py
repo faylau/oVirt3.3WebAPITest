@@ -22,6 +22,10 @@ from Utils.PrintLog import LogPrint
 def smart_create_storage_domain(sd_name, xml_sd_info, status_code=201):
     '''
     @summary: 智能创建存储域
+    @param sd_name: 存储域名称
+    @param xml_sd_info: XML格式的存储域配置信息
+    @param status_code: 创建存储域成功后返回的状态码，缺省值为201
+    @return: True or False
     '''
     sd_api = StorageDomainAPIs()
     if not sd_api.searchStorageDomainByName(sd_name)['result']['storage_domains']:
@@ -38,6 +42,7 @@ def smart_del_storage_domain(sd_name, xml_del_option, host_name=None, status_cod
     @param xml_del_option: XML格式的删除选项
     @param host_name: 关联主机名称（缺省为None,若不提供，则XML中必须提供host名称）
     @param status_code: 缺少值为200
+    @return: True or False
     '''
     sd_api = StorageDomainAPIs()
     LogPrint().info("Post-Test: Delete StorageDomain '%s'." % sd_name)
@@ -97,6 +102,7 @@ class StorageDomainAPIs(BaseAPIs):
         @summary: 根据存储域name或id获取其详细信息
         @param sd_name: 存储域名称，缺省为None
         @param sd_id: 存储域id，缺省为None
+        @note: sd_name和sd_id二者必须提供一个作为参数
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（存储域详细信息）。
         '''
         if not sd_id and sd_name:
