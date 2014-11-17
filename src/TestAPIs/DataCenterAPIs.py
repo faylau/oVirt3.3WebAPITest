@@ -1,15 +1,17 @@
 #coding:utf-8
-from TestAPIs.StorageDomainAPIs import DataStorageAPIs
+
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
-__version__ = "V0.1"
+__version__ = "V0.2"
 
 '''
 # ChangeLog:
 #---------------------------------------------------------------------------------
-# Version        Date            Desc                            Author
+# Version        Date            Desc                                    Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/08/29      初始版本                                                            Liu Fei 
+# V0.1           2014/08/29      初始版本                                                                            Liu Fei 
+#---------------------------------------------------------------------------------
+# V0.2           2014/11/17      对部分API的注释进行了补充                                         Liu Fei 
 #---------------------------------------------------------------------------------
 '''
 
@@ -17,6 +19,7 @@ import xmltodict
 
 from BaseAPIs import BaseAPIs
 from StorageDomainAPIs import StorageDomainAPIs
+from TestAPIs.StorageDomainAPIs import DataStorageAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 
@@ -37,6 +40,10 @@ def smart_attach_storage_domain(dc_name, sd_name, data=None):
 def smart_detach_storage_domain(dc_name, sd_name, data='<action><async>false</async></action>'):
     '''
     @summary: 从数据中心分离存储域（分离，并判断存储域状态是否最终变为unattached）
+    @param dc_name: 数据中心名称
+    @param sd_name: 要分离的存储域名称
+    @param data: 调用接口传递的数据，缺省为“分离操作同步”
+    @return: True or False
     '''
     dc_api = DataCenterAPIs()
     ds_api = DataStorageAPIs()
@@ -46,6 +53,10 @@ def smart_detach_storage_domain(dc_name, sd_name, data='<action><async>false</as
 def smart_active_storage_domain(dc_name, sd_name, data=None):
     '''
     @summary: 智能激活数据中心里的存储域
+    @param dc_name: 数据中心名称
+    @param sd_name: 待激活的存储域名称
+    @param data: 调用接口时传递的数据，缺省为None
+    @return: True or False
     '''
     dc_api = DataCenterAPIs()
     r = dc_api.activeDCStorageDomain(dc_name, sd_name)
@@ -56,6 +67,7 @@ def smart_deactive_storage_domain(dc_name, sd_name, data=None):
     @summary: 智能取消激活数据中心里的存储域（对active状态存储域进行maintenance操作）
     @param dc_name: 数据中心名称
     @param sd_name: 存储域名称
+    @param data: 调用接口时传递的数据，缺省为None
     @return: True or False
     '''
     dc_api = DataCenterAPIs()
@@ -121,6 +133,7 @@ class DataCenterAPIs(BaseAPIs):
         @summary: 根据数据中心名称或ID，获取数据中心详细信息
         @param dc_name: 数据中心名称，缺省为None
         @param dc_id: 数据中心ID，缺省为None
+        @note: dc_name和dc_id至少必须提供其中一个用于标识数据中心
         @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的数据中心信息
         '''
         if not dc_id and dc_name:
@@ -211,7 +224,7 @@ class DataCenterAPIs(BaseAPIs):
         @summary: 获取数据中心指定存储域的状态
         @param dc_name: 数据中心名称
         @param sd_name: 存储域名称
-        @return: 存储域状态（状态只有）
+        @return: 存储域状态
         '''
         # 调用StorageDomainAPIs模块中的getStorageDomainIdByName()方法获得存储域id
         sdapi = StorageDomainAPIs()
