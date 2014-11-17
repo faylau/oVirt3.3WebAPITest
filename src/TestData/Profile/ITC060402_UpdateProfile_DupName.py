@@ -1,19 +1,21 @@
 #encoding:utf-8
 
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-nw_name = 'network001'
-dc_name = 'Default'
-dc_id = DataCenterAPIs().getDataCenterIdByName(dc_name)
+from TestData.Profile import ITC06_SetUp as ModuleData
 
 '''
 @note: PreData
 '''
+nw_name = 'network_ITC06'
+dc_name = ModuleData.dc_name
+dc_id = DataCenterAPIs().getDataCenterIdByName(dc_name)
 nw_info = '''
 <network>
     <name>%s</name>
     <data_center id= "%s"/>    
 </network>
 ''' %(nw_name,dc_id)
+
 
 profile_name1 = 'p001'
 profile_name2 = 'p002'

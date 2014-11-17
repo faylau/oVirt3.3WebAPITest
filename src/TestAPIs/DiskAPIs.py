@@ -15,10 +15,13 @@ __version__ = "V0.1"
 # V0.3           2014/11/13    *修改smart_delete_disk方法                                                           Liu Fei
 #                              *修改了smart方法中的日志信息内容
 #-----------------------------------------------------------------------------------------
+# V0.4           2014/11/13    *修改smart_delete_disk方法                                                          wei keke
+#                              *修改了smart方法中的日志信息内容
+                               *增加isExist方法
+#-----------------------------------------------------------------------------------------
 '''
 
 import xmltodict
-import time
 
 from BaseAPIs import BaseAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
@@ -71,19 +74,18 @@ def smart_delete_disk(disk_id, status_code=200):
             r = disk_api.deleteDisk(disk_id)
             # 2014/11/13: Modified by LiuFei: add 'int' before status_code.
             if r['status_code'] == int(status_code):
-
                 if wait_until(is_disk_delete, 60, 10):
-                    LogPrint().info("TearDown: Delete disk SUCCESS.")
+                    LogPrint().info("INFO: Delete disk SUCCESS.")
                     return True
-
-                LogPrint().info("INFO: Delete disk SUCCESS.")
-                return True
+                else:
+                    LogPrint().error("INFO: Disk is still exist.")
+                    return False
 
             else:
-                LogPrint().error("ERROR: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
+                LogPrint().error("INFO: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
                 return False
     except:
-        LogPrint().warning("TearDown: Disk is not exist.")
+        LogPrint().warning("INFO: Disk is not exist.")
         return True
 
 class DiskAPIs(BaseAPIs):

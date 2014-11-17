@@ -149,14 +149,14 @@ class ITC060301_CreateProfile(BaseTestCase):
         ''' 
         self.flag = True
         self.proapi = ProfilesAPIs()
-        LogPrint().info("Test: Create a profile %s for network %s."%(self.dm.prfile_name, self.dm.nw_name))
+        LogPrint().info("Test: Create a profile %s for network %s."%(self.dm.profile_name, self.dm.nw_name))
         r = self.proapi.createProfiles(self.dm.profile_info, self.nw_id)
         if r['status_code'] == self.dm.expected_status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse((self.dm.profile_info %self.nw_id))
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
-                LogPrint().info("PASS: Create profile %s for network %s SUCCESS."%(self.dm.prfile_name, self.dm.nw_name))
+                LogPrint().info("PASS: Create profile %s for network %s SUCCESS."%(self.dm.profile_name, self.dm.nw_name))
 #                 return True
             else:
                 LogPrint().error("FAIL:Returned Profile info INCORRECT.")
@@ -228,7 +228,7 @@ class ITC060303_CreateProfile_DupName(BaseTestCase):
         LogPrint().info("Pre-Test-1: Create a network %s for TC."%self.dm.nw_name)
         self.nw_id = self.nwapi.createNetwork(self.dm.nw_info)['result']['network']['@id']
         #创建一个配置集
-        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.prfile_name)
+        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.profile_name)
         self.proapi = ProfilesAPIs()
         self.proapi.createProfiles(self.dm.profile_info, self.nw_id)
           
@@ -310,7 +310,7 @@ class ITC060401_UpdateProfile(BaseTestCase):
         LogPrint().info("Pre-Test-1: Create a network %s for TC."%self.dm.nw_name)
         self.nw_id = self.nwapi.createNetwork(self.dm.nw_info)['result']['network']['@id']
         self.proapi = ProfilesAPIs()
-        LogPrint().info("Pre-Test-1: Create a network %s for TC."%self.dm.nw_name)
+        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.profile_name)
         self.proapi.createProfiles(self.dm.profile_info, self.nw_id)
         
     def test_UpdateProfile(self): 
@@ -353,9 +353,9 @@ class ITC060402_UpdateProfile_DupName(BaseTestCase):
         self.nw_id = self.nwapi.createNetwork(self.dm.nw_info)['result']['network']['@id']
         #创建两个配置集
         self.proapi = ProfilesAPIs()
-        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.prfile_name1)
+        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.profile_name1)
         self.proapi.createProfiles(self.dm.profile_info1, self.nw_id)
-        LogPrint().info("Pre-Test-3: Create a profile %s for this network."%self.dm.prfile_name2)
+        LogPrint().info("Pre-Test-3: Create a profile %s for this network."%self.dm.profile_name2)
         self.proapi.createProfiles(self.dm.profile_info2, self.nw_id)
         
     def test_UpdateProfile(self):
@@ -365,7 +365,7 @@ class ITC060402_UpdateProfile_DupName(BaseTestCase):
         ''' 
         #编辑配置集1，使其名字和配置集2重名 
         self.flag = True
-        LogPrint().info("Test: Update profile %s.Set its name be %s."%(self.dm.prfile_name1, self.dm.profile_name2))
+        LogPrint().info("Test: Update profile %s.Set its name be %s."%(self.dm.profile_name1, self.dm.profile_name2))
         r = self.proapi.updateProfile(self.dm.profile_name1, self.nw_id, self.dm.update_info)
         if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
@@ -396,7 +396,7 @@ class ITC060403_UpdateProfile_DiffNw(BaseTestCase):
         LogPrint().info("Pre-Test-1: Create a network %s for TC."%self.dm.nw_name)
         self.nw_id = self.nwapi.createNetwork(self.dm.nw_info)['result']['network']['@id']
         #为网络创建一个配置集
-        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.prfile_name)
+        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.profile_name)
         self.proapi = ProfilesAPIs()
         self.proapi.createProfiles(self.dm.profile_info, self.nw_id)
         
@@ -406,7 +406,7 @@ class ITC060403_UpdateProfile_DiffNw(BaseTestCase):
         @note: 操作失败，验证返回状态码，验证报错信息
         ''' 
         self.flag = True
-        LogPrint().info("Test: Update profile %s.Change its network."%self.dm.prfile_name)
+        LogPrint().info("Test: Update profile %s.Change its network."%self.dm.profile_name)
         r = self.proapi.updateProfile(self.dm.profile_name, self.nw_id, self.dm.update_info)
         if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
@@ -436,7 +436,7 @@ class ITC0605_DeleteProfile(BaseTestCase):
         LogPrint().info("Pre-Test-1: Create a network %s for TC."%self.dm.nw_name)
         self.nw_id = self.nwapi.createNetwork(self.dm.nw_info)['result']['network']['@id']
         #为网络创建一个配置集
-        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.prfile_name)
+        LogPrint().info("Pre-Test-2: Create a profile %s for this network."%self.dm.profile_name)
         self.proapi = ProfilesAPIs()
         self.proapi.createProfiles(self.dm.profile_info, self.nw_id)
         
@@ -446,13 +446,13 @@ class ITC0605_DeleteProfile(BaseTestCase):
         @note: 操作成功，验证返回状态码，验证配置集是否存在
         '''  
         self.flag = True
-        LogPrint().info("Test: Delete profile %s."%self.dm.prfile_name)
+        LogPrint().info("Test: Delete profile %s."%self.dm.profile_name)
         r = self.proapi.delProfile(self.dm.profile_name, self.nw_id)
         if r['status_code'] == self.dm.expected_status_code:
             if not self.proapi.isExist(self.dm.profile_name, self.nw_id):
-                LogPrint().info("PASS: Delete profile % SUCCESS."%self.dm.prfile_name)
+                LogPrint().info("PASS: Delete profile % SUCCESS."%self.dm.profile_name)
             else:
-                LogPrint().error("FAIL: Profile % is still exist."%self.dm.prfile_name)
+                LogPrint().error("FAIL: Profile % is still exist."%self.dm.profile_name)
                 self.flag = False
         else:
             LogPrint().error("FAIL: The returned status code is '%s', INCORRECT. " % r['status_code'])
@@ -477,7 +477,7 @@ class ITC06_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Profile.ITC0602_GetProfileInfo"]
+    test_cases = ["Profile.ITC060302_CreateProfile_VerifyName"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

@@ -5,10 +5,10 @@ from TestData.Profile import ITC06_SetUp as ModuleData
 '''
 @note: PreData
 '''
-nw_name = 'network-ITC06'
+nw_name = 'network_ITC06'
 dc_name = ModuleData.dc_name
 dc_id = DataCenterAPIs().getDataCenterIdByName(dc_name)
-profile_name = 'profile-ITC06'
+profile_name = 'profile_ITC06'
 nw_info = '''
 <network>
     <name>%s</name>
@@ -18,13 +18,12 @@ nw_info = '''
 
 profile_info = '''
     <vnic_profile>
-        <name>%s</name>
+        <name>profile_ITC06</name>
         <description>shelled</description>
         <network id="%s"/>
         <port_mirroring>false</port_mirroring>
     </vnic_profile>
-'''%profile_name
-
+'''
 '''
 @note: ExpectedData
 '''

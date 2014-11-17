@@ -9,7 +9,8 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # V0.1           2014/09/10     初始版                            wei keke
 #---------------------------------------------------------------------------------
-from TestAPIs.NetworkAPIs import NetworkProfilesAPIs
+# V0.2           2014/11/17     *增加isExist                            wei keke                               
+#---------------------------------------------------------------------------------
 '''
 
 import xmltodict
@@ -31,8 +32,6 @@ class ProfilesAPIs(BaseAPIs):
         '''
         self.base_url = '%s/vnicprofiles' % WebBaseApiUrl
         
-    
-    
     def getProfileIdByName(self, profile_name,nw_id):
         '''
         @summary: 根据配置集名称获得其id（同一网络内配置集名称唯一）
@@ -85,7 +84,6 @@ class ProfilesAPIs(BaseAPIs):
         '''
         if not profile_id and profile_name and nw_id:
             profile_id = self.getProfileIdByName(profile_name, nw_id)
-            print profile_id
         api_url = '%s/%s' % (self.base_url, profile_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
