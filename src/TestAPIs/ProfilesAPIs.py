@@ -90,7 +90,19 @@ class ProfilesAPIs(BaseAPIs):
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-        
+    
+    def isExist(self, profile_name, nw_id):
+        '''
+        @summary: 查看网络中是否存在某配置集
+        @param profile_name: 配置集名称
+        @param nw_id:网络id 
+        @return: True或 False
+        '''
+        r =  ProfilesAPIs().getProfileInfo(profile_name=profile_name, nw_id=nw_id)
+        if r:
+            return True
+        else:
+            return False
             
     def createProfiles(self, profile_info,nw_id=None):
         '''
@@ -123,8 +135,6 @@ class ProfilesAPIs(BaseAPIs):
             r = HttpClient.sendRequest(method=method, api_url=api_url, data=(profile_info %nw_id))
         else:
             r = HttpClient.sendRequest(method=method, api_url=api_url, data=profile_info)
-        
-        
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}      
     
     def updateProfile(self, profile_name, nw_id,update_info):
@@ -167,8 +177,8 @@ if __name__=='__main__':
     #print profileapi.getProfileIdByName('aaa', 'e98b6c1f-4021-4875-b6a8-691c923d0d30')
     #print profileapi.getProfilesList()
     #print profileapi.getProfileIdByName('sd', nw_id='76c060f3-4b0c-43e5-bba5-012d5e16b26')
-    #print profileapi.getProfileInfo('peanuts00', nw_id='e98b6c1f-4021-4875-b6a8-691c923d0d30')
-    
+    print profileapi.getProfileInfo('pp', nw_id='0b1de2ef-aa48-47f7-834c-8335ffa7d9a6')
+    print profileapi.isExist('pp', nw_id='0b1de2ef-aa48-47f7-834c-8335ffa7d9a6')
     profile_info = '''
     <vnic_profile>
         <name>pp</name>

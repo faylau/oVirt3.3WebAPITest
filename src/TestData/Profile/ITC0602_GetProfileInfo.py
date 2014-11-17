@@ -1,13 +1,14 @@
 #encoding:utf-8
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-nw_name = 'network001'
-dc_name = 'Default'
-dc_id = DataCenterAPIs().getDataCenterIdByName(dc_name)
-profile_name = 'p001'
+from TestData.Profile import ITC06_SetUp as ModuleData
 
 '''
 @note: PreData
 '''
+nw_name = 'network_ITC06'
+dc_name = ModuleData.dc_name
+dc_id = DataCenterAPIs().getDataCenterIdByName(dc_name)
+profile_name = 'profile_ITC06'
 nw_info = '''
 <network>
     <name>%s</name>
@@ -17,7 +18,7 @@ nw_info = '''
 
 profile_info = '''
     <vnic_profile>
-        <name>p001</name>
+        <name>profile_ITC06</name>
         <description>shelled</description>
         <network id="%s"/>
         <port_mirroring>false</port_mirroring>
