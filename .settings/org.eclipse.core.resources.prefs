@@ -74,6 +74,9 @@ data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=c
 eclipse.preferences.version=1
 encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/ProfilesAPIs.py=utf-8
+encoding//src/TestAPIs/StorageConnectionAPIs.py=utf-8
+encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
+encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
 encoding//src/TestCases/BaseTestCase.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
@@ -94,6 +97,7 @@ encoding//src/TestData/Profile/ITC060402_UpdateProfile_DupName.py=utf-8
 encoding//src/TestData/Profile/ITC060403_UpdateProfile_DiffNw.py=utf-8
 encoding//src/TestData/Profile/ITC0605_DeleteProfile.py=utf-8
 encoding//src/TestData/Profile/ITC06_SetUp.py=utf-8
+encoding//src/TestData/VirtualMachine/ITC05_SetUp.py=utf-8
 encoding//src/TestRun/TestCenter.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"

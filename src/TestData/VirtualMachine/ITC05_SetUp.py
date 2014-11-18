@@ -1,5 +1,7 @@
 #encoding:utf-8
-from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+
+
+
 from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorages
 
 '''
@@ -57,11 +59,11 @@ xml_host_info = '''
 # 4个存储域信息（data1/data2，1个ISO和1个Export域）                                                                                                                               
 #######################################################################################
 data1_nfs_name = 'data1-nfs-ITC05'
-data1_nfs = DataStorages['nfs']['data2']
+data1_nfs = DataStorages['nfs']['data1']
 data1_nfs_ip = data1_nfs['ip']
 data1_nfs_path = data1_nfs['path']
 data2_nfs_name = 'data2-nfs-ITC05'
-data2_nfs = DataStorages['nfs']['data3']
+data2_nfs = DataStorages['nfs']['data2']
 data2_nfs_ip = data2_nfs['ip']
 data2_nfs_path = data2_nfs['path']
 export1_name = 'export1-ITC05'
@@ -133,11 +135,11 @@ xml_storage_info = '''
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-vm_name = 'KE-ITC05'
+vm_name = 'VM-ITC05'
 vm_info='''
 <vm>
-        <name>KE-ITC05</name>
-        <description>Virtual Machine 2</description>
+        <name>%s</name>
+        <description>Virtual Machine for Module Test.</description>
         <type>server</type>
         <memory>536870912</memory>
         <cluster>
@@ -154,7 +156,7 @@ vm_info='''
             <boot dev="hd"/>
         </os>
     </vm>
-'''%cluster_nfs_name
+''' % (vm_name, cluster_nfs_name)
 
 
 '''
