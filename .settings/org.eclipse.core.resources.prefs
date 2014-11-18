@@ -74,11 +74,13 @@ data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=c
 eclipse.preferences.version=1
 encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/ProfilesAPIs.py=utf-8
+encoding//src/TestCases/BaseTestCase.py=utf-8
 encoding//src/TestCases/DataCenter.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/Host.py=utf-8
 encoding//src/TestCases/Network.py=utf-8
 encoding//src/TestCases/Profile.py=utf-8
+encoding//src/TestCases/StorageDomain.py=utf-8
 encoding//src/TestCases/Template.py=utf-8
 encoding//src/TestCases/VirtualMachine.py=utf-8
 encoding//src/TestData/Network/ITC05_Setup.py=utf-8
