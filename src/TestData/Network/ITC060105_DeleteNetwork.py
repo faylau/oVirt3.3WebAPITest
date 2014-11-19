@@ -12,19 +12,30 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-'''
-@note: ModuleTestData
-'''
-dc_name = 'DC-ITC05-NFS'
+import TestData.Network.ITC06_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
-dc_info = '''
-<data_center>
+'''
+@note: PreData
+'''
+dc_name = ModuleData.dc_name
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
+nw_name = 'network001'
+nw_info = '''
+<network>
     <name>%s</name>
-    <storage_type>nfs</storage_type>
-    <version minor="3" major="3"/>
-</data_center>
-''' % dc_name
+    <data_center id= "%s"/>    
+</network>
+''' %(nw_name,dc_id)
 
 '''
-@note: ExpectedResult
+@note: ExpectedData
+'''
+expected_status_code = 200
+expected_info = '''
+<action>
+    <status>
+        <state>complete</state>
+    </status>
+</action>
 '''

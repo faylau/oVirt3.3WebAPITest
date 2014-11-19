@@ -30,6 +30,8 @@ def smart_create_storage_domain(sd_name, xml_sd_info, status_code=201):
     sd_api = StorageDomainAPIs()
     if not sd_api.searchStorageDomainByName(sd_name)['result']['storage_domains']:
         r = sd_api.createStorageDomain(xml_sd_info)
+#         print r['status_code']
+#         print xmltodict.unparse(r['result'], pretty=True)
         return (r['status_code'] == status_code)
     else:
         LogPrint().warning("WARN: Storage Domain '%s' already exists." % sd_name)

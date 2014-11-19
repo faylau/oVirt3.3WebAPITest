@@ -46,22 +46,22 @@ def smart_del_vm(vm_name, xml_del_vm_option=None, status_code=200):
         return vm_api.getVmStatus(vm_name)=='down'
     if vm_api.searchVmByName(vm_name):
         vm_state = vm_api.getVmStatus(vm_name)
-        # 当VM状态为UP时，掉电，然后再删除
-        if vm_state == 'up':
-            LogPrint().info("INFO-STEP: Stop vm '%s' from 'up' to 'down' state." % vm_name)
+        # 当VM状态为UP/Paused时，掉电，然后再删除
+        if vm_state in ['up', 'paused', 'suspended']:
+            LogPrint().info("INFO-STEP: Stop vm '%s' from '%s' to 'down' state." % (vm_name, vm_state))
             r = vm_api.stopVm(vm_name)
             if wait_until(is_vm_down, 50, 5):
                 LogPrint().info("INFO-STEP: Delete vm '%s'." % vm_name)
                 r = vm_api.delVm(vm_name)
                 return r['status_code']==200
-        # 当VM状态为Suspended时，掉电，然后再删除
-        elif vm_state == 'suspended':
-            LogPrint().info("INFO-STEP: Stop vm '%s' from 'suspended' to 'down' state." % vm_name)
-            r = vm_api.stopVm(vm_name)
-            if wait_until(is_vm_down, 100, 5):
-                LogPrint().info("INFO-STEP: Delete vm '%s'." % vm_name)
-                r = vm_api.delVm(vm_name)
-                return r['status_code']==200
+#         # 当VM状态为Suspended时，掉电，然后再删除
+#         elif vm_state == 'suspended':
+#             LogPrint().info("INFO-STEP: Stop vm '%s' from 'suspended' to 'down' state." % vm_name)
+#             r = vm_api.stopVm(vm_name)
+#             if wait_until(is_vm_down, 100, 5):
+#                 LogPrint().info("INFO-STEP: Delete vm '%s'." % vm_name)
+#                 r = vm_api.delVm(vm_name)
+#                 return r['status_code']==200
         # 当VM状态为Down时，直接删除
         elif vm_state == 'down':
             LogPrint().info("INFO-STEP: Delete vm '%s'." % vm_name)

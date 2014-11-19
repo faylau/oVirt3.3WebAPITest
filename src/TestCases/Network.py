@@ -21,11 +21,11 @@ from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-from TestData.Network import ITC05_Setup as ModuleData
+from TestData.Network import ITC06_Setup as ModuleData
 
 import xmltodict
 
-class ITC05_Setup(BaseTestCase):
+class ITC06_Setup(BaseTestCase):
     '''
     @summary: “集群管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）
     @note: （1）创建一个数据中心（NFS）；
@@ -45,7 +45,7 @@ class ITC05_Setup(BaseTestCase):
         LogPrint().info("Pre-Module-Test: Create DataCenter '%s'." % self.dm.dc_name)
         dcapi.createDataCenter(self.dm.dc_info)
 
-class ITC050101_GetNetworkList(BaseTestCase):
+class ITC060101_GetNetworkList(BaseTestCase):
     '''
     @summary: ITCxxxx:
     '''
@@ -66,7 +66,7 @@ class ITC050101_GetNetworkList(BaseTestCase):
             self.flag = False
         self.assertTrue(self.flag)
     
-class ITC050102_GetNetworkInfo(BaseTestCase):
+class ITC060102_GetNetworkInfo(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-02获取指定网络信息
     '''
@@ -137,7 +137,7 @@ class ITC050102_GetNetworkInfo(BaseTestCase):
         LogPrint().info("Post-Test: Delete network '%s'." % self.dm.nw_name)
         self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))    
 
-class ITC05010301_CreateNetwork(BaseTestCase):
+class ITC06010301_CreateNetwork(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-01成功创建
     '''
@@ -173,7 +173,7 @@ class ITC05010301_CreateNetwork(BaseTestCase):
         LogPrint().info("Post-Test: Delete network %s."%self.dm.nw_name)
         self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name)) 
         
-class ITC05010302_CreateNetwork_VerifyName(BaseTestCase):
+class ITC06010302_CreateNetwork_VerifyName(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-02验证名称合法性
     '''
@@ -206,7 +206,7 @@ class ITC05010302_CreateNetwork_VerifyName(BaseTestCase):
             self.expected_result_index += 1
         do_test()
    
-class ITC05010303_CreateNetwork_DupName(BaseTestCase):
+class ITC06010303_CreateNetwork_DupName(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-03同一数据中心内网络重名
     '''
@@ -245,7 +245,7 @@ class ITC05010303_CreateNetwork_DupName(BaseTestCase):
         LogPrint().info("Post-Test: Delete network %s."%self.dm.nw_name)
         self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
         
-class ITC05010304_CreateNetwork_NoRequired(BaseTestCase):
+class ITC06010304_CreateNetwork_NoRequired(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-04缺少必填项
     '''
@@ -280,7 +280,7 @@ class ITC05010304_CreateNetwork_NoRequired(BaseTestCase):
             self.expected_result_index += 1
         do_test()
 
-class ITC05010305_CreateNetwork_DupVlan(BaseTestCase):
+class ITC06010305_CreateNetwork_DupVlan(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-05同一数据中心内网络vlan id重复
     '''
@@ -315,7 +315,7 @@ class ITC05010305_CreateNetwork_DupVlan(BaseTestCase):
         LogPrint().info("Post-Test: Delete network %s."%self.dm.nw_name1)
         self.assertTrue(smart_delete_network(self.dm.nw_name1,self.dm.dc_name))
         
-class ITC05010401_UpdateNetwork(BaseTestCase):
+class ITC06010401_UpdateNetwork(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-04编辑网络-01成功编辑
     '''
@@ -353,7 +353,7 @@ class ITC05010401_UpdateNetwork(BaseTestCase):
         LogPrint().info("Post-Test: Delete network %s."%self.dm.new_nw_name)
         self.assertTrue(smart_delete_network(self.dm.new_nw_name,self.dm.dc_name))
         
-class ITC05010402_UpdateNetwork_DupName(BaseTestCase):
+class ITC06010402_UpdateNetwork_DupName(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-04编辑网络-02网络名称重复
     '''
@@ -394,7 +394,7 @@ class ITC05010402_UpdateNetwork_DupName(BaseTestCase):
         LogPrint().info("Post-Test-2: Delete network %s."%self.dm.nw_name2)
         self.assertTrue(smart_delete_network(self.dm.nw_name2,self.dm.dc_name))
 
-class ITC050105_DeleteNetwork(BaseTestCase):
+class ITC060105_DeleteNetwork(BaseTestCase):
     '''
     @summary: ITC-05网络管理-01基本操作-05删除网络
     '''
@@ -431,7 +431,7 @@ class ITC050105_DeleteNetwork(BaseTestCase):
         LogPrint().info("Post-Test-1: Delete network %s."%self.dm.nw_name)
         self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
 
-class ITC050201_GetNetworkProfileList(BaseTestCase):
+class ITC060201_GetNetworkProfileList(BaseTestCase):
     '''
     @summary: 测试环境准备，创建一个网络并为它创建若干配置集
     '''
@@ -476,7 +476,7 @@ class ITC050201_GetNetworkProfileList(BaseTestCase):
         LogPrint().info("Post-Test: Delete network '%s' and it's profiles." % self.dm.nw_name)
         self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))
 
-class ITC050202_GetNetworkProfileInfo(BaseTestCase):
+class ITC060202_GetNetworkProfileInfo(BaseTestCase):
     '''
     @summary: 测试环境准备，创建一个网络并为它创建若干配置集
     '''
@@ -525,7 +525,7 @@ class ITC050202_GetNetworkProfileInfo(BaseTestCase):
         LogPrint().info("Post-Test: Delete network '%s' and it's profiles." % self.dm.nw_name)
         self.assertTrue(smart_delete_network(self.dm.nw_name,self.dm.dc_name))        
 
-class ITC05_TearDown(BaseTestCase):
+class ITC06_TearDown(BaseTestCase):
     '''
     @summary: “集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
     @note: 删除数据中心；
@@ -538,7 +538,7 @@ class ITC05_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
 
-    test_cases = ["Network.ITC05010305_CreateNetwork_DupVlan"]
+    test_cases = ["Network.ITC06010305_CreateNetwork_DupVlan"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

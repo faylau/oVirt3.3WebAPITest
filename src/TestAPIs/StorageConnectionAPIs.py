@@ -82,7 +82,7 @@ if __name__ == "__main__":
         <name>node-ITC05-1</name>
     </host>
     '''
-    sc_api.delStorageConnection('2256dde9-e3d8-414c-a256-572ab73a4ad5', xml_del_option)
+    sc_api.delStorageConnection('050bfa21-fc3d-4025-9e45-d4e723edaa1a', xml_del_option)
     
     
     

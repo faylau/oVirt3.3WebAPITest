@@ -1,5 +1,18 @@
 #encoding:utf-8
-import TestData.Network.ITC05_Setup as ModuleData
+
+__authors__ = ['wei keke']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                         
+#---------------------------------------------------------------------------------
+'''
+
+import TestData.Network.ITC06_Setup as ModuleData
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
 
