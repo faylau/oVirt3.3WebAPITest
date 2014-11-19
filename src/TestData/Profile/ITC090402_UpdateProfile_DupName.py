@@ -1,12 +1,24 @@
 #encoding:utf-8
 
+__authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/09          初始版本                                                            Wei Keke 
+#---------------------------------------------------------------------------------
+'''
+
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-from TestData.Profile import ITC06_SetUp as ModuleData
+from TestData.Profile import ITC09_SetUp as ModuleData
 
 '''
 @note: PreData
 '''
-nw_name = 'network_ITC06'
+nw_name = 'network_ITC09'
 dc_name = ModuleData.dc_name
 dc_id = DataCenterAPIs().getDataCenterIdByName(dc_name)
 nw_info = '''
@@ -14,7 +26,7 @@ nw_info = '''
     <name>%s</name>
     <data_center id= "%s"/>    
 </network>
-''' %(nw_name,dc_id)
+''' %(nw_name, dc_id)
 
 
 profile_name1 = 'p001'
