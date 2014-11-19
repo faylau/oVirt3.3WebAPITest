@@ -21,18 +21,9 @@ from TestAPIs.ClusterAPIs import ClusterAPIs, smart_create_cluster, smart_delete
 from TestAPIs.NetworkAPIs import NetworkAPIs, smart_create_network, smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-<<<<<<< HEAD
-
-
-#from Utils.HTMLTestRunner import HTMLTestRunner
 from TestData.Cluster import ITC02_Setup as ModuleData
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host
 
-=======
-from TestData.Cluster import ITC02_Setup as ModuleData
-from TestAPIs.HostAPIs import smart_create_host,smart_del_host
-
->>>>>>> d1b7e73378fcdc5967ab2d57d3c273f83aaf4239
 import xmltodict
 
 

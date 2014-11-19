@@ -1,6 +1,14 @@
 #encoding:utf-8
+__authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
 '''
-@author: keke
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/09          初始版本                                                            Wei Keke 
+#---------------------------------------------------------------------------------
 '''
 import unittest
 from BaseTestCase import BaseTestCase
@@ -24,128 +32,129 @@ from TestAPIs.NetworkAPIs import NetworkAPIs
 
 
    
-# class ITC07_SetUp(BaseTestCase):
-#     '''
-#     @summary: 模板管理模块级测试用例，初始化模块测试环境；
-#     @note: （1）创建一个NFS类型数据中心；
-#     @note: （2）创建一个集群；
-#     @note: （3）创建一个主机，并等待其变为UP状态；
-#     @note: （4）创建3个存储域（data1/data2/Export）；
-#     @note: （5）将 data1 附加到数据中心；
-#     @note: （6）创建一个虚拟机
-#     @note: （7）创建一个磁盘
-#     @note: （8）将磁盘附加到虚拟机
-#     '''
-#     def setUp(self):
-#         self.dm = super(self.__class__, self).setUp()
-#          
-#     def test_CreateModuleTestEnv(self):
-#         dcapi = DataCenterAPIs()
-#         capi = ClusterAPIs()
-#          
-#         # 创建1个数据中心（nfs类型）
-#         LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
-#         self.assertTrue(dcapi.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
-#      
-#         # 创建1个集群
-#         LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
-#         self.assertTrue(capi.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
-#      
-#         # 在NFS数据中心中创建一个主机，并等待主机UP。
-#         LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host1_name, self.dm.cluster_nfs_name))
-#         self.assertTrue(smart_create_host(self.dm.host1_name, self.dm.xml_host_info))
-#      
-#         # 为NFS数据中心创建Data（data1/data2/export）。
-#         @BaseTestCase.drive_data(self, self.dm.xml_storage_info)
-#         def create_storage_domains(xml_storage_domain_info):
-#             sd_name = xmltodict.parse(xml_storage_domain_info)['storage_domain']['name']
-#             LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % sd_name)
-#             self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
-#         create_storage_domains()
-#          
-#         # 将创建的的data1和export域附加到NFS/ISCSI数据中心里。
-#         LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
-#         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
-#         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-#         #创建一个虚拟机
-#         self.vmapi = VirtualMachineAPIs()
-#         r = self.vmapi.createVm(self.dm.vm_info)
-#         if r['status_code'] == 201:
-#             self.vm_name = r['result']['vm']['name']
-#         else:
-#             LogPrint().error("Create vm failed.Status-code is WRONG.")
-#             self.assertTrue(False)
-#         #创建一个磁盘    
-#         self.diskapi = DiskAPIs()
-#         r = self.diskapi.createDisk(self.dm.disk_info)
-#         def is_disk_ok():
-#             return self.diskapi.getDiskStatus(self.disk_id)=='ok'
-#         if r['status_code'] == 202:
-#             self.disk_id = r['result']['disk']['@id']
-#             if wait_until(is_disk_ok, 200, 5):
-#                 LogPrint().info("Create disk ok.")
-#         else:
-#             LogPrint().error("Create disk failed.Status-code is WRONG.")
-#             self.assertTrue(False)
-#         #将磁盘附加到虚拟机    
-#         self.vmdiskapi = VmDiskAPIs()
-#         r=self.vmdiskapi.attachDiskToVm(self.vm_name, self.disk_id)
-#         if r['status_code'] == 200:
-#             LogPrint().info("Attach Disk to vm SUCCESS.")
-#         else:
-#             LogPrint().error("Attach Disk to vm fail.Status-code is WRONG.")
-#             self.assertTrue(False)
-#  
-# class ITC070101_GetTemplateList(BaseTestCase):
-#     '''
-#     @summary: 07模板管理-01基本操作-01获取模板列表
-#     '''
-#     def setUp(self):
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#     def test_GetTemplateList(self):
-#         '''
-#         @summary: 获取模板列表
-#         @note: 操作成功，验证返回状态码
-#         '''
-#         temp_api = TemplatesAPIs()
-#         LogPrint().info("Test: Get template list.")
-#         r = temp_api.getTemplatesList()
-#         if r['status_code'] == 200:
-#             LogPrint().info("PASS: Get TemplateList SUCCESS.")
-#             self.assertTrue(True)
-#         else:
-#             LogPrint().error("FAIL: Returned status code is WRONG.")
-#             self.assertTrue(False)
-#         
-# class ITC070102_GetTemplateInfo(BaseTestCase):
-#     '''
-#     @summary: 07模板管理-01基本操作-02获取模板详情
-#     '''
-#     def setUp(self):
-#         self.dm = super(self.__class__, self).setUp()
-#         self.temp_api = TemplatesAPIs()
-#         LogPrint().info("Pre-Test: Create a template %s for TC."%self.dm.temp_name)
-#         self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
-# 
-#     def test_GetTemplateInfo(self):
-#         '''
-#         @summary: 获取模板详情
-#         @note: 操作成功，验证返回状态码和返回信息
-#         '''
-#         self.flag=True
-#         LogPrint().info("Test: Get info of template %s."%self.dm.temp_name)
-#         r = self.temp_api.getTemplateInfo(self.dm.temp_name)
-#         if r['status_code'] == self.dm.expected_status_code:
-#             LogPrint().info("PASS: Get TemplateInfo SUCCESS.")
-#         else:
-#             LogPrint().error("FAIL: Get TemplateInfo fail.The Template info is WRONOG.")
-#             self.flag=False
-#         self.assertTrue(self.flag)
-#     def tearDown(self):
-#         LogPrint().info("Post-Test: Delete template %s."%self.dm.temp_name)
-#         self.assertTrue(smart_delete_template(self.dm.temp_name))
-       
+class ITC07_SetUp(BaseTestCase):
+    '''
+    @summary: 模板管理模块级测试用例，初始化模块测试环境；
+    @note: （1）创建一个NFS类型数据中心；
+    @note: （2）创建一个集群；
+    @note: （3）创建一个主机，并等待其变为UP状态；
+    @note: （4）创建3个存储域（data1/data2/Export）；
+    @note: （5）将 data1 附加到数据中心；
+    @note: （6）创建一个虚拟机
+    @note: （7）创建一个磁盘
+    @note: （8）将磁盘附加到虚拟机
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+          
+    def test_CreateModuleTestEnv(self):
+        dcapi = DataCenterAPIs()
+        capi = ClusterAPIs()
+          
+        # 创建1个数据中心（nfs类型）
+        LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
+        self.assertTrue(dcapi.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
+      
+        # 创建1个集群
+        LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
+        self.assertTrue(capi.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
+      
+        # 在NFS数据中心中创建一个主机，并等待主机UP。
+        LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host1_name, self.dm.cluster_nfs_name))
+        self.assertTrue(smart_create_host(self.dm.host1_name, self.dm.xml_host_info))
+      
+        # 为NFS数据中心创建Data（data1/data2/export）。
+        @BaseTestCase.drive_data(self, self.dm.xml_storage_info)
+        def create_storage_domains(xml_storage_domain_info):
+            sd_name = xmltodict.parse(xml_storage_domain_info)['storage_domain']['name']
+            LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % sd_name)
+            self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
+        create_storage_domains()
+          
+        # 将创建的的data1、data2和export域附加到NFS/ISCSI数据中心里。
+        LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data2_nfs_name))
+        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        #创建一个虚拟机
+        self.vmapi = VirtualMachineAPIs()
+        r = self.vmapi.createVm(self.dm.vm_info)
+        if r['status_code'] == 201:
+            self.vm_name = r['result']['vm']['name']
+        else:
+            LogPrint().error("Create vm failed.Status-code is WRONG.")
+            self.assertTrue(False)
+        #创建一个磁盘    
+        self.diskapi = DiskAPIs()
+        r = self.diskapi.createDisk(self.dm.disk_info)
+        def is_disk_ok():
+            return self.diskapi.getDiskStatus(self.disk_id)=='ok'
+        if r['status_code'] == 202:
+            self.disk_id = r['result']['disk']['@id']
+            if wait_until(is_disk_ok, 200, 5):
+                LogPrint().info("Create disk ok.")
+        else:
+            LogPrint().error("Create disk failed.Status-code is WRONG.")
+            self.assertTrue(False)
+        #将磁盘附加到虚拟机    
+        self.vmdiskapi = VmDiskAPIs()
+        r=self.vmdiskapi.attachDiskToVm(self.vm_name, self.disk_id)
+        if r['status_code'] == 200:
+            LogPrint().info("Attach Disk to vm SUCCESS.")
+        else:
+            LogPrint().error("Attach Disk to vm fail.Status-code is WRONG.")
+            self.assertTrue(False)
+  
+class ITC070101_GetTemplateList(BaseTestCase):
+    '''
+    @summary: 07模板管理-01基本操作-01获取模板列表
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+         
+    def test_GetTemplateList(self):
+        '''
+        @summary: 获取模板列表
+        @note: 操作成功，验证返回状态码
+        '''
+        temp_api = TemplatesAPIs()
+        LogPrint().info("Test: Get template list.")
+        r = temp_api.getTemplatesList()
+        if r['status_code'] == 200:
+            LogPrint().info("PASS: Get TemplateList SUCCESS.")
+            self.assertTrue(True)
+        else:
+            LogPrint().error("FAIL: Returned status code is WRONG.")
+            self.assertTrue(False)
+         
+class ITC070102_GetTemplateInfo(BaseTestCase):
+    '''
+    @summary: 07模板管理-01基本操作-02获取模板详情
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.temp_api = TemplatesAPIs()
+        LogPrint().info("Pre-Test: Create a template %s for TC."%self.dm.temp_name)
+        self.assertTrue(smart_create_template(self.dm.temp_name, self.dm.temp_info))
+ 
+    def test_GetTemplateInfo(self):
+        '''
+        @summary: 获取模板详情
+        @note: 操作成功，验证返回状态码和返回信息
+        '''
+        self.flag=True
+        LogPrint().info("Test: Get info of template %s."%self.dm.temp_name)
+        r = self.temp_api.getTemplateInfo(self.dm.temp_name)
+        if r['status_code'] == self.dm.expected_status_code:
+            LogPrint().info("PASS: Get TemplateInfo SUCCESS.")
+        else:
+            LogPrint().error("FAIL: Get TemplateInfo fail.The Template info is WRONOG.")
+            self.flag=False
+        self.assertTrue(self.flag)
+    def tearDown(self):
+        LogPrint().info("Post-Test: Delete template %s."%self.dm.temp_name)
+        self.assertTrue(smart_delete_template(self.dm.temp_name))
+        
 class ITC0701030101_CreateTemplate(BaseTestCase):
     '''
     @summary: 07模板管理-01基本操作-03创建模板-01成功创建-01最小测试集
@@ -704,6 +713,7 @@ class ITC0703030102_CreateTemplateNic_proid(BaseTestCase):
         #为所在数据中心的ovirtmgmt网络创建一个配置集
         LogPrint().info("Pre-Test-2: Create a profile %s for ovirtmgmt."%self.dm.profile_name)
         self.nw_id = NetworkAPIs().getNetworkIdByName('ovirtmgmt', self.dm.dc_name)
+        print self.nw_id
         r =ProfilesAPIs().createProfiles(self.dm.profile_info, self.nw_id)
         if r['status_code'] == 201:
             self.proid = r['result']['vnic_profile']['@id']
@@ -736,9 +746,7 @@ class ITC0703030102_CreateTemplateNic_proid(BaseTestCase):
     def tearDown(self):
         LogPrint().info("Post-Test-1: Delete template %s."%self.dm.temp_name)
         self.assertTrue(smart_delete_template(self.dm.temp_name))
-        LogPrint().info("Post-Test-2: Delete template %s nic %s."%(self.dm.temp_name, self.dm.nic_name))
-        TemplateNicsAPIs().deleteTemplateNic(self.dm.temp_name, self.dm.nic_name)
-        LogPrint().info("Post-Test-3: Delete profile %s."%self.dm.profile_name)
+        LogPrint().info("Post-Test-2: Delete profile %s."%self.dm.profile_name)
         ProfilesAPIs().delProfile(self.dm.profile_name, self.nw_id)
         
 class ITC0703030201_CreateTemplateNic_DupName(BaseTestCase):
@@ -828,7 +836,7 @@ class ITC0703030203_CreateTemplateNic_NoRequired(BaseTestCase):
         @note: 操作失败，验证返回状态码和返回信息
         '''    
         tempnic_api = TemplateNicsAPIs()
-        LogPrint().info("Test: Create nic %s for this template."%self.dm.nic_name)
+        LogPrint().info("Test: Create nic for this template.")
         r =  tempnic_api.createTemplateNic(self.dm.temp_name, self.dm.nic_data)
         if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
@@ -985,7 +993,7 @@ class ITC070305_DeleteTemplateNic(BaseTestCase):
 #                                              
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Template.ITC07020301_CopyTemplateDisk_sync"]
+    test_cases = ["Template.ITC07030401_UpdateTemplateNic"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

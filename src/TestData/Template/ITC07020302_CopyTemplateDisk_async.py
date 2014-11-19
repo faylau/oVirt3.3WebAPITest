@@ -23,7 +23,7 @@ temp_info='''
 @note: TestData
 @note: 目标存储域也由Setup用例测试数据提供，这里暂时用字符串代替
 '''
-des_sd_name = 'Data3_ISCSI'
+des_sd_name = ModuleData.data2_nfs_name
 des_sd_id = StorageDomainAPIs().getStorageDomainIdByName(des_sd_name)
 copy_data = '''
 <action>

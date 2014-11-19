@@ -449,7 +449,7 @@ class TemplateNicsAPIs(TemplatesAPIs):
         r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
-    def getNicIdByName(self,temp_name,nic_name):
+    def  getNicIdByName(self,temp_name,nic_name):
         '''
         @summary: 根据名称获得模板的nic id
         @param temp_name:模板名称
@@ -565,12 +565,11 @@ class TemplateNicsAPIs(TemplatesAPIs):
         api_url='%s/%s/nics/%s' % (self.base_url,temp_id,nic_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
             
 if __name__=='__main__':
     tempapi = TemplatesAPIs()
-    print tempapi.searchTemplateByName("kek")
+    #print tempapi.searchTemplateByName("kek")
     #print tempapi.getTemplateIdByName('temp')
     #print tempapi.getTemplateNameById(tempapi.getTemplateIdByName('temp'))
     #print tempapi.getTemplatesList()
@@ -665,7 +664,7 @@ if __name__=='__main__':
     '''
     #print xmltodict.unparse(tempdiskapi.copyTemplateDisk('template00', 'osvtest2_Disk2',copy_data )['result'],pretty=True) 
     #print tempdiskapi.exportTemplateDisk('ov', 'osvtest_Disk1', export_data) (fail)
-    print tempdiskapi.deleteTemplateDisk('template1','VM2_Disk1',delete_data) 
+    #print tempdiskapi.deleteTemplateDisk('template1','VM2_Disk1',delete_data) 
     tempnicapi = TemplateNicsAPIs()
     
     nic_data='''
@@ -673,10 +672,10 @@ if __name__=='__main__':
     </nic>
     '''
     #print tempnicapi.getTemplateNicList('temp')
-    #print tempnicapi.getNicIdByName('aaa', 'nic5')
+    print tempnicapi.getNicIdByName('Blank', 'nic1')
     #print xmltodict.unparse(tempnicapi.createTemplateNic('aaa', nic_data)['result'],pretty=True)
     #print tempnicapi.updateTemplateNic('temp','nic2', nic_data)
-    #print tempnicapi.deleteTemplateNic('temp', 'nic')   
+    print tempnicapi.deleteTemplateNic('Blank', 'nic1')   
 
 
     

@@ -26,7 +26,7 @@ nic_data='''
         <name>%s</name>
     </nic>
 '''%nic_name
-dc_name = 'DC-ISCSI'
+dc_name = ModuleData.dc_nfs_name
 profile_name ='pp'
 profile_info = '''
 <vnic_profile>

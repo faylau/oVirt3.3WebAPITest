@@ -28,7 +28,7 @@
     <module name="VirtualMachine" id="05">
         <description>虚拟机管理</description>
         <filename>VirtualMachine.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="Network" id="06">

@@ -8,7 +8,7 @@ from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs
 '''
 @note: 数据中心名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-dc_name ='DC-ISCSI'
+dc_name = ModuleData.dc_nfs_name
 vm_id = VirtualMachineAPIs().getVmIdByName(ModuleData.vm_name)
 temp_name = 'template-ke'
 temp_info='''
