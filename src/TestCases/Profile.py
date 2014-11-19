@@ -1,7 +1,14 @@
 #encoding:utf-8
+<<<<<<< HEAD
 __authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
+=======
+
+__authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
+>>>>>>> 640e45190e0c83f29b30a1cc21b2da390cc17eda
 '''
 # ChangeLog:
 #---------------------------------------------------------------------------------
@@ -19,11 +26,11 @@ from Utils.Util import DictCompare
 from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
-from TestData.Profile import ITC06_SetUp as ModuleData
+from TestData.Profile import ITC09_SetUp as ModuleData
 
 import xmltodict
 
-class ITC06_SetUp(BaseTestCase):
+class ITC09_SetUp(BaseTestCase):
     '''
     @summary: “配置集管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）
     @note: （1）创建一个数据中心（NFS）；
@@ -44,7 +51,7 @@ class ITC06_SetUp(BaseTestCase):
         dcapi.createDataCenter(self.dm.dc_info)
 
 
-class ITC0601_GetProfileList(BaseTestCase):
+class ITC0901_GetProfileList(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-01获取所有配置集列表
     '''
@@ -64,7 +71,7 @@ class ITC0601_GetProfileList(BaseTestCase):
             self.flag = False
         self.assertTrue(self.flag)
     
-class ITC0602_GetProfileInfo(BaseTestCase):
+class ITC0902_GetProfileInfo(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-02获取指定配置集信息
     '''
@@ -134,7 +141,7 @@ class ITC0602_GetProfileInfo(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)      
 
-class ITC060301_CreateProfile(BaseTestCase):
+class ITC090301_CreateProfile(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-03创建配置集-01成功创建
     '''
@@ -176,7 +183,7 @@ class ITC060301_CreateProfile(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
         
-class ITC060302_CreateProfile_VerifyName(BaseTestCase):
+class ITC090302_CreateProfile_VerifyName(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-03创建配置集-02验证名称合法性
     '''
@@ -215,7 +222,7 @@ class ITC060302_CreateProfile_VerifyName(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
    
-class ITC060303_CreateProfile_DupName(BaseTestCase):
+class ITC090303_CreateProfile_DupName(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-03新建一个配置集-03名称重复
     '''
@@ -256,7 +263,7 @@ class ITC060303_CreateProfile_DupName(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
         
-class ITC060304_CreateProfile_NoRequired(BaseTestCase):
+class ITC090304_CreateProfile_NoRequired(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-03创建一个配置集-04验证参数完整性
     '''
@@ -300,7 +307,7 @@ class ITC060304_CreateProfile_NoRequired(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
          
-class ITC060401_UpdateProfile(BaseTestCase):
+class ITC090401_UpdateProfile(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-04编辑配置集-01成功编辑
     '''
@@ -342,7 +349,7 @@ class ITC060401_UpdateProfile(BaseTestCase):
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
         
         
-class ITC060402_UpdateProfile_DupName(BaseTestCase):
+class ITC090402_UpdateProfile_DupName(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-04编辑配置集-01重名
     '''
@@ -385,7 +392,7 @@ class ITC060402_UpdateProfile_DupName(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)    
             
-class ITC060403_UpdateProfile_DiffNw(BaseTestCase):
+class ITC090403_UpdateProfile_DiffNw(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-04编辑配置集-03更改所在网络
     '''
@@ -425,7 +432,7 @@ class ITC060403_UpdateProfile_DiffNw(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
         
-class ITC0605_DeleteProfile(BaseTestCase):
+class ITC0905_DeleteProfile(BaseTestCase):
     '''
     @summary: ITC-06配置集管理-05删除配置集
     '''
@@ -464,7 +471,7 @@ class ITC0605_DeleteProfile(BaseTestCase):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
 
-class ITC06_TearDown(BaseTestCase):
+class ITC09_TearDown(BaseTestCase):
     '''
     @summary: “配置集管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
     @note: 删除数据中心；
@@ -477,7 +484,7 @@ class ITC06_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Profile.ITC06_TearDown"]
+    test_cases = ["Profile.ITC09_TearDown"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
