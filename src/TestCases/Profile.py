@@ -1,14 +1,8 @@
 #encoding:utf-8
-<<<<<<< HEAD
 __authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
-=======
 
-__authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
-__version__ = "V0.1"
-
->>>>>>> 640e45190e0c83f29b30a1cc21b2da390cc17eda
 '''
 # ChangeLog:
 #---------------------------------------------------------------------------------
