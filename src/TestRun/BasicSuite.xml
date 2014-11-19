@@ -12,9 +12,1408 @@
         <operation modulename="DataCenter" classname="ITC010101_GetDCList"/>
         <run>True</run>
     </TestCase>
-    <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC010102_GetDCInfo" id="ITC010102">
+        <description>ITC-01数据中心管理-01数据中心操作-02获取指定数据中心信息</description>
+        <operation modulename="DataCenter" classname="ITC010102_GetDCInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01010301_CreateDC" id="ITC01010301">
+        <description>ITC-01数据中心管理-01数据中心操作-03创建-01正常创建</description>
+        <operation modulename="DataCenter" classname="ITC01010301_CreateDC"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01010302_CreateExistDC" id="ITC01010302">
+        <description>ITC-01数据中心管理-01数据中心操作-03创建-02重复创建</description>
+        <operation modulename="DataCenter" classname="ITC01010302_CreateExistDC"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0101030301_CreateDC_NoRequiredParams" id="ITC0101030301">
+        <description>ITC-01数据中心管理-01数据中心操作-03创建-03参数验证-01缺少必填参数</description>
+        <operation modulename="DataCenter" classname="ITC0101030301_CreateDC_NoRequiredParams"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0101030302_CreateDC_VerifyName" id="ITC0101030302">
+        <description>ITC-01数据中心管理-01数据中心操作-03创建-03参数验证-01缺少必填参数</description>
+        <operation modulename="DataCenter" classname="ITC0101030302_CreateDC_VerifyName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01010401_UpdateUninitializedDC" id="ITC01010401">
+        <description>ITC-01数据中心管理-01数据中心操作-04编辑-01编辑Uninitialized状态数据中心</description>
+        <operation modulename="DataCenter" classname="ITC01010401_UpdateUninitializedDC"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01010403_UpdateDC_DupName" id="ITC01010403">
+        <description>ITC-01数据中心管理-01数据中心操作-04编辑-03数据中心重名</description>
+        <operation modulename="DataCenter" classname="ITC01010403_UpdateDC_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01010404_UpdateDCVersion_HighToLow" id="ITC01010404">
+        <description>ITC-01数据中心管理-01数据中心操作-04编辑-04兼容版本由高到低</description>
+        <operation modulename="DataCenter" classname="ITC01010404_UpdateDCVersion_HighToLow"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01010501_DelDC_Uninitialized" id="ITC01010501">
+        <description>ITC-01数据中心管理-01数据中心操作-05删除-01常规删除</description>
+        <operation modulename="DataCenter" classname="ITC01010501_DelDC_Uninitialized"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01010502_DelDC_Force" id="ITC01010502">
+        <description>ITC-01数据中心管理-01数据中心操作-05删除-02强制删除</description>
+        <operation modulename="DataCenter" classname="ITC01010502_DelDC_Force"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC010201_GetStorageDomainsOfDC" id="ITC010201">
+        <description>ITC-01数据中心管理-02存储域操作-01查看存储域列表</description>
+        <operation modulename="DataCenter" classname="ITC010201_GetStorageDomainsOfDC"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC010202_GetStorageDomainInfoInDC" id="ITC010202">
+        <description>ITC-01数据中心管理-02存储域操作-02查看存储域信息</description>
+        <operation modulename="DataCenter" classname="ITC010202_GetStorageDomainInfoInDC"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102030101_AttachDataStorage_Master" id="ITC0102030101">
+        <description>ITC-01数据中心管理-02存储域操作-03附加-01附加Data域-01Master</description>
+        <operation modulename="DataCenter" classname="ITC0102030101_AttachDataStorage_Master"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102030102_AttachDataStorage_NotMaster" id="ITC0102030102">
+        <description>ITC-01数据中心管理-02存储域操作-03附加-01附加Data域-02非Master</description>
+        <operation modulename="DataCenter" classname="ITC0102030102_AttachDataStorage_NotMaster"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102030201_AttachIsoStorage" id="ITC0102030201">
+        <description>ITC-01数据中心管理-02存储域操作-03附加-02附加ISO域-01一个ISO域</description>
+        <operation modulename="DataCenter" classname="ITC0102030201_AttachIsoStorage"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102030202_AttachIsoStorage_Second" id="ITC0102030202">
+        <description>ITC-01数据中心管理-02存储域操作-03附加-02附加ISO域-02多个ISO域失败</description>
+        <operation modulename="DataCenter" classname="ITC0102030202_AttachIsoStorage_Second"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102030301_AttachExportStorage" id="ITC0102030301">
+        <description>ITC-01数据中心管理-02存储域操作-03附加-03附加Export域-01一个Export域</description>
+        <operation modulename="DataCenter" classname="ITC0102030301_AttachExportStorage"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102030302_AttachExportStorage_Second" id="ITC0102030302">
+        <description>ITC-01数据中心管理-02存储域操作-03附加-03附加Export域-02多个Export域失败</description>
+        <operation modulename="DataCenter" classname="ITC0102030302_AttachExportStorage_Second"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102030401_AttachStorage_NoActiveDataStorage" id="ITC0102030401">
+        <description>ITC-01数据中心管理-02存储域操作-03附加-04错误验证-01缺少正常状态Data域时附加其他存储</description>
+        <operation modulename="DataCenter" classname="ITC0102030401_AttachStorage_NoActiveDataStorage"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01020401_DetachStorage_Iso" id="ITC01020401">
+        <description>ITC-01数据中心管理-02存储域操作-04分离-01分离ISO存储域</description>
+        <operation modulename="DataCenter" classname="ITC01020401_DetachStorage_Iso"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01020402_DetachStorage_Export" id="ITC01020402">
+        <description>ITC-01数据中心管理-02存储域操作-04分离-02分离Export存储域</description>
+        <operation modulename="DataCenter" classname="ITC01020402_DetachStorage_Export"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102040301_DetachStorage_Data_Normal" id="ITC0102040301">
+        <description>ITC-01数据中心管理-02存储域操作-04分离-03分离Data域-01附加有多个Data域</description>
+        <operation modulename="DataCenter" classname="ITC0102040301_DetachStorage_Data_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0102040302_DetachStorage_Data_One" id="ITC0102040302">
+        <description>ITC-01数据中心管理-02存储域操作-04分离-03分离Data域-02只有一个Data域时失败</description>
+        <operation modulename="DataCenter" classname="ITC0102040302_DetachStorage_Data_One"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01020501_ActivateStorage_Normal" id="ITC01020501">
+        <description>ITC-01数据中心管理-02存储域操作-05激活-01正常激活</description>
+        <operation modulename="DataCenter" classname="ITC01020501_ActivateStorage_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01020601_DeactivateStorage_Normal" id="ITC01020601">
+        <description>ITC-01数据中心管理-02存储域操作-06取消激活-01Active状态</description>
+        <operation modulename="DataCenter" classname="ITC01020601_DeactivateStorage_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC010301_GetClustersInDataCenter" id="ITC010301">
+        <description>ITC-01数据中心管理-03集群操作-01查看集群列表</description>
+        <operation modulename="DataCenter" classname="ITC010301_GetClustersInDataCenter"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC01_TearDown" id="ITC01">
+        <description>“数据中心管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="DataCenter" classname="ITC01_TearDown"/>
+        <run>True</run>
+    </TestCase>
     
     <!-- ********************************************************************************************* -->
     
+    <TestCase name="ITC02_Setup" id="ITC02">
+        <description>“集群管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）</description>
+        <operation modulename="Cluster" classname="ITC02_Setup"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC020101_GetClustersList" id="ITC020101">
+        <description>ITC-02集群管理-01基本操作-01获取集群列表</description>
+        <operation modulename="Cluster" classname="ITC020101_GetClustersList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC020102_GetClusterInfo" id="ITC020102">
+        <description>ITC-02集群管理-01集群操作-02获取指定集群信息</description>
+        <operation modulename="Cluster" classname="ITC020102_GetClusterInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC02010301_CreateCluster" id="ITC02010301">
+        <description>ITC-02集群管理-01集群操作-03创建一个集群-01创建成功</description>
+        <operation modulename="Cluster" classname="ITC02010301_CreateCluster"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC02010302_CreateCluster_Dup" id="ITC02010302">
+        <description>ITC-02集群管理-01集群操作-03创建一个集群-02重名</description>
+        <operation modulename="Cluster" classname="ITC02010302_CreateCluster_Dup"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC02010303_CreateClusterNoRequired" id="ITC02010303">
+        <description>ITC-02集群管理-01集群操作-03创建一个集群-03缺少必填参数</description>
+        <operation modulename="Cluster" classname="ITC02010303_CreateClusterNoRequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC02010401_UpdateCluster_nohost" id="ITC02010401">
+        <description>ITC-02集群管理-01集群操作-04编辑集群-01集群内无主机</description>
+        <operation modulename="Cluster" classname="ITC02010401_UpdateCluster_nohost"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0201040201_UpdateCluster_host_cputype" id="ITC0201040201">
+        <description>ITC-02集群管理-01集群操作-04编辑集群-02集群内有主机-01更改集群的cpu类型</description>
+        <operation modulename="Cluster" classname="ITC0201040201_UpdateCluster_host_cputype"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0201040202_UpdateCluster_host_upcpu" id="ITC0201040202">
+        <description>ITC-02集群管理-01集群操作-04编辑集群-02集群内有主机-02升高cpu级别</description>
+        <operation modulename="Cluster" classname="ITC0201040202_UpdateCluster_host_upcpu"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0201040203_UpdateCluster_host_name" id="ITC0201040203">
+        <description>ITC-02集群管理-01集群操作-04编辑集群-02集群内有主机-03更改名称</description>
+        <operation modulename="Cluster" classname="ITC0201040203_UpdateCluster_host_name"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC02010501_DeleteCluster_clear" id="ITC02010501">
+        <description>ITC-02集群管理-01集群操作-05删除集群-01干净集群</description>
+        <operation modulename="Cluster" classname="ITC02010501_DeleteCluster_clear"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC02010502_DeleteCluster_host" id="ITC02010502">
+        <description>ITC-02集群管理-01集群操作-05删除集群-02集群内有主机</description>
+        <operation modulename="Cluster" classname="ITC02010502_DeleteCluster_host"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC020201_GetClusterNetworkList" id="ITC020201">
+        <description>ITC-02集群管理-02集群网络基本操作-01获取集群网络列表</description>
+        <operation modulename="Cluster" classname="ITC020201_GetClusterNetworkList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC020202_GetClusterNetworkInfo" id="ITC020202">
+        <description>ITC-02集群管理-01集群操作-02获取指定集群的网络信息</description>
+        <operation modulename="Cluster" classname="ITC020202_GetClusterNetworkInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC020203_attachNetworktoCluster" id="ITC020203">
+        <description>ITC-02集群管理-02集群网络操作-03将网络附加到集群</description>
+        <operation modulename="Cluster" classname="ITC020203_attachNetworktoCluster"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC020204_detachNetworkFromCluster" id="ITC020204">
+        <description>ITC-02集群管理-02集群网络操作-04将网络从集群分离</description>
+        <operation modulename="Cluster" classname="ITC020204_detachNetworkFromCluster"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC020205_UpdateNetworkofCluster" id="ITC020205">
+        <description>ITC-02集群管理-02集群网络操作-05更新集群网络信息</description>
+        <operation modulename="Cluster" classname="ITC020205_UpdateNetworkofCluster"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC02_TearDown" id="ITC02">
+        <description>“集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="Cluster" classname="ITC02_TearDown"/>
+        <run>True</run>
+    </TestCase>
+    
     <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC03_SetUp" id="ITC03">
+        <description>“主机管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）</description>
+        <operation modulename="Host" classname="ITC03_SetUp"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC030101_GetHostsList" id="ITC030101">
+        <description>ITC-03主机管理-01主机操作-01获取主机列表</description>
+        <operation modulename="Host" classname="ITC030101_GetHostsList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC030102_GetHostInfo" id="ITC030102">
+        <description>ITC-03主机管理-01主机操作-02查看主机信息</description>
+        <operation modulename="Host" classname="ITC030102_GetHostInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010301_CreateHost_Normal" id="ITC03010301">
+        <description>ITC-03主机管理-01主机操作-03创建-01常规创建</description>
+        <operation modulename="Host" classname="ITC03010301_CreateHost_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010302_CreateHost_PowerManagement" id="ITC03010302">
+        <description>ITC-03主机管理-01主机操作-03创建-02电源管理</description>
+        <operation modulename="Host" classname="ITC03010302_CreateHost_PowerManagement"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010303_CreateHost_DupName" id="ITC03010303">
+        <description>ITC-03主机管理-01主机操作-03创建-03重名</description>
+        <operation modulename="Host" classname="ITC03010303_CreateHost_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010304_CreateHost_NameVerify" id="ITC03010304">
+        <description>ITC-03主机管理-01主机操作-03创建-04名称有效性验证</description>
+        <operation modulename="Host" classname="ITC03010304_CreateHost_NameVerify"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010305_CreateHost_IpVerify" id="ITC03010305">
+        <description>ITC-03主机管理-01主机操作-03创建-05IP有效性验证</description>
+        <operation modulename="Host" classname="ITC03010305_CreateHost_IpVerify"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010306_CreateHost_IncorrectPassword" id="ITC03010306">
+        <description>ITC-03主机管理-01主机操作-03创建-06root密码错误</description>
+        <operation modulename="Host" classname="ITC03010306_CreateHost_IncorrectPassword"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010307_CreateHost_NoRequiredParams" id="ITC03010307">
+        <description>ITC-03主机管理-01主机操作-03创建-07缺少必填参数</description>
+        <operation modulename="Host" classname="ITC03010307_CreateHost_NoRequiredParams"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0301040101_EditHost_Up_VerifyEditableOptions" id="ITC0301040101">
+        <description>ITC-03主机管理-01主机操作-04编辑-01Active状态-01验证可编辑项</description>
+        <operation modulename="Host" classname="ITC0301040101_EditHost_Up_VerifyEditableOptions"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0301040102_EditHost_Up_VerifyUneditableOptions" id="ITC0301040102">
+        <description>ITC-03主机管理-01主机操作-04编辑-01Up状态-02验证不可编辑项</description>
+        <operation modulename="Host" classname="ITC0301040102_EditHost_Up_VerifyUneditableOptions"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0301040201_EditHost_Maintenance_VerifyEditableOptions" id="ITC0301040201">
+        <description>ITC-03主机管理-01主机操作-04编辑-02Maintenance状态-01验证可编辑项</description>
+        <operation modulename="Host" classname="ITC0301040201_EditHost_Maintenance_VerifyEditableOptions"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0301040202_EditHost_Maintenance_VerifyUneditableOptions" id="ITC0301040202">
+        <description>ITC-03主机管理-01主机操作-04编辑-02Maintenance状态-02验证不可编辑项</description>
+        <operation modulename="Host" classname="ITC0301040202_EditHost_Maintenance_VerifyUneditableOptions"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010403_EditHost_DupName" id="ITC03010403">
+        <description>ITC-03主机管理-01主机操作-04编辑-03重名</description>
+        <operation modulename="Host" classname="ITC03010403_EditHost_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010501_DelHost_Normal" id="ITC03010501">
+        <description>ITC-03主机管理-01主机操作-05删除-01普通删除</description>
+        <operation modulename="Host" classname="ITC03010501_DelHost_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010502_DelHost_Force" id="ITC03010502">
+        <description>ITC-03主机管理-01主机操作-05删除-02强制删除</description>
+        <operation modulename="Host" classname="ITC03010502_DelHost_Force"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010503_DelHost_Up" id="ITC03010503">
+        <description>ITC-03主机管理-01主机操作-05删除-03无法删除UP状态主机</description>
+        <operation modulename="Host" classname="ITC03010503_DelHost_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010601_ActivateHost_Maintenance" id="ITC03010601">
+        <description>ITC-03主机管理-01主机操作-06激活-01激活维护状态主机</description>
+        <operation modulename="Host" classname="ITC03010601_ActivateHost_Maintenance"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010602_ActivateHost_Up" id="ITC03010602">
+        <description>ITC-03主机管理-01主机操作-06激活-02激活UP状态主机</description>
+        <operation modulename="Host" classname="ITC03010602_ActivateHost_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010701_DeactivateHost_Up" id="ITC03010701">
+        <description>ITC-03主机管理-01主机操作-07取消激活-01取消激活UP状态主机</description>
+        <operation modulename="Host" classname="ITC03010701_DeactivateHost_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010702_DeactivateHost_Maintenance" id="ITC03010702">
+        <description>ITC-03主机管理-01主机操作-07取消激活-02取消激活非UP状态主机</description>
+        <operation modulename="Host" classname="ITC03010702_DeactivateHost_Maintenance"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010801_InstallHost_Maintenance" id="ITC03010801">
+        <description>ITC-03主机管理-01主机操作-08安装-01主机Maintenance状态</description>
+        <operation modulename="Host" classname="ITC03010801_InstallHost_Maintenance"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03010802_InstallHost_Up" id="ITC03010802">
+        <description>ITC-03主机管理-01主机操作-08安装-02主机UP状态无法Install</description>
+        <operation modulename="Host" classname="ITC03010802_InstallHost_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0301090401_FenceHost_Status_CorrectIpmi" id="ITC0301090401">
+        <description>ITC-03主机管理-01主机操作-09电源管理-04状态-01IPMI配置正确</description>
+        <operation modulename="Host" classname="ITC0301090401_FenceHost_Status_CorrectIpmi"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0301090402_FenceHost_Status_IncorrectIpmi" id="ITC0301090402">
+        <description>ITC-03主机管理-01主机操作-09电源管理-04状态-02IPMI配置不正确</description>
+        <operation modulename="Host" classname="ITC0301090402_FenceHost_Status_IncorrectIpmi"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03011001_DiscoveryIscsi_Normal" id="ITC03011001">
+        <description>ITC-03主机管理-01主机操作-10ISCSI存储发现-01基本功能</description>
+        <operation modulename="Host" classname="ITC03011001_DiscoveryIscsi_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03011002_DiscoveryIscsi_IncorrectIp" id="ITC03011002">
+        <description>ITC-03主机管理-01主机操作-10ISCSI存储发现-02IP或Port不正确</description>
+        <operation modulename="Host" classname="ITC03011002_DiscoveryIscsi_IncorrectIp"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC030111_LoginIscsi_Normal" id="ITC030111">
+        <description>ITC-03主机管理-01主机操作-11ISCSI存储挂载</description>
+        <operation modulename="Host" classname="ITC030111_LoginIscsi_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC030112_CommitNetwork" id="ITC030112">
+        <description>ITC-03主机管理-01主机操作-12提交保存主机网络配置</description>
+        <operation modulename="Host" classname="ITC030112_CommitNetwork"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03011301_SelectSpm_Up" id="ITC03011301">
+        <description>ITC-03主机管理-01主机操作-13选择SPM-01选择UP主机</description>
+        <operation modulename="Host" classname="ITC03011301_SelectSpm_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC030201_GetHostNicList" id="ITC030201">
+        <description>ITC-03主机管理-02主机网络接口操作-01查看主机网络接口列表</description>
+        <operation modulename="Host" classname="ITC030201_GetHostNicList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC030202_GetHostNicInfo" id="ITC030202">
+        <description>ITC-03主机管理-02主机网络接口操作-02查看主机网络接口信息</description>
+        <operation modulename="Host" classname="ITC030202_GetHostNicInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0304_HostNicStatistics" id="ITC0304">
+        <description>ITC-03主机管理-04主机网络接口统计</description>
+        <operation modulename="Host" classname="ITC0304_HostNicStatistics"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0305_HostStatistics" id="ITC0305">
+        <description>ITC-03主机管理-05主机信息统计</description>
+        <operation modulename="Host" classname="ITC0305_HostStatistics"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC03_TearDown" id="ITC03">
+        <description>“主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="Host" classname="ITC03_TearDown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC04_SetUp" id="ITC04">
+        <description>“存储域管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）</description>
+        <operation modulename="StorageDomain" classname="ITC04_SetUp"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC040101_GetStorageDomainsList" id="ITC040101">
+        <description>ITC-04存储域管理-01存储域操作-01查看全部存储域列表</description>
+        <operation modulename="StorageDomain" classname="ITC040101_GetStorageDomainsList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC040102_GetStorageDomainInfo" id="ITC040102">
+        <description>ITC-04存储域管理-01存储域操作-02查看存储域信息</description>
+        <operation modulename="StorageDomain" classname="ITC040102_GetStorageDomainInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0401030101_CreateNfsSd_Normal" id="ITC0401030101">
+        <description>ITC-04存储域管理-01存储域操作-03创建-01NFS-01正常创建</description>
+        <operation modulename="StorageDomain" classname="ITC0401030101_CreateNfsSd_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0401030104_CreateNfsSd_IpVerify" id="ITC0401030104">
+        <description>ITC-04存储域管理-01存储域操作-03创建-01NFS-04地址有效性验证</description>
+        <operation modulename="StorageDomain" classname="ITC0401030104_CreateNfsSd_IpVerify"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0401030105_CreateNfsSd_PathVerify" id="ITC0401030105">
+        <description>ITC-04存储域管理-01存储域操作-03创建-01NFS-05路径有效性验证</description>
+        <operation modulename="StorageDomain" classname="ITC0401030105_CreateNfsSd_PathVerify"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0401030201_CreateIscsiSd_Normal" id="ITC0401030201">
+        <description>ITC-04存储域管理-01存储域操作-03创建-02ISCSI-01正常创建</description>
+        <operation modulename="StorageDomain" classname="ITC0401030201_CreateIscsiSd_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0401040102_EditNfsSd_Unattached" id="ITC0401040102">
+        <description>ITC-04存储域管理-01存储域操作-04编辑-01NFS-02Unattached状态无法编辑</description>
+        <operation modulename="StorageDomain" classname="ITC0401040102_EditNfsSd_Unattached"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0401050101_DelNfsSd_Unattached" id="ITC0401050101">
+        <description>ITC-04存储域管理-01存储域操作-05删除-01NFS-01Unattached状态</description>
+        <operation modulename="StorageDomain" classname="ITC0401050101_DelNfsSd_Unattached"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0401050201_DelIscsiSd_Unattached" id="ITC0401050201">
+        <description>ITC-04存储域管理-01存储域操作-05删除-02ISCSI-01Unattached状态</description>
+        <operation modulename="StorageDomain" classname="ITC0401050201_DelIscsiSd_Unattached"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC04010601_DestroySd_Unattached" id="ITC04010601">
+        <description>ITC-04存储域管理-01存储域操作-06销毁-01Unattached状态</description>
+        <operation modulename="StorageDomain" classname="ITC04010601_DestroySd_Unattached"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC04010701_ImportSd_Unattached" id="ITC04010701">
+        <description>ITC-04存储域管理-01存储域操作-07导入-01ISO域</description>
+        <operation modulename="StorageDomain" classname="ITC04010701_ImportSd_Unattached"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC040201_GetDisksFromDataStorage" id="ITC040201">
+        <description>ITC-04存储域管理-02Data域磁盘管理-01查看磁盘列表</description>
+        <operation modulename="StorageDomain" classname="ITC040201_GetDisksFromDataStorage"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC040202_GetDiskInfoFromDataStorage" id="ITC040202">
+        <description>ITC-04存储域管理-02Data域磁盘管理-02查看磁盘详细信息</description>
+        <operation modulename="StorageDomain" classname="ITC040202_GetDiskInfoFromDataStorage"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC04020301_DelDiskFromDataStorage_OK" id="ITC04020301">
+        <description>ITC-04存储域管理-02Data域磁盘管理-03删除存储域中的磁盘-01OK状态</description>
+        <operation modulename="StorageDomain" classname="ITC04020301_DelDiskFromDataStorage_OK"/>
+        <run>True</run>
+    </TestCase>
+    
+    
+    <TestCase name="ITC040301_GetFilesFromIsoStorage" id="ITC040301">
+        <description>ITC-04存储域管理-03ISO域文件管理-01查看ISO域文件列表</description>
+        <operation modulename="StorageDomain" classname="ITC040301_GetFilesFromIsoStorage"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC04_TearDown" id="ITC04">
+        <description>“主机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="StorageDomain" classname="ITC04_TearDown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC05_SetUp" id="ITC05">
+        <description>虚拟机管理模块级测试用例，初始化模块测试环境；</description>
+        <operation modulename="VirtualMachine" classname="ITC05_SetUp"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC050101_GetVmsList" id="ITC050101">
+        <description>ITC-05虚拟机管理-01虚拟机操作-01查看虚拟机列表</description>
+        <operation modulename="VirtualMachine" classname="ITC050101_GetVmsList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC050102_GetVmInfo" id="ITC050102">
+        <description>ITC-05虚拟机管理-01虚拟机操作-02查看虚拟机信息</description>
+        <operation modulename="VirtualMachine" classname="ITC050102_GetVmInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010301_CreateVm_Normal" id="ITC05010301">
+        <description>ITC-05虚拟机管理-01虚拟机操作-03创建-01普通创建</description>
+        <operation modulename="VirtualMachine" classname="ITC05010301_CreateVm_Normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010303_CreateVm_DupName" id="ITC05010303">
+        <description>ITC-05虚拟机管理-01虚拟机操作-03创建-03重名</description>
+        <operation modulename="VirtualMachine" classname="ITC05010303_CreateVm_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010304_CreateVm_NameVerify" id="ITC05010304">
+        <description>ITC-05虚拟机管理-01虚拟机操作-03创建-04名称有效性</description>
+        <operation modulename="VirtualMachine" classname="ITC05010304_CreateVm_NameVerify"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010305_CreateVm_NoRequiredParams" id="ITC05010305">
+        <description>ITC-05虚拟机管理-01虚拟机操作-03创建-05缺少必填参数</description>
+        <operation modulename="VirtualMachine" classname="ITC05010305_CreateVm_NoRequiredParams"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010403_EditVm_DupName" id="ITC05010403">
+        <description>ITC-05虚拟机管理-01虚拟机操作-04编辑-03重名</description>
+        <operation modulename="VirtualMachine" classname="ITC05010403_EditVm_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0501050101_DelVm_Normal_Down" id="ITC0501050101">
+        <description>ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-01Down状态</description>
+        <operation modulename="VirtualMachine" classname="ITC0501050101_DelVm_Normal_Down"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0501050102_DelVm_Normal_Up" id="ITC0501050102">
+        <description>ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-02Up状态</description>
+        <operation modulename="VirtualMachine" classname="ITC0501050102_DelVm_Normal_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010502_DelVm_WithoutDisk" id="ITC05010502">
+        <description>ITC-05虚拟机管理-01虚拟机操作-05删除-02不删除磁盘</description>
+        <operation modulename="VirtualMachine" classname="ITC05010502_DelVm_WithoutDisk"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010503_DelVm_Force" id="ITC05010503">
+        <description>ITC-05虚拟机管理-01虚拟机操作-05删除-03强制删除</description>
+        <operation modulename="VirtualMachine" classname="ITC05010503_DelVm_Force"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05010504_DelVm_DeleteProtect" id="ITC05010504">
+        <description>ITC-05虚拟机管理-01虚拟机操作-05删除-04删除保护</description>
+        <operation modulename="VirtualMachine" classname="ITC05010504_DelVm_DeleteProtect"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0502010101_StartVm_Down_NoDisk_MultiStartDevices" id="ITC0502010101">
+        <description>ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（有多个启动设备）</description>
+        <operation modulename="VirtualMachine" classname="ITC0502010101_StartVm_Down_NoDisk_MultiStartDevices"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0502010102_StartVm_Down_NoDisk_StartFromHd" id="ITC0502010102">
+        <description>ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（只有一个启动设备：硬盘）</description>
+        <operation modulename="VirtualMachine" classname="ITC0502010102_StartVm_Down_NoDisk_StartFromHd"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0502010103_StartVm_Down_StartFromHd" id="ITC0502010103">
+        <description>ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（只有一个启动设备：硬盘）</description>
+        <operation modulename="VirtualMachine" classname="ITC0502010103_StartVm_Down_StartFromHd"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020102_StartVm_Suspended" id="ITC05020102">
+        <description>ITC-05虚拟机管理-02生命周期管理-01启动-02Suspended状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020102_StartVm_Suspended"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020103_StartVm_Once" id="ITC05020103">
+        <description>ITC-05虚拟机管理-02生命周期管理-01启动-03只运行一次</description>
+        <operation modulename="VirtualMachine" classname="ITC05020103_StartVm_Once"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020104_StartVm_Paused" id="ITC05020104">
+        <description>ITC-05虚拟机管理-02生命周期管理-01启动-04以暂停方式启动</description>
+        <operation modulename="VirtualMachine" classname="ITC05020104_StartVm_Paused"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020201_StopVm_Up" id="ITC05020201">
+        <description>ITC-05虚拟机管理-02生命周期管理-02断电-01Up状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020201_StopVm_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020202_StopVm_Suspended" id="ITC05020202">
+        <description>ITC-05虚拟机管理-02生命周期管理-02断电-02Suspended状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020202_StopVm_Suspended"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020203_StopVm_Down" id="ITC05020203">
+        <description>ITC-05虚拟机管理-02生命周期管理-02断电-03Down状态失败</description>
+        <operation modulename="VirtualMachine" classname="ITC05020203_StopVm_Down"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020301_ShutdownVm_Up" id="ITC05020301">
+        <description>ITC-05虚拟机管理-02生命周期管理-03关闭-01Up状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020301_ShutdownVm_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020302_ShutdownVm_Suspended" id="ITC05020302">
+        <description>ITC-05虚拟机管理-02生命周期管理-03关闭-02Suspended状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020302_ShutdownVm_Suspended"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020303_ShutdownVm_Down" id="ITC05020303">
+        <description>ITC-05虚拟机管理-02生命周期管理-03关闭-03Down状态失败</description>
+        <operation modulename="VirtualMachine" classname="ITC05020303_ShutdownVm_Down"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020401_SuspendVm_Up" id="ITC05020401">
+        <description>ITC-05虚拟机管理-02生命周期管理-04挂起-01Up状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020401_SuspendVm_Up"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020402_SuspendVm_Down" id="ITC05020402">
+        <description>ITC-05虚拟机管理-02生命周期管理-04挂起-02Down状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020402_SuspendVm_Down"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020403_SuspendVm_Suspended" id="ITC05020403">
+        <description>ITC-05虚拟机管理-02生命周期管理-04挂起-03Suspend状态</description>
+        <operation modulename="VirtualMachine" classname="ITC05020403_SuspendVm_Suspended"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020501_MigrateVm_AutoSelectHost" id="ITC05020501">
+        <description>ITC-05虚拟机管理-02生命周期管理-05迁移-01自动选择主机</description>
+        <operation modulename="VirtualMachine" classname="ITC05020501_MigrateVm_AutoSelectHost"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020502_MigrateVm_HandSelectHost" id="ITC05020502">
+        <description>ITC-05虚拟机管理-02生命周期管理-05迁移-02手动选择主机</description>
+        <operation modulename="VirtualMachine" classname="ITC05020502_MigrateVm_HandSelectHost"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020503_MigrateVm_OnlyOneHost" id="ITC05020503">
+        <description>ITC-05虚拟机管理-02生命周期管理-05迁移-03只有一个主机</description>
+        <operation modulename="VirtualMachine" classname="ITC05020503_MigrateVm_OnlyOneHost"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020504_MigrateVm_NotAllowMigration" id="ITC05020504">
+        <description>ITC-05虚拟机管理-02生命周期管理-05迁移-04虚拟机设置不允许迁移</description>
+        <operation modulename="VirtualMachine" classname="ITC05020504_MigrateVm_NotAllowMigration"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020601_CancelMigration_DuringMigration" id="ITC05020601">
+        <description>ITC-05虚拟机管理-02生命周期管理-06取消迁移-01迁移过程中</description>
+        <operation modulename="VirtualMachine" classname="ITC05020601_CancelMigration_DuringMigration"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05020602_CancelMigration_NotDuringMigration" id="ITC05020602">
+        <description>ITC-05虚拟机管理-02生命周期管理-06取消迁移-02非迁移过程中</description>
+        <operation modulename="VirtualMachine" classname="ITC05020602_CancelMigration_NotDuringMigration"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC050301_GetVMDiskList" id="ITC050301">
+        <description></description>
+        <operation modulename="VirtualMachine" classname="ITC050301_GetVMDiskList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC050302_GetVMDiskInfo" id="ITC050302">
+        <description></description>
+        <operation modulename="VirtualMachine" classname="ITC050302_GetVMDiskInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0503030101_CreateVMDisk_normal" id="ITC0503030101">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-01创建内部磁盘 -01成功创建</description>
+        <operation modulename="VirtualMachine" classname="ITC0503030101_CreateVMDisk_normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0503030102_CreateVMDisk_noRequired" id="ITC0503030102">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-01创建内部磁盘 -02参数完整性</description>
+        <operation modulename="VirtualMachine" classname="ITC0503030102_CreateVMDisk_noRequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0503030201_CreateVMDisk_attach" id="ITC0503030201">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-02附加已有磁盘</description>
+        <operation modulename="VirtualMachine" classname="ITC0503030201_CreateVMDisk_attach"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030401_UpdateVMDisk_vmdown" id="ITC05030401">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-01虚拟机关机</description>
+        <operation modulename="VirtualMachine" classname="ITC05030401_UpdateVMDisk_vmdown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030402_UpdateVMDisk_vmrun" id="ITC05030402">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05030402_UpdateVMDisk_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030501_DeleteVMDisk_option" id="ITC05030501">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-01是否永久删除</description>
+        <operation modulename="VirtualMachine" classname="ITC05030501_DeleteVMDisk_option"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030502_DeleteActiveVMDisk_vmrun" id="ITC05030502">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-02磁盘激活状态，虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05030502_DeleteActiveVMDisk_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030601_activeVMDisk_vmrun" id="ITC05030601">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-06激活磁盘-01虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05030601_activeVMDisk_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030602_activeVMDisk_vmdown" id="ITC05030602">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-06激活磁盘-02虚拟机关机</description>
+        <operation modulename="VirtualMachine" classname="ITC05030602_activeVMDisk_vmdown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030701_deactiveVMDisk_vmrun" id="ITC05030701">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-07取消激活磁盘-01虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05030701_deactiveVMDisk_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030702_deactiveVMDisk_vmdown" id="ITC05030702">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-07取消激活磁盘-02虚拟机关机</description>
+        <operation modulename="VirtualMachine" classname="ITC05030702_deactiveVMDisk_vmdown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030801_MoveactiveVMDisk_vmdown" id="ITC05030801">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-08移动激活的磁盘-01虚拟机关机</description>
+        <operation modulename="VirtualMachine" classname="ITC05030801_MoveactiveVMDisk_vmdown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030802_MoveactiveVMDisk_vmrun" id="ITC05030802">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-08移动激活的磁盘-02虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05030802_MoveactiveVMDisk_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030901_MovedeactiveVMDisk_vmdown" id="ITC05030901">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-09移动非激活的磁盘-01虚拟机关机</description>
+        <operation modulename="VirtualMachine" classname="ITC05030901_MovedeactiveVMDisk_vmdown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05030902_MovedeactiveVMDisk_vmrun" id="ITC05030902">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-09移动非激活的磁盘-02虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05030902_MovedeactiveVMDisk_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC050310_statisticsVmDisk" id="ITC050310">
+        <description></description>
+        <operation modulename="VirtualMachine" classname="ITC050310_statisticsVmDisk"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC050401_GetVmNicList" id="ITC050401">
+        <description></description>
+        <operation modulename="VirtualMachine" classname="ITC050401_GetVmNicList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC050402_GetVmNicInfo" id="ITC050402">
+        <description></description>
+        <operation modulename="VirtualMachine" classname="ITC050402_GetVmNicInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040301_CreateVmNic_normal" id="ITC05040301">
+        <description>ITC-05虚拟机管理-04网络接口-03创建-01正常创建</description>
+        <operation modulename="VirtualMachine" classname="ITC05040301_CreateVmNic_normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040302_CreateVmNic_dupname" id="ITC05040302">
+        <description>ITC-05虚拟机管理-04网络接口-03创建-02重名</description>
+        <operation modulename="VirtualMachine" classname="ITC05040302_CreateVmNic_dupname"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040303_CreateVmNic_norequired" id="ITC05040303">
+        <description>ITC-05虚拟机管理-04网络接口-03创建-03参数完整性</description>
+        <operation modulename="VirtualMachine" classname="ITC05040303_CreateVmNic_norequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040304_CreateVmNic_verifyname" id="ITC05040304">
+        <description>ITC-05虚拟机管理-04网络接口-03创建-04验证名称合法性</description>
+        <operation modulename="VirtualMachine" classname="ITC05040304_CreateVmNic_verifyname"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040305_CreateVmNic_verifymac" id="ITC05040305">
+        <description>ITC-05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性</description>
+        <operation modulename="VirtualMachine" classname="ITC05040305_CreateVmNic_verifymac"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040401_UpdateVmNic_normal" id="ITC05040401">
+        <description>ITC-05虚拟机管理-04网络接口-04编辑网络接口-01正常编辑</description>
+        <operation modulename="VirtualMachine" classname="ITC05040401_UpdateVmNic_normal"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040402_UpdateVmNic_dupname" id="ITC05040402">
+        <description>ITC-05虚拟机管理-04网络接口-04编辑网络接口-02重名</description>
+        <operation modulename="VirtualMachine" classname="ITC05040402_UpdateVmNic_dupname"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040403_UpdateVmNic_type" id="ITC05040403">
+        <description>ITC-05虚拟机管理-04网络接口-04编辑网络接口-03编辑接口类型</description>
+        <operation modulename="VirtualMachine" classname="ITC05040403_UpdateVmNic_type"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040404_UpdateVmNic_dupmac" id="ITC05040404">
+        <description>ITC-05虚拟机管理-04网络接口-04编辑网络接口-04mac已被使用</description>
+        <operation modulename="VirtualMachine" classname="ITC05040404_UpdateVmNic_dupmac"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040501_ActiveVmNic_vmrun" id="ITC05040501">
+        <description>ITC-05虚拟机管理-04网络接口-05激活网络接口-01虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05040501_ActiveVmNic_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040502_ActiveVmNic_vmdown" id="ITC05040502">
+        <description>ITC-05虚拟机管理-04网络接口-05激活网络接口</description>
+        <operation modulename="VirtualMachine" classname="ITC05040502_ActiveVmNic_vmdown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040601_DeactiveVmNic_vmrun" id="ITC05040601">
+        <description>ITC-05虚拟机管理-04网络接口-06取消激活网络接口-01虚拟机运行</description>
+        <operation modulename="VirtualMachine" classname="ITC05040601_DeactiveVmNic_vmrun"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040602_DeactiveVmNic_vmdown" id="ITC05040602">
+        <description>ITC-05虚拟机管理-04网络接口-06取消激活网络接口</description>
+        <operation modulename="VirtualMachine" classname="ITC05040602_DeactiveVmNic_vmdown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040701_DeleteVmNic_vmdown_plugged" id="ITC05040701">
+        <description>ITC-05虚拟机管理-04网络接口-07删除网络接口-01虚拟机down</description>
+        <operation modulename="VirtualMachine" classname="ITC05040701_DeleteVmNic_vmdown_plugged"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05040702_DeleteVmNic_vmrun_plugged" id="ITC05040702">
+        <description>ITC-05虚拟机管理-04网络接口-07删除网络接口-02虚拟机run</description>
+        <operation modulename="VirtualMachine" classname="ITC05040702_DeleteVmNic_vmrun_plugged"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC05_TearDown" id="ITC05">
+        <description>“虚拟机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="VirtualMachine" classname="ITC05_TearDown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC06_Setup" id="ITC06">
+        <description>“网络管理”模块测试环境初始化（执行该模块测试用例时，都需要执行该用例搭建初始化环境）</description>
+        <operation modulename="Network" classname="ITC06_Setup"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060101_GetNetworkList" id="ITC060101">
+        <description>ITCxxxx:</description>
+        <operation modulename="Network" classname="ITC060101_GetNetworkList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060102_GetNetworkInfo" id="ITC060102">
+        <description>ITC-05网络管理-01基本操作-02获取指定网络信息</description>
+        <operation modulename="Network" classname="ITC060102_GetNetworkInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06010301_CreateNetwork" id="ITC06010301">
+        <description>ITC-05网络管理-01基本操作-03创建一个新的网络-01成功创建</description>
+        <operation modulename="Network" classname="ITC06010301_CreateNetwork"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06010302_CreateNetwork_VerifyName" id="ITC06010302">
+        <description>ITC-05网络管理-01基本操作-03创建一个新的网络-02验证名称合法性</description>
+        <operation modulename="Network" classname="ITC06010302_CreateNetwork_VerifyName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06010303_CreateNetwork_DupName" id="ITC06010303">
+        <description>ITC-05网络管理-01基本操作-03创建一个新的网络-03同一数据中心内网络重名</description>
+        <operation modulename="Network" classname="ITC06010303_CreateNetwork_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06010304_CreateNetwork_NoRequired" id="ITC06010304">
+        <description>ITC-05网络管理-01基本操作-03创建一个新的网络-04缺少必填项</description>
+        <operation modulename="Network" classname="ITC06010304_CreateNetwork_NoRequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06010305_CreateNetwork_DupVlan" id="ITC06010305">
+        <description>ITC-05网络管理-01基本操作-03创建一个新的网络-05同一数据中心内网络vlan id重复</description>
+        <operation modulename="Network" classname="ITC06010305_CreateNetwork_DupVlan"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06010401_UpdateNetwork" id="ITC06010401">
+        <description>ITC-05网络管理-01基本操作-04编辑网络-01成功编辑</description>
+        <operation modulename="Network" classname="ITC06010401_UpdateNetwork"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06010402_UpdateNetwork_DupName" id="ITC06010402">
+        <description>ITC-05网络管理-01基本操作-04编辑网络-02网络名称重复</description>
+        <operation modulename="Network" classname="ITC06010402_UpdateNetwork_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060105_DeleteNetwork" id="ITC060105">
+        <description>ITC-05网络管理-01基本操作-05删除网络</description>
+        <operation modulename="Network" classname="ITC060105_DeleteNetwork"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060201_GetNetworkProfileList" id="ITC060201">
+        <description>测试环境准备，创建一个网络并为它创建若干配置集</description>
+        <operation modulename="Network" classname="ITC060201_GetNetworkProfileList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060202_GetNetworkProfileInfo" id="ITC060202">
+        <description>测试环境准备，创建一个网络并为它创建若干配置集</description>
+        <operation modulename="Network" classname="ITC060202_GetNetworkProfileInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC06_TearDown" id="ITC06">
+        <description>“集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="Network" classname="ITC06_TearDown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC08_SetUp" id="ITC08">
+        <description>磁盘管理模块级测试用例，初始化模块测试环境。</description>
+        <operation modulename="Disk" classname="ITC08_SetUp"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0801_GetDiskList" id="ITC0801">
+        <description>ITC-08磁盘管理-01获取所有磁盘列表</description>
+        <operation modulename="Disk" classname="ITC0801_GetDiskList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0802_GetDiskInfo" id="ITC0802">
+        <description>ITC-08磁盘管理-02获取指定磁盘信息</description>
+        <operation modulename="Disk" classname="ITC0802_GetDiskInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080301_CreateDisk" id="ITC080301">
+        <description>ITC-08磁盘管理-03创建磁盘-01成功创建</description>
+        <operation modulename="Disk" classname="ITC080301_CreateDisk"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080302_CreateDisk_VerifyName" id="ITC080302">
+        <description>ITC-08磁盘管理-03创建磁盘-02验证名称合法性</description>
+        <operation modulename="Disk" classname="ITC080302_CreateDisk_VerifyName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080303_CreateDisk_NoRequired" id="ITC080303">
+        <description>ITC-08磁盘管理-03创建一个配置集-03验证参数完整性</description>
+        <operation modulename="Disk" classname="ITC080303_CreateDisk_NoRequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080304_CreateDisk_ErrorSet" id="ITC080304">
+        <description>ITC-08磁盘管理-03创建一个配置集-04错误配置</description>
+        <operation modulename="Disk" classname="ITC080304_CreateDisk_ErrorSet"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080401_DeleteDisk" id="ITC080401">
+        <description>ITC-08磁盘管理-04删除磁盘-01磁盘无关联</description>
+        <operation modulename="Disk" classname="ITC080401_DeleteDisk"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080402_DeleteDisk_AttachtoTemp" id="ITC080402">
+        <description>ITC-08磁盘管理-04删除磁盘-02磁盘附加到模板上</description>
+        <operation modulename="Disk" classname="ITC080402_DeleteDisk_AttachtoTemp"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080403_DeleteDisk_AttachtoRunVm" id="ITC080403">
+        <description>ITC-08磁盘管理-04删除磁盘-03磁盘附加到运行的虚拟机上</description>
+        <operation modulename="Disk" classname="ITC080403_DeleteDisk_AttachtoRunVm"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC080404_DeleteDisk_AttachtoDownVm" id="ITC080404">
+        <description>ITC-08磁盘管理-04删除磁盘-04磁盘附加到已关机的虚拟机</description>
+        <operation modulename="Disk" classname="ITC080404_DeleteDisk_AttachtoDownVm"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0805_GetStaticsofDisk" id="ITC0805">
+        <description>08磁盘管理-05获取磁盘统计信息</description>
+        <operation modulename="Disk" classname="ITC0805_GetStaticsofDisk"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC08_TearDown" id="ITC08">
+        <description>“磁盘管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="Disk" classname="ITC08_TearDown"/>
+        <run>True</run>
+    </TestCase>
+    
+    <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC0601_GetProfileList" id="ITC0601">
+        <description>ITC-06配置集管理-01获取所有配置集列表</description>
+        <operation modulename="Profile" classname="ITC0601_GetProfileList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0602_GetProfileInfo" id="ITC0602">
+        <description>ITC-06配置集管理-02获取指定配置集信息</description>
+        <operation modulename="Profile" classname="ITC0602_GetProfileInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060301_CreateProfile" id="ITC060301">
+        <description>ITC-06配置集管理-03创建配置集-01成功创建</description>
+        <operation modulename="Profile" classname="ITC060301_CreateProfile"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060302_CreateProfile_VerifyName" id="ITC060302">
+        <description>ITC-06配置集管理-03创建配置集-02验证名称合法性</description>
+        <operation modulename="Profile" classname="ITC060302_CreateProfile_VerifyName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060303_CreateProfile_DupName" id="ITC060303">
+        <description>ITC-06配置集管理-03新建一个配置集-03名称重复</description>
+        <operation modulename="Profile" classname="ITC060303_CreateProfile_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060304_CreateProfile_NoRequired" id="ITC060304">
+        <description>ITC-06配置集管理-03创建一个配置集-04验证参数完整性</description>
+        <operation modulename="Profile" classname="ITC060304_CreateProfile_NoRequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060401_UpdateProfile" id="ITC060401">
+        <description>ITC-06配置集管理-04编辑配置集-01成功编辑</description>
+        <operation modulename="Profile" classname="ITC060401_UpdateProfile"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060402_UpdateProfile_DupName" id="ITC060402">
+        <description>ITC-06配置集管理-04编辑配置集-01重名</description>
+        <operation modulename="Profile" classname="ITC060402_UpdateProfile_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC060403_UpdateProfile_DiffNw" id="ITC060403">
+        <description>ITC-06配置集管理-04编辑配置集-03更改所在网络</description>
+        <operation modulename="Profile" classname="ITC060403_UpdateProfile_DiffNw"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0605_DeleteProfile" id="ITC0605">
+        <description>ITC-06配置集管理-05删除配置集</description>
+        <operation modulename="Profile" classname="ITC0605_DeleteProfile"/>
+        <run>True</run>
+    </TestCase>
+    
+    <!-- ********************************************************************************************* -->
+    
+    <TestCase name="ITC07_SetUp" id="ITC07">
+        <description>模板管理模块级测试用例，初始化模块测试环境。</description>
+        <operation modulename="Template" classname="ITC07_SetUp"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070101_GetTemplateList" id="ITC070101">
+        <description></description>
+        <operation modulename="Template" classname="ITC070101_GetTemplateList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070102_GetTemplateInfo" id="ITC070102">
+        <description></description>
+        <operation modulename="Template" classname="ITC070102_GetTemplateInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0701030101_CreateTemplate" id="ITC0701030101">
+        <description>07模板管理-03创建模板-01成功创建-01最小测试集</description>
+        <operation modulename="Template" classname="ITC0701030101_CreateTemplate"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0701030102_CreateTemplate_SD" id="ITC0701030102">
+        <description>07模板管理-03创建模板-01成功创建-02指定存储域</description>
+        <operation modulename="Template" classname="ITC0701030102_CreateTemplate_SD"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0701030201_CreateTemplate_DupName" id="ITC0701030201">
+        <description>07模板管理-03创建模板-02创建失败-01模板重名</description>
+        <operation modulename="Template" classname="ITC0701030201_CreateTemplate_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0701030202_CreateTemplate_VerifyName" id="ITC0701030202">
+        <description>07模板管理-03创建模板-02创建失败-02验证名称合法性</description>
+        <operation modulename="Template" classname="ITC0701030202_CreateTemplate_VerifyName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0701030203_CreateTemplate_NoRequired" id="ITC0701030203">
+        <description>07模板管理-03创建模板-02创建失败-03验证参数完整性</description>
+        <operation modulename="Template" classname="ITC0701030203_CreateTemplate_NoRequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070105_DeleteTemplate" id="ITC070105">
+        <description>07模板管理-01基本操作-05删除模板</description>
+        <operation modulename="Template" classname="ITC070105_DeleteTemplate"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC07010601_ExportTemplate_sync" id="ITC07010601">
+        <description>07模板管理-01基本操作-06导出模板-01同步</description>
+        <operation modulename="Template" classname="ITC07010601_ExportTemplate_sync"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC07010602_ExportTemplate_async" id="ITC07010602">
+        <description>07模板管理-01基本操作-06导出模板-02异步</description>
+        <operation modulename="Template" classname="ITC07010602_ExportTemplate_async"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070201_GetTemplateDiskList" id="ITC070201">
+        <description>07模板管理-02模板磁盘管理-01获取模板磁盘列表</description>
+        <operation modulename="Template" classname="ITC070201_GetTemplateDiskList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070202_GetTemplateDiskInfo" id="ITC070202">
+        <description>07模板管理-02模板磁盘管理-02获取模板磁盘详情</description>
+        <operation modulename="Template" classname="ITC070202_GetTemplateDiskInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC07020301_CopyTemplateDisk_sync" id="ITC07020301">
+        <description>07模板管理-02模板磁盘管理-03复制模板-01同步</description>
+        <operation modulename="Template" classname="ITC07020301_CopyTemplateDisk_sync"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC07020302_CopyTemplateDisk_async" id="ITC07020302">
+        <description>07模板管理-02模板磁盘管理-03复制模板-01异步</description>
+        <operation modulename="Template" classname="ITC07020302_CopyTemplateDisk_async"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC07020303_CopyTemplateDisk_nosd" id="ITC07020303">
+        <description>07模板管理-02模板磁盘管理-03复制模板-03缺少存储域</description>
+        <operation modulename="Template" classname="ITC07020303_CopyTemplateDisk_nosd"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070301_GetTemplateNicList" id="ITC070301">
+        <description>07模板管理-03模板网络接口-01获取网络接口列表</description>
+        <operation modulename="Template" classname="ITC070301_GetTemplateNicList"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070302_GetTemplateNicInfo" id="ITC070302">
+        <description>07模板管理-03模板网络接口-02获取网络接口详情</description>
+        <operation modulename="Template" classname="ITC070302_GetTemplateNicInfo"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0703030101_CreateTemplateNic" id="ITC0703030101">
+        <description>07模板管理-03模板网络接口-03新建网络接口-01成功创建-01测试最小集</description>
+        <operation modulename="Template" classname="ITC0703030101_CreateTemplateNic"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0703030102_CreateTemplateNic_proid" id="ITC0703030102">
+        <description>07模板管理-03模板网络接口-03新建网络接口-01成功创建-02指定配置集</description>
+        <operation modulename="Template" classname="ITC0703030102_CreateTemplateNic_proid"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0703030201_CreateTemplateNic_DupName" id="ITC0703030201">
+        <description>07模板管理-03模板网络接口-03新建网络接口-01创建失败-01重名</description>
+        <operation modulename="Template" classname="ITC0703030201_CreateTemplateNic_DupName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0703030202_CreateTemplateNic_VerifyName" id="ITC0703030202">
+        <description>07模板管理-03模板网络接口-03新建网络接口-01创建失败-02验证名称合法性</description>
+        <operation modulename="Template" classname="ITC0703030202_CreateTemplateNic_VerifyName"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0703030203_CreateTemplateNic_NoRequired" id="ITC0703030203">
+        <description>07模板管理-03模板网络接口-03新建网络接口-01创建失败-03缺少必填项</description>
+        <operation modulename="Template" classname="ITC0703030203_CreateTemplateNic_NoRequired"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC07030401_UpdateTemplateNic" id="ITC07030401">
+        <description>07模板管理-03模板网络接口-04编辑网络接口-01成功</description>
+        <operation modulename="Template" classname="ITC07030401_UpdateTemplateNic"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC070305_DeleteTemplateNic" id="ITC070305">
+        <description>07模板管理-03模板网络接口-05删除网络接口</description>
+        <operation modulename="Template" classname="ITC070305_DeleteTemplateNic"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC07_TearDown" id="ITC07">
+        <description>“模板管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <operation modulename="Template" classname="ITC07_TearDown"/>
+        <run>True</run>
+    </TestCase>
+      
 </TestCases>
