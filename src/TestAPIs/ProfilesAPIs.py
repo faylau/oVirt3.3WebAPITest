@@ -71,7 +71,6 @@ class ProfilesAPIs(BaseAPIs):
         api_url = self.base_url
         method = "GET"
         r = HttpClient.sendRequest(method=method, api_url=api_url)
-        r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
     
     def getProfileInfo(self, profile_name=None,profile_id=None,nw_id=None):
@@ -96,11 +95,19 @@ class ProfilesAPIs(BaseAPIs):
         @param nw_id:网络id 
         @return: True或 False
         '''
-        r =  ProfilesAPIs().getProfileInfo(profile_name=profile_name, nw_id=nw_id)
-        if r:
-            return True
+        flag=False
+        pro_list = NetworkProfilesAPIs().getNetworkProfileList(nw_id)
+        if not pro_list:
+            return flag
+        pro_list = NetworkProfilesAPIs().getNetworkProfileList(nw_id)['result']['vnic_profiles']['vnic_profile']
+        if isinstance(pro_list, list):
+            for pro in pro_list:
+                if pro['name']==profile_name:
+                    flag=True
         else:
-            return False
+            if pro_list['name']==profile_name:
+                flag=True
+        return flag
             
     def createProfiles(self, profile_info,nw_id=None):
         '''
@@ -175,8 +182,8 @@ if __name__=='__main__':
     #print profileapi.getProfileIdByName('aaa', 'e98b6c1f-4021-4875-b6a8-691c923d0d30')
     #print profileapi.getProfilesList()
     #print profileapi.getProfileIdByName('sd', nw_id='76c060f3-4b0c-43e5-bba5-012d5e16b26')
-    print profileapi.getProfileInfo('pp', nw_id='0b1de2ef-aa48-47f7-834c-8335ffa7d9a6')
-    print profileapi.isExist('pp', nw_id='0b1de2ef-aa48-47f7-834c-8335ffa7d9a6')
+    #print profileapi.getProfileInfo('ppp', nw_id='0b1de2ef-aa48-47f7-834c-8335ffa7d9a6')
+    print profileapi.isExist('ppp', nw_id='0b1de2ef-aa48-47f7-834c-8335ffa7d9a6')
     profile_info = '''
     <vnic_profile>
         <name>pp</name>
@@ -184,11 +191,11 @@ if __name__=='__main__':
         <port_mirroring>false</port_mirroring>
     </vnic_profile>
     '''
-    print profileapi.createProfiles(profile_info)
+    #print profileapi.createProfiles(profile_info)
     #print profileapi.updateProfile('peanuts', 'e98b6c1f-4021-4875-b6a8-691c923d0d30',profile_info)
     #print xmltodict.unparse(profileapi.updateProfile('peanuts', 'e98b6c1f-4021-4875-b6a8-691c923d0d30',profile_info)['result'],pretty=True)
     #print xmltodict.unparse(profileapi.createProfiles(profile_info)['result'],pretty=True) 
-    print profileapi.delProfile('aaa', 'e98b6c1f-4021-4875-b6a8-691c923d0d30')     
+    #print profileapi.delProfile('aaa', 'e98b6c1f-4021-4875-b6a8-691c923d0d30')     
     '''
     'e98b6c1f-4021-4875-b6a8-691c923d0d30'
     <network id="%s"/>

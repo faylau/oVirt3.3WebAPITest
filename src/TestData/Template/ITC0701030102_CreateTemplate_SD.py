@@ -1,5 +1,6 @@
 #encoding:utf-8
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
+from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 from TestData.Template import ITC07_SetUp as ModuleData
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs
 '''
@@ -12,7 +13,8 @@ from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs,VmDiskAPIs
 '''
 @note: TestData
 '''
-sd_id = '2170acd2-6fd0-4e88-a566-293a20fca97a'
+sd_name = ModuleData.data1_nfs_name
+sd_id = StorageDomainAPIs().getStorageDomainIdByName(sd_name)
 vm_id = VirtualMachineAPIs().getVmIdByName(ModuleData.vm_name)
 disk_id = VmDiskAPIs().getVmDiskIdByName(ModuleData.vm_name, ModuleData.disk_name)
 temp_name = 'template-ke'

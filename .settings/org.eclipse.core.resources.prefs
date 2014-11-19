@@ -74,10 +74,14 @@ data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=c
 eclipse.preferences.version=1
 encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/ProfilesAPIs.py=utf-8
+encoding//src/TestAPIs/TemplatesAPIs.py=utf-8
+encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/Network.py=utf-8
 encoding//src/TestCases/Profile.py=utf-8
 encoding//src/TestCases/Template.py=utf-8
+encoding//src/TestData/Network/ITC05010301_CreateNetwork.py=utf-8
+encoding//src/TestData/Network/ITC05010303_CreateNetwork_DupName.py=utf-8
 encoding//src/TestData/Network/ITC05_Setup.py=utf-8
 encoding//src/TestData/Profile/ITC0602_GetProfileInfo.py=utf-8
 encoding//src/TestData/Profile/ITC060301_CreateProfile.py=utf-8
@@ -89,6 +93,14 @@ encoding//src/TestData/Profile/ITC060402_UpdateProfile_DupName.py=utf-8
 encoding//src/TestData/Profile/ITC060403_UpdateProfile_DiffNw.py=utf-8
 encoding//src/TestData/Profile/ITC0605_DeleteProfile.py=utf-8
 encoding//src/TestData/Profile/ITC06_SetUp.py=utf-8
+encoding//src/TestData/Template/ITC0701030101_CreateTemplate.py=utf-8
+encoding//src/TestData/Template/ITC0701030102_CreateTemplate_SD.py=utf-8
+encoding//src/TestData/Template/ITC0701030201_CreateTemplate_DupName.py=utf-8
+encoding//src/TestData/Template/ITC070202_GetTemplateDiskInfo.py=utf-8
+encoding//src/TestData/Template/ITC07020301_CopyTemplateDisk_sync.py=utf-8
+encoding//src/TestData/Template/ITC0703030101_CreateTemplateNic.py=utf-8
+encoding//src/TestData/Template/ITC07_SetUp.py=utf-8
+encoding//src/TestRun/TestCenter.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.

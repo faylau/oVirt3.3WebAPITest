@@ -19,30 +19,21 @@ nw_info = '''
 
 
 profile_info = '''
-<data_driver>
-    <vnic_profile>
-        <name>p001#</name>
-        <description>shelled</description>
-        <network id="%s"/>
-        <port_mirroring>false</port_mirroring>
-    </vnic_profile>
-    <vnic_profile>
-        <name>p00&</name>
-        <description>shelled</description>
-        <network id="%s"/>
-        <port_mirroring>false</port_mirroring>
-    </vnic_profile>
-</data_driver>
+<vnic_profile>
+    <name>p001#</name>
+    <description>shelled</description>
+    <network id="%s"/>
+    <port_mirroring>false</port_mirroring>
+</vnic_profile>
 '''
 '''
 @note: ExpectedData
 '''
 expected_status_code = 400
-expected_info_list = [
-''' 
+expected_info = ''' 
 <fault>
     <reason>Operation Failed</reason>
     <detail>[Name must be formed of alphanumeric characters, numbers or "-_".]</detail>
 </fault>
 '''
-]
+

@@ -32,13 +32,13 @@ def smart_create_template(temp_name,temp_info):
         return tempapi.getTemplateInfo(temp_name=temp_name)['result']['template']['status']['state']=='ok'
     if r['status_code'] == 202:
         if wait_until(is_temp_ok, 600, 10):
-            LogPrint().info("Pre-Test:Create Template %s success"%temp_name)
+            LogPrint().info("INFO:Create Template %s success"%temp_name)
             return True
         else:
-            LogPrint().error("Pre-Test:Create Template overtime")
+            LogPrint().error("INFO:Create Template overtime")
             return False
     else:
-        LogPrint().error("Pre-Test:Create Template failed.Status-code is wrong.")
+        LogPrint().error("INFO:Create Template failed.Status-code is %s."%r['status_code'])
         return False
     
 def smart_delete_template(temp_name):  
@@ -50,17 +50,24 @@ def smart_delete_template(temp_name):
     
     tempapi = TemplatesAPIs()
     try:    
-        tempapi.getTemplateInfo(temp_name)
+        tempapi.getTemplateIdByName(temp_name)
         if tempapi.getTemplateStatus(temp_name)!='ok':
             LogPrint().warning("WARN: The template is not 'ok'. It cannot be deleted.")
             return False
         else:
+            def is_temp_delete():
+                return tempapi.is_Exist(temp_name) == False   
             r = tempapi.delTemplate(temp_name)
+            print r
             if r['status_code'] == 200:
-                LogPrint().info("Post-Test:Delete template success.")
-                return True
+                if wait_until(is_temp_delete, 300, 10):
+                    LogPrint().info("Delete template success.")
+                    return True
+                else:
+                    LogPrint().info("Delete template overtime.")
+                    return False
             else:
-                LogPrint().error("Post-Test:Delete template failed")
+                LogPrint().error("Status code is WRONG")
                 return False
     except:
         LogPrint().warning("WARN: Template is not exist.")
@@ -147,7 +154,18 @@ class TemplatesAPIs(BaseAPIs):
         
     def getTemplateStatus(self,temp_name):
         return self.getTemplateInfo(temp_name)['result']['template']['status']['state']
-                
+    
+    def is_Exist(self,temp_name):
+        '''
+        @summary: 检查模板是否存在
+        @return: True False
+        '''  
+        r = self.searchTemplateByName(temp_name)['result']['templates'] 
+        if r == None:
+            return False
+        else:
+            return True
+        
     def getTemplatesList(self):
         '''
         @summary: 获取全部模板列表
@@ -552,7 +570,7 @@ class TemplateNicsAPIs(TemplatesAPIs):
             
 if __name__=='__main__':
     tempapi = TemplatesAPIs()
-    #print tempapi.searchTemplateByName("kek")
+    print tempapi.searchTemplateByName("kek")
     #print tempapi.getTemplateIdByName('temp')
     #print tempapi.getTemplateNameById(tempapi.getTemplateIdByName('temp'))
     #print tempapi.getTemplatesList()

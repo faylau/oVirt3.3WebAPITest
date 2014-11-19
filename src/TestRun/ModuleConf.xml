@@ -22,7 +22,7 @@
     <module name="StorageDomain" id="04">
         <description>存储域管理</description>
         <filename>StorageDomain.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="VirtualMachine" id="05">
@@ -46,7 +46,7 @@
     <module name="Template" id="08">
         <description>模板管理</description>
         <filename>Template.py</filename>
-        <run>False</run>
+        <run>True</run>
     </module>
 
     <module name="Disk" id="09">

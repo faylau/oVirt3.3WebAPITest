@@ -138,16 +138,14 @@ vm_info='''
         </os>
     </vm>
 '''%cluster_nfs_name
-
+sd_id = StorageDomainAPIs().getStorageDomainIdByName(data1_nfs_name)
 disk_name = 'testkeke'
 disk_info='''
 <disk>
     <alias>testkeke</alias>
     <name>testkeke</name>
     <storage_domains>
-        <storage_domain>
-            <name>%s</name>
-        </storage_domain>
+        <storage_domain id = "%s"/>
     </storage_domains>
     <size>114748364</size>
     <sparse>false</sparse>
@@ -157,7 +155,7 @@ disk_info='''
     <shareable>false</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''%data1_nfs_name
+'''%sd_id
 '''
 ---------------------------------------------------------------------------------------------------
 @note: Post-Test-Data

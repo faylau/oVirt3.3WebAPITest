@@ -9,8 +9,7 @@ import unittest
 from BaseTestCase import BaseTestCase
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
-from Utils.HTMLTestRunner import HTMLTestRunner
-from TestAPIs.NetworkAPIs import NetworkAPIs, NetworkProfilesAPIs
+from TestAPIs.NetworkAPIs import NetworkAPIs
 from TestAPIs.ProfilesAPIs import ProfilesAPIs
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 from TestData.Profile import ITC06_SetUp as ModuleData
@@ -189,27 +188,22 @@ class ITC060302_CreateProfile_VerifyName(BaseTestCase):
         @summary: 验证名称合法性：包含非法字符
         @note: 操作失败，验证返回状态码和报错信息
         ''' 
-        self.expected_result_index = 0
         self.proapi = ProfilesAPIs()
-        @BaseTestCase.drive_data(self, self.dm.profile_info)
-        def do_test(xml_info):
-            self.flag = True
-            LogPrint().info("Test: Create a profile for network %s."%self.dm.nw_name)
-            r = self.proapi.createProfiles(xml_info,self.nw_id)
-            if r['status_code']==self.dm.expected_status_code:
-                dictCompare = DictCompare()
-                if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.expected_result_index]), r['result']):
-                    LogPrint().info("PASS: The returned status code and messages are CORRECT.")
-                else:
-                    LogPrint().error("FAIL: The returned messages are INCORRECT.")
-                    self.flag = False
+        self.flag = True
+        LogPrint().info("Test: Create a profile for network %s."%self.dm.nw_name)
+        r = self.proapi.createProfiles(self.dm.profile_info, self.nw_id)
+        if r['status_code']==self.dm.expected_status_code:
+            dictCompare = DictCompare()
+            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
+                LogPrint().info("PASS: The returned status code and messages are CORRECT.")
             else:
-                LogPrint().error("FAIL: The returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
+                LogPrint().error("FAIL: The returned messages are INCORRECT.")
                 self.flag = False
-            self.assertTrue(self.flag)
-            self.expected_result_index += 1
-        do_test()
-        
+        else:
+            LogPrint().error("FAIL: The returned status code is '%s' while it should be '%s'." % (r['status_code'], self.dm.expected_status_code))
+            self.flag = False
+        self.assertTrue(self.flag)
+              
     def tearDown(self):
         LogPrint().info("Post-Test: Delete the network %s."%self.dm.nw_name)
         self.nwapi.delNetwork(self.dm.nw_name, self.dm.dc_name)
@@ -369,7 +363,6 @@ class ITC060402_UpdateProfile_DupName(BaseTestCase):
         r = self.proapi.updateProfile(self.dm.profile_name1, self.nw_id, self.dm.update_info)
         if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
-            print xmltodict.parse(self.dm.expected_info)
             if dictCompare.isSubsetDict(r['result'], xmltodict.parse(self.dm.expected_info)):
                 LogPrint().info("PASS: The returned status code and messages are CORRECT when update dup profile.")
             else:
@@ -450,9 +443,9 @@ class ITC0605_DeleteProfile(BaseTestCase):
         r = self.proapi.delProfile(self.dm.profile_name, self.nw_id)
         if r['status_code'] == self.dm.expected_status_code:
             if not self.proapi.isExist(self.dm.profile_name, self.nw_id):
-                LogPrint().info("PASS: Delete profile % SUCCESS."%self.dm.profile_name)
+                LogPrint().info("PASS: Delete profile %s SUCCESS."%self.dm.profile_name)
             else:
-                LogPrint().error("FAIL: Profile % is still exist."%self.dm.profile_name)
+                LogPrint().error("FAIL: Profile %s is still exist."%self.dm.profile_name)
                 self.flag = False
         else:
             LogPrint().error("FAIL: The returned status code is '%s', INCORRECT. " % r['status_code'])
@@ -477,7 +470,7 @@ class ITC06_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Profile.ITC060302_CreateProfile_VerifyName"]
+    test_cases = ["Profile.ITC06_TearDown"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)
