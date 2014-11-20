@@ -72,10 +72,13 @@ data-repo-scope-placeholder="Search"
 data-skip-pjax="true"
 data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=clone">
 eclipse.preferences.version=1
+encoding//src/Configs/GlobalConfig.py=utf-8
+encoding//src/TestAPIs/DataCenterAPIs.py=utf-8
 encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/ProfilesAPIs.py=utf-8
 encoding//src/TestAPIs/TemplatesAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
+encoding//src/TestCases/BaseTestCase.py=utf-8
 encoding//src/TestCases/Cluster.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/Network.py=utf-8
@@ -101,6 +104,7 @@ encoding//src/TestData/Template/ITC07030401_UpdateTemplateNic.py=utf-8
 encoding//src/TestData/Template/ITC070305_DeleteTemplateNic.py=utf-8
 encoding//src/TestData/Template/ITC07_SetUp.py=utf-8
 encoding//src/TestRun/TestCenter.py=utf-8
+encoding//src/Utils/Util.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.
