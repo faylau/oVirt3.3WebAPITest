@@ -72,11 +72,14 @@ data-repo-scope-placeholder="Search"
 data-skip-pjax="true"
 data-url="/users/set_protocol?protocol_selector\=subversion&amp;protocol_type\=clone">
 eclipse.preferences.version=1
+encoding//src/Configs/GlobalConfig.py=utf-8
+encoding//src/TestAPIs/DataCenterAPIs.py=utf-8
 encoding//src/TestAPIs/DiskAPIs.py=utf-8
 encoding//src/TestAPIs/ProfilesAPIs.py=utf-8
 encoding//src/TestAPIs/StorageDomainAPIs.py=utf-8
 encoding//src/TestAPIs/TemplatesAPIs.py=utf-8
 encoding//src/TestAPIs/VirtualMachineAPIs.py=utf-8
+encoding//src/TestCases/BaseTestCase.py=utf-8
 encoding//src/TestCases/Cluster.py=utf-8
 encoding//src/TestCases/Disk.py=utf-8
 encoding//src/TestCases/Network.py=utf-8
@@ -134,6 +137,7 @@ encoding//src/TestData/VirtualMachine/ITC0503040202_UpdateVMDisk_vmrun_deactive.
 encoding//src/TestData/VirtualMachine/ITC05030502_DeleteActiveVMDisk_vmrun.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05040702_DeleteVmNic_vmrun_plugged.py=utf-8
 encoding//src/TestRun/TestCenter.py=utf-8
+encoding//src/Utils/Util.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">
 name="q"
 or=<a href\="\#" class\="js-clone-selector" data-protocol\="subversion">Subversion</a>.
