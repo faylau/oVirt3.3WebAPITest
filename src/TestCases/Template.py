@@ -229,7 +229,7 @@ class ITC0701030102_CreateTemplate_SD(BaseTestCase):
 
 class ITC0701030201_CreateTemplate_DupName(BaseTestCase):
     '''
-    @summary: 07模板管理-03创建模板-02创建失败-01模板重名
+    @summary: 07模板管理-01基本操作-03创建模板-02创建失败-01模板重名
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -262,7 +262,7 @@ class ITC0701030201_CreateTemplate_DupName(BaseTestCase):
 
 class ITC0701030202_CreateTemplate_VerifyName(BaseTestCase):
     '''
-    @summary: 07模板管理-03创建模板-02创建失败-02验证名称合法性
+    @summary: 07模板管理-01基本操作-03创建模板-02创建失败-02验证名称合法性
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -289,7 +289,7 @@ class ITC0701030202_CreateTemplate_VerifyName(BaseTestCase):
 
 class ITC0701030203_CreateTemplate_NoRequired(BaseTestCase):
     '''
-    @summary: 07模板管理-03创建模板-02创建失败-03验证参数完整性
+    @summary: 07模板管理-01基本操作-03创建模板-02创建失败-03验证参数完整性
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()

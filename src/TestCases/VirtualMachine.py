@@ -86,1114 +86,971 @@ class ITC05_SetUp(BaseTestCase):
             LogPrint().error("Create vm failed.Status-code is WRONG.")
             self.assertTrue(False)
 
-# class ITC050101_GetVmsList(BaseTestCase):
+class ITC050101_GetVmsList(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-01查看虚拟机列表
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+     
+    def test_GetVmsList(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）获取虚拟机列表；
+        @note: （2）操作成功，验证接口返回状态码是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Get VMs list.")
+        r = vm_api.getVmsList()
+        if r['status_code'] == self.dm.expected_status_code_get_vms:
+            LogPrint().info("PASS: Get VMs list SUCCESS.")
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG.")
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        pass
+ 
+class ITC050102_GetVmInfo(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-02查看虚拟机信息
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm-ITC050102
+        LogPrint().info("Pre-Test: Create a vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_GetVmInfo(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）调用相关接口，获取指定VM信息；
+        @note: （2）操作成功，验证接口返回验证码、虚拟机信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Get vm '%s' info." % self.dm.vm_name)
+        r = vm_api.getVmInfo(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_get_vm_info:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_vm_info), r['result']):
+                LogPrint().info("PASS: Get vm '%s' info SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Get vm '%s' info INCORRECT." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05010301_CreateVm_Normal(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-01普通创建
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+    def test_CreateVm_Normal(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）创建一个普通机（使用Blank模板）；
+        @note: （2）操作成功，验证接口返回的状态码、虚拟机信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Create a vm '%s' from template 'Blank'." % self.dm.vm_name)
+        r = vm_api.createVm(self.dm.xml_vm_info)
+        if r['status_code'] == self.dm.expected_status_code_create_vm:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_vm_info), r['result']):
+                LogPrint().info("PASS: Create vm '%s' SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Create vm '%s' FAILED, returned vm info are INCORRECT." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm '%s'." % (r['status_code'], self.dm.vm_name))
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05010303_CreateVm_DupName(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-03重名
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test: Create the 1st vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_CreateVm_DupName(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）创建一个重名的虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Create the 2nd vm with dup name '%s'." % self.dm.vm_name)
+        r = vm_api.createVm(self.dm.xml_vm_info)
+        if r['status_code'] == self.dm.expected_status_code_create_vm_dup:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_create_vm_dup), r['result']):
+                LogPrint().info("PASS: Returned messages are CORRECT while creating vm with dup name.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm with dup name.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm with dup name '%s'." % (r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05010304_CreateVm_NameVerify(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-04名称有效性
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+    def test_CreateVm_DupName(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）使用无效虚拟机名创建虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        self.i = 0
+        @BaseTestCase.drive_data(self, self.dm.xml_vm_info)
+        def do_test(vm_info):
+            LogPrint().info("Test: Create vm with invalid name '%s'." % xmltodict.parse(vm_info)['vm']['name'])
+            r = vm_api.createVm(vm_info)
+            if r['status_code'] == self.dm.expected_status_code_create_vm_invalid_name:
+                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.i]), r['result']):
+                    LogPrint().info("PASS: Returned messages are CORRECT while creating vm with invalid name.")
+                    self.flag = True
+                else:
+                    LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm with invalid name.")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm with invalid name '%s'." % (r['status_code']))
+                self.flag = False
+            self.i += 1
+            self.assertTrue(self.flag)
+        do_test()
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        # 如果虚拟机存在，则删除，否则给出提示信息。
+        for vm_name in self.dm.vm_name_list:
+            LogPrint().info("Post-Test: Delete vm '%s'." % vm_name)
+            self.assertTrue(smart_del_vm(vm_name))
+ 
+class ITC05010305_CreateVm_NoRequiredParams(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-05缺少必填参数
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+    def test_CreateVm_NoRequiredParams(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）使用缺少必填参数（name、cluster、template）的xml文件创建虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+         
+        self.dict_vms = OrderedDict()
+        self.dict_vms[self.dm.vm1_name] = self.dm.xml_vm1_info
+        self.dict_vms[self.dm.vm2_name] = self.dm.xml_vm2_info
+        self.dict_vms[self.dm.vm3_name] = self.dm.xml_vm3_info
+         
+        LogPrint().info("Test: Create vm without required parameters (name/cluster/template).")
+        self.i = 0
+        for vm_name in self.dict_vms:
+            r = vm_api.createVm(self.dict_vms[vm_name])
+            if r['status_code'] == self.dm.expected_status_code_list[self.i]:
+                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.i]), r['result']):
+                    LogPrint().info("PASS: Returned messages are CORRECT while creating vm without required parameters (name/cluster/template).")
+                    self.flag = True
+                else:
+                    LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm without parameters (name/cluster/template).")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm without parameters (name/cluster/template).")
+                self.flag = False
+            self.assertTrue(self.flag)
+            self.i += 1
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        # 如果虚拟机存在，则删除，否则给出提示信息。
+        for vm_name in self.dict_vms:
+            LogPrint().info("Post-Test: Delete vm '%s'." % vm_name)
+            self.assertTrue(smart_del_vm(vm_name))
+ 
+class ITC05010403_EditVm_DupName(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-04编辑-03重名
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_EditVm_DupName(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）编辑虚拟机，使用重复的名称；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Edit vm '%s' with dup name '%s'." % (self.dm.vm_name, ModuleData.vm_name))
+        r = vm_api.updateVm(self.dm.vm_name, self.dm.xml_vm_update_info)
+        if r['status_code'] == self.dm.expected_status_code_edit_vm_dup:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_edit_vm_dup), r['result']):
+                LogPrint().info("PASS: Returned messages are CORRECT while edit vm with dup name.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while edit vm with dup name.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when edit vm with dup name '%s'." % (r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC0501050101_DelVm_Normal_Down(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-01Down状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_DelVm_Normal_Down(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）删除Down状态的虚拟机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Delete vm '%s' with 'Down' state." % self.dm.vm_name)
+        r = vm_api.delVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_del_vm:
+            if not vm_api.searchVmByName(self.dm.vm_name):
+                LogPrint().info("PASS: Delete vm '%s' SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Delete vm '%s' FAILED." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC0501050102_DelVm_Normal_Up(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-02Up状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，并启动。
+        LogPrint().info("Pre-Test: Create and Start vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+    def test_DelVm_Normal_Up(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）删除Up状态的虚拟机；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Delete vm '%s' with 'Up' state." % self.dm.vm_name)
+        r = vm_api.delVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_del_vm_up:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_del_vm_up), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的虚拟机；
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05010502_DelVm_WithoutDisk(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-02不删除磁盘
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test-1: Create a vm with name '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机添加一个磁盘disk1
+        LogPrint().info("Pre-Test-2: Create a disk '%s' and attach it to vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        r = smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias)
+        self.disk_id = r[1]
+        self.assertTrue(r[0])
+         
+    def test_DelVm_WithoutDisk(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）删除虚拟机，但不删除磁盘；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        disk_api = DiskAPIs()
+        LogPrint().info("Test: Delete vm '%s' without its disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        r = vm_api.delVm(self.dm.vm_name, self.dm.xml_del_vm_without_disk)
+        if r['status_code'] == self.dm.expected_status_code_del_vm:
+            if not vm_api.searchVmByName(self.dm.vm_name) and disk_api.searchDiskByAlias(self.dm.disk_alias)['result']['disks']:
+                LogPrint().info("PASS: Delete vm '%s' without disk SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Delete vm '%s' without disk FAILED. Vm still exists or Disk is removed." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG while deleting vm '%s' without disk." % (r['status_code'], self.dm.vm_name))
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的磁盘；
+        @note: （1）删除创建的虚拟机。
+        '''
+        LogPrint().info("Post-Test-1: Delete vm '%s' if it exist." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        LogPrint().info("Post-Test-2: Delete disk '%s' if it exist." % self.dm.disk_alias)
+        self.assertTrue(smart_delete_disk(self.disk_id))
+ 
+class ITC05010503_DelVm_Force(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-03强制删除
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()        
+         
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Test: Create a vm with name '%s' for this TC." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_DelVm_WithoutDisk(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）强制删除虚拟机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Force delete vm '%s'." % self.dm.vm_name)
+        r = vm_api.delVm(self.dm.vm_name, self.dm.xml_del_vm_force)
+        if r['status_code'] == self.dm.expected_status_code_del_vm:
+            if not vm_api.searchVmByName(self.dm.vm_name):
+                LogPrint().info("PASS: Force delete vm '%s' SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Force delete vm '%s' FAILED. Vm still exists." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG while force deleting vm '%s'." % (r['status_code'], self.dm.vm_name))
+            self.flag = False
+        self.assertTrue(self.flag)
+     
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）删除创建的磁盘；
+        @note: （1）删除创建的虚拟机。
+        '''
+        LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name, self.dm.xml_del_vm_force))
+         
+class ITC05010504_DelVm_DeleteProtect(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-04删除保护
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试环境
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1（设置“删除保护”项）
+        LogPrint().info("Pre-Test: Create vm '%s' with 'Delete Protect' optoin." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_DelVm_DeleteProtect(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）删除虚拟机vm1（有删除保护选项）；
+        @note: （2）操作失败，检查接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Delete vm '%s' with 'Delete Protect' option." % self.dm.vm_name)
+        r = vm_api.delVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_del_vm_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_del_vm_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT while deleting vm '%s' with 'Delete Protect' option." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are INCORRECT while deleting vm '%s' with 'Delete Protect' option." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test-1：编辑虚拟机，取消“删除保护”项
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Post-Test-1: Edit vm '%s' to cancel the 'Delete Protect' option." % self.dm.vm_name)
+        self.assertTrue(vm_api.updateVm(self.dm.vm_name, self.dm.xml_vm_update_info)['status_code']==self.dm.expected_status_code_update_vm)
+         
+        # Post-Test-2：删除虚拟机
+        LogPrint().info("Post-Test-2: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name, self.dm.xml_del_vm_force)) 
+ 
+class ITC0502010101_StartVm_Down_NoDisk_MultiStartDevices(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（有多个启动设备）
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试环境
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，定义多个启动设备（光驱、磁盘等）
+        LogPrint().info("Pre-Test: Create vm '%s' with multi-start-devices." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_StartVm_Down_NoDisk_MultiStartDevices(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）运行虚拟机；
+        @note: （2）操作成功，检查接口返回的状态码、相关信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Start vm '%s' without disk in 'down' state (which have multi-start devices)." % self.dm.vm_name)
+        r = vm_api.startVm(self.dm.vm_name)
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        if wait_until(is_vm_up, 300, 5):
+            if r['status_code'] == 200:
+                LogPrint().info("PASS: Start vm '%s' SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机vm1
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC0502010102_StartVm_Down_NoDisk_StartFromHd(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（只有一个启动设备：硬盘）
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试环境
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，定义一个启动设备（硬盘）
+        LogPrint().info("Pre-Test: Create vm '%s' with only one start device (hard disk)." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_StartVm_Down_NoDisk_StartFromHd(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）运行虚拟机；
+        @note: （2）操作失败，检查接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Start vm '%s' without disk in 'down' state (have multi-start devices)." % self.dm.vm_name)
+        r = vm_api.startVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_start_vm_without_disk_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_start_vm_without_disk_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned messages are INCORRECT.")
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is INCORRECT." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机vm1
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC0502010103_StartVm_Down_StartFromHd(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（只有一个启动设备：硬盘）
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试环境
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，定义一个启动设备（硬盘）
+        LogPrint().info("Pre-Test-1: Create vm '%s' with 'hd' as start divice." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机vm1创建一个虚拟磁盘disk1
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+    def test_StartVm_Down_StartFromHd(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）运行虚拟机；
+        @note: （2）操作失败，检查接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Start vm '%s' with disk in 'down' state from hd device." % self.dm.vm_name)
+        r = vm_api.startVm(self.dm.vm_name)
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        if wait_until(is_vm_up, 300, 5):
+            if r['status_code'] == self.dm.expected_status_code_start_vm_with_disk:
+                LogPrint().info("PASS: Start vm '%s' SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机vm1
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05020102_StartVm_Suspended(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-01启动-02Suspended状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试环境
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1（第一启动设备为cd-rom）
+        LogPrint().info("Pre-Test-1: Create vm '%s' with 'cd-rom' as 1st start device." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：启动虚拟机，然后将其设置为suspended状态。
+        LogPrint().info("Pre-Test-2: Start vm '%s' and then make it in 'suspended' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        self.assertTrue(smart_suspend_vm(self.dm.vm_name))
+         
+    def test_StartVm_Down_StartFromHd(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）运行虚拟机；
+        @note: （2）操作成功，检查接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Start vm '%s' with disk in 'suspended' state." % self.dm.vm_name)
+        r = vm_api.startVm(self.dm.vm_name)
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        if wait_until(is_vm_up, 300, 5):
+            if r['status_code'] == self.dm.expected_status_code_start_vm_from_suspended:
+                LogPrint().info("PASS: Start vm '%s' from 'suspended' state SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机vm1
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05020103_StartVm_Once(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-01启动-03只运行一次
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试环境
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1
+        LogPrint().info("Pre-Tests-1: Create vm '%s' for this TC." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机vm1创建一个磁盘disk1
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+    def test_StartVm_Once(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）运行虚拟机；
+        @note: （2）操作成功，检查接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Start vm '%s' by 'once'." % self.dm.vm_name)
+        r = vm_api.startVm(self.dm.vm_name, self.dm.xml_start_vm_once)
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        if wait_until(is_vm_up, 300, 5):
+            if r['status_code'] == self.dm.expected_status_code_start_vm_once:
+                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_start_vm_once)['action'], vm_api.getVmInfo(self.dm.vm_name)['result']):
+                    LogPrint().info("PASS: Start vm '%s' by 'once' SUCCESS." % self.dm.vm_name)
+                    self.flag = True
+                else:
+                    LogPrint().error("FAIL: Start vm '%s' SUCCESS, but its info not equals to 'xml_start_vm_once'." % self.dm.vm_name)
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Start vm '%s' by 'once' FAILED. Returned status code '%s' is INCORRECT." % (self.dm.vm_name, r['status_code']))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Start vm '%s' by 'once' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机vm1
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05020104_StartVm_Paused(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-01启动-04以暂停方式启动
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试环境
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1（第一启动设备为cdrom）
+        LogPrint().info("Pre-Test: Create vm '%s' with 'cdrom' as 1st start device." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_StartVm_Paused(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）以暂停方式运行虚拟机；
+        @note: （2）操作成功，检查接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Start vm '%s' by 'paused'." % self.dm.vm_name)
+        r = vm_api.startVm(self.dm.vm_name, self.dm.xml_start_vm_paused)
+        def is_vm_paused():
+            return vm_api.getVmStatus(self.dm.vm_name)=='paused'
+        if wait_until(is_vm_paused, 300, 5):
+            if r['status_code'] == self.dm.expected_status_code_start_vm_paused:
+                LogPrint().info("PASS: Start vm '%s' by 'paused' SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Start vm '%s' by 'paused' FAILED. Returned status code '%s' is INCORRECT." % (self.dm.vm_name, r['status_code']))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Start vm '%s' by 'paused' FAILED. It's final state is not 'Paused'." % self.dm.vm_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+         
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机vm1
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))            
+ 
+class ITC05020201_StopVm_Up(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-02断电-01Up状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，并启动。
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        LogPrint().info("Pre-Test-2: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+    def test_StopVm_Up(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对虚拟机进行断电操作；
+        @note: （2）操作成功，验证接口返回的状态码、VM的最终状态是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Stop vm '%s' from 'up' state." % self.dm.vm_name)
+        r = vm_api.stopVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_stop_vm:
+            if vm_api.getVmStatus(self.dm.vm_name)=='down':
+                LogPrint().info("PASS: Stop vm '%s' from 'up' state SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Stop vm '%s' from 'up' state FAILED. Vm's final state is not 'down'." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05020202_StopVm_Suspended(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-02断电-02Suspended状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，启动，挂起。
+        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        LogPrint().info("Pre-Test-2: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        LogPrint().info("Pre-Test-3: Suspend a vm '%s' to 'suspended' state." % self.dm.vm_name)
+        self.assertTrue(smart_suspend_vm(self.dm.vm_name))
+         
+    def test_StopVm_Suspended(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对Suspended状态虚拟机进行断电操作；
+        @note: （2）操作成功，验证接口返回的状态码、VM的最终状态是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        def is_vm_down():
+            return vm_api.getVmStatus(self.dm.vm_name)=='down'
+        LogPrint().info("Test: Stop vm '%s' from 'suspended' state." % self.dm.vm_name)
+        r = vm_api.stopVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_stop_vm:
+            if wait_until(is_vm_down, 300, 5):
+                LogPrint().info("PASS: Stop vm '%s' from 'suspended' state SUCCESS." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Stop vm '%s' from 'suspended' state FAILED. Vm's final state is not 'down'." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))       
+ 
+class ITC05020203_StopVm_Down(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-02断电-03Down状态失败
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，处于Down状态。
+        LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_StopVm_Down(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对Down状态虚拟机进行断电操作；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Stop vm '%s' from 'Down' state." % self.dm.vm_name)
+        r = vm_api.stopVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_stop_vm_down:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_stop_vm_down), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT while stopping vm '%s' from 'down' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are INCORRECT while stopping vm '%s' from 'down' state." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))   
+ 
+# class ITC05020301_ShutdownVm_Up(BaseTestCase):
 #     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-01查看虚拟机列表
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#     
-#     def test_GetVmsList(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）获取虚拟机列表；
-#         @note: （2）操作成功，验证接口返回状态码是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Get VMs list.")
-#         r = vm_api.getVmsList()
-#         if r['status_code'] == self.dm.expected_status_code_get_vms:
-#             LogPrint().info("PASS: Get VMs list SUCCESS.")
-#             self.flag = True
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG.")
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         pass
-# 
-# class ITC050102_GetVmInfo(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-02查看虚拟机信息
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm-ITC050102
-#         LogPrint().info("Pre-Test: Create a vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_GetVmInfo(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）调用相关接口，获取指定VM信息；
-#         @note: （2）操作成功，验证接口返回验证码、虚拟机信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Get vm '%s' info." % self.dm.vm_name)
-#         r = vm_api.getVmInfo(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_get_vm_info:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_vm_info), r['result']):
-#                 LogPrint().info("PASS: Get vm '%s' info SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Get vm '%s' info INCORRECT." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05010301_CreateVm_Normal(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-01普通创建
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#     def test_CreateVm_Normal(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）创建一个普通机（使用Blank模板）；
-#         @note: （2）操作成功，验证接口返回的状态码、虚拟机信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Create a vm '%s' from template 'Blank'." % self.dm.vm_name)
-#         r = vm_api.createVm(self.dm.xml_vm_info)
-#         if r['status_code'] == self.dm.expected_status_code_create_vm:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_vm_info), r['result']):
-#                 LogPrint().info("PASS: Create vm '%s' SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Create vm '%s' FAILED, returned vm info are INCORRECT." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm '%s'." % (r['status_code'], self.dm.vm_name))
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的虚拟机；
-#         '''
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05010303_CreateVm_DupName(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-03重名
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1
-#         LogPrint().info("Pre-Test: Create the 1st vm with name '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_CreateVm_DupName(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）创建一个重名的虚拟机；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Create the 2nd vm with dup name '%s'." % self.dm.vm_name)
-#         r = vm_api.createVm(self.dm.xml_vm_info)
-#         if r['status_code'] == self.dm.expected_status_code_create_vm_dup:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_create_vm_dup), r['result']):
-#                 LogPrint().info("PASS: Returned messages are CORRECT while creating vm with dup name.")
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm with dup name.")
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm with dup name '%s'." % (r['status_code']))
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的虚拟机；
-#         '''
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05010304_CreateVm_NameVerify(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-04名称有效性
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#     def test_CreateVm_DupName(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）使用无效虚拟机名创建虚拟机；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         self.i = 0
-#         @BaseTestCase.drive_data(self, self.dm.xml_vm_info)
-#         def do_test(vm_info):
-#             LogPrint().info("Test: Create vm with invalid name '%s'." % xmltodict.parse(vm_info)['vm']['name'])
-#             r = vm_api.createVm(vm_info)
-#             if r['status_code'] == self.dm.expected_status_code_create_vm_invalid_name:
-#                 if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.i]), r['result']):
-#                     LogPrint().info("PASS: Returned messages are CORRECT while creating vm with invalid name.")
-#                     self.flag = True
-#                 else:
-#                     LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm with invalid name.")
-#                     self.flag = False
-#             else:
-#                 LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm with invalid name '%s'." % (r['status_code']))
-#                 self.flag = False
-#             self.i += 1
-#             self.assertTrue(self.flag)
-#         do_test()
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的虚拟机；
-#         '''
-#         # 如果虚拟机存在，则删除，否则给出提示信息。
-#         for vm_name in self.dm.vm_name_list:
-#             LogPrint().info("Post-Test: Delete vm '%s'." % vm_name)
-#             self.assertTrue(smart_del_vm(vm_name))
-# 
-# class ITC05010305_CreateVm_NoRequiredParams(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-03创建-05缺少必填参数
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#     def test_CreateVm_NoRequiredParams(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）使用缺少必填参数（name、cluster、template）的xml文件创建虚拟机；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         
-#         self.dict_vms = OrderedDict()
-#         self.dict_vms[self.dm.vm1_name] = self.dm.xml_vm1_info
-#         self.dict_vms[self.dm.vm2_name] = self.dm.xml_vm2_info
-#         self.dict_vms[self.dm.vm3_name] = self.dm.xml_vm3_info
-#         
-#         LogPrint().info("Test: Create vm without required parameters (name/cluster/template).")
-#         
-#         self.i = 0
-#         for vm_name in self.dict_vms:
-#             r = vm_api.createVm(self.dict_vms[vm_name])
-#             if r['status_code'] == self.dm.expected_status_code_list[self.i]:
-#                 if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.i]), r['result']):
-#                     LogPrint().info("PASS: Returned messages are CORRECT while creating vm without required parameters (name/cluster/template).")
-#                     self.flag = True
-#                 else:
-#                     LogPrint().error("FAIL: Returned messages are INCORRECT while creating vm without parameters (name/cluster/template).")
-#                     self.flag = False
-#             else:
-#                 LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm without parameters (name/cluster/template).")
-#                 self.flag = False
-#             self.assertTrue(self.flag)
-#             self.i += 1
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的虚拟机；
-#         '''
-#         # 如果虚拟机存在，则删除，否则给出提示信息。
-#         for vm_name in self.dict_vms:
-#             LogPrint().info("Post-Test: Delete vm '%s'." % vm_name)
-#             self.assertTrue(smart_del_vm(vm_name))
-# 
-# class ITC05010403_EditVm_DupName(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-04编辑-03重名
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1
-#         LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_EditVm_DupName(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）编辑虚拟机，使用重复的名称；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Edit vm '%s' with dup name '%s'." % (self.dm.vm_name, ModuleData.vm_name))
-#         r = vm_api.updateVm(self.dm.vm_name, self.dm.xml_vm_update_info)
-#         if r['status_code'] == self.dm.expected_status_code_edit_vm_dup:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_edit_vm_dup), r['result']):
-#                 LogPrint().info("PASS: Returned messages are CORRECT while edit vm with dup name.")
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned messages are INCORRECT while edit vm with dup name.")
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG when edit vm with dup name '%s'." % (r['status_code']))
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的虚拟机；
-#         '''
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC0501050101_DelVm_Normal_Down(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-01Down状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1
-#         LogPrint().info("Pre-Test: Create a vm with name '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_DelVm_Normal_Down(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）删除Down状态的虚拟机；
-#         @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Delete vm '%s' with 'Down' state." % self.dm.vm_name)
-#         r = vm_api.delVm(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_del_vm:
-#             if not vm_api.searchVmByName(self.dm.vm_name):
-#                 LogPrint().info("PASS: Delete vm '%s' SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Delete vm '%s' FAILED." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的虚拟机；
-#         '''
-#         LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC0501050102_DelVm_Normal_Up(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-01普通删除-02Up状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，并启动。
-#         LogPrint().info("Pre-Test: Create and Start vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#     def test_DelVm_Normal_Up(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）删除Up状态的虚拟机；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Delete vm '%s' with 'Up' state." % self.dm.vm_name)
-#         r = vm_api.delVm(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_del_vm_up:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_del_vm_up), r['result']):
-#                 LogPrint().info("PASS: Returned status code and messages are CORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned messages are INCORRECT while deleting vm '%s' with 'up' state." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的虚拟机；
-#         '''
-#         LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05010502_DelVm_WithoutDisk(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-02不删除磁盘
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1
-#         LogPrint().info("Pre-Test-1: Create a vm with name '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机添加一个磁盘disk1
-#         LogPrint().info("Pre-Test-2: Create a disk '%s' and attach it to vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         r = smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias)
-#         self.disk_id = r[1]
-#         self.assertTrue(r[0])
-#         
-#     def test_DelVm_WithoutDisk(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）删除虚拟机，但不删除磁盘；
-#         @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         disk_api = DiskAPIs()
-#         LogPrint().info("Test: Delete vm '%s' without its disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
-#         r = vm_api.delVm(self.dm.vm_name, self.dm.xml_del_vm_without_disk)
-#         if r['status_code'] == self.dm.expected_status_code_del_vm:
-#             if not vm_api.searchVmByName(self.dm.vm_name) and disk_api.searchDiskByAlias(self.dm.disk_alias)['result']['disks']:
-#                 LogPrint().info("PASS: Delete vm '%s' without disk SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Delete vm '%s' without disk FAILED. Vm still exists or Disk is removed." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG while deleting vm '%s' without disk." % (r['status_code'], self.dm.vm_name))
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的磁盘；
-#         @note: （1）删除创建的虚拟机。
-#         '''
-#         LogPrint().info("Post-Test-1: Delete vm '%s' if it exist." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-#         LogPrint().info("Post-Test-2: Delete disk '%s' if it exist." % self.dm.disk_alias)
-#         self.assertTrue(smart_delete_disk(self.disk_id))
-# 
-# class ITC05010503_DelVm_Force(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-03强制删除
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()        
-#         
-#         # 前提1：创建一个虚拟机vm1
-#         LogPrint().info("Pre-Test: Create a vm with name '%s' for this TC." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_DelVm_WithoutDisk(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）强制删除虚拟机；
-#         @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Force delete vm '%s'." % self.dm.vm_name)
-#         r = vm_api.delVm(self.dm.vm_name, self.dm.xml_del_vm_force)
-#         if r['status_code'] == self.dm.expected_status_code_del_vm:
-#             if not vm_api.searchVmByName(self.dm.vm_name):
-#                 LogPrint().info("PASS: Force delete vm '%s' SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Force delete vm '%s' FAILED. Vm still exists." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG while force deleting vm '%s'." % (r['status_code'], self.dm.vm_name))
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#     
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）删除创建的磁盘；
-#         @note: （1）删除创建的虚拟机。
-#         '''
-#         LogPrint().info("Post-Test: Delete vm '%s' if it exist." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name, self.dm.xml_del_vm_force))
-#         
-# class ITC05010504_DelVm_DeleteProtect(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-01虚拟机操作-05删除-04删除保护
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试环境
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1（设置“删除保护”项）
-#         LogPrint().info("Pre-Test: Create vm '%s' with 'Delete Protect' optoin." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_DelVm_DeleteProtect(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）删除虚拟机vm1（有删除保护选项）；
-#         @note: （2）操作失败，检查接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Delete vm '%s' with 'Delete Protect' option." % self.dm.vm_name)
-#         r = vm_api.delVm(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_del_vm_fail:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_del_vm_fail), r['result']):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT while deleting vm '%s' with 'Delete Protect' option." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are INCORRECT while deleting vm '%s' with 'Delete Protect' option." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test-1：编辑虚拟机，取消“删除保护”项
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Post-Test-1: Edit vm '%s' to cancel the 'Delete Protect' option." % self.dm.vm_name)
-#         self.assertTrue(vm_api.updateVm(self.dm.vm_name, self.dm.xml_vm_update_info)['status_code']==self.dm.expected_status_code_update_vm)
-#         
-#         # Post-Test-2：删除虚拟机
-#         LogPrint().info("Post-Test-2: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name, self.dm.xml_del_vm_force)) 
-# 
-# class ITC0502010101_StartVm_Down_NoDisk_MultiStartDevices(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（有多个启动设备）
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试环境
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，定义多个启动设备（光驱、磁盘等）
-#         LogPrint().info("Pre-Test: Create vm '%s' with multi-start-devices." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_StartVm_Down_NoDisk_MultiStartDevices(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）运行虚拟机；
-#         @note: （2）操作成功，检查接口返回的状态码、相关信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Start vm '%s' without disk in 'down' state (which have multi-start devices)." % self.dm.vm_name)
-#         r = vm_api.startVm(self.dm.vm_name)
-#         def is_vm_up():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-#         if wait_until(is_vm_up, 300, 5):
-#             if r['status_code'] == 200:
-#                 LogPrint().info("PASS: Start vm '%s' SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机vm1
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC0502010102_StartVm_Down_NoDisk_StartFromHd(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（只有一个启动设备：硬盘）
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试环境
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，定义一个启动设备（硬盘）
-#         LogPrint().info("Pre-Test: Create vm '%s' with only one start device (hard disk)." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_StartVm_Down_NoDisk_StartFromHd(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）运行虚拟机；
-#         @note: （2）操作失败，检查接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Start vm '%s' without disk in 'down' state (have multi-start devices)." % self.dm.vm_name)
-#         r = vm_api.startVm(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_start_vm_without_disk_fail:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_start_vm_without_disk_fail), r['result']):
-#                 LogPrint().info("PASS: Returned status code and messages are CORRECT.")
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned messages are INCORRECT.")
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is INCORRECT." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机vm1
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC0502010103_StartVm_Down_StartFromHd(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-01启动-01Down状态-01无磁盘（只有一个启动设备：硬盘）
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试环境
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，定义一个启动设备（硬盘）
-#         LogPrint().info("Pre-Test-1: Create vm '%s' with 'hd' as start divice." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机vm1创建一个虚拟磁盘disk1
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#     def test_StartVm_Down_StartFromHd(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）运行虚拟机；
-#         @note: （2）操作失败，检查接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Start vm '%s' with disk in 'down' state from hd device." % self.dm.vm_name)
-#         r = vm_api.startVm(self.dm.vm_name)
-#         def is_vm_up():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-#         if wait_until(is_vm_up, 300, 5):
-#             if r['status_code'] == self.dm.expected_status_code_start_vm_with_disk:
-#                 LogPrint().info("PASS: Start vm '%s' SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机vm1
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05020102_StartVm_Suspended(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-01启动-02Suspended状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试环境
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1（第一启动设备为cd-rom）
-#         LogPrint().info("Pre-Test-1: Create vm '%s' with 'cd-rom' as 1st start device." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：启动虚拟机，然后将其设置为suspended状态。
-#         LogPrint().info("Pre-Test-2: Start vm '%s' and then make it in 'suspended' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         self.assertTrue(smart_suspend_vm(self.dm.vm_name))
-#         
-#     def test_StartVm_Down_StartFromHd(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）运行虚拟机；
-#         @note: （2）操作成功，检查接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Start vm '%s' with disk in 'suspended' state." % self.dm.vm_name)
-#         r = vm_api.startVm(self.dm.vm_name)
-#         def is_vm_up():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-#         if wait_until(is_vm_up, 300, 5):
-#             if r['status_code'] == self.dm.expected_status_code_start_vm_from_suspended:
-#                 LogPrint().info("PASS: Start vm '%s' from 'suspended' state SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Start vm '%s' FAILED. Returned status code is INCORRECT." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Start vm '%s' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机vm1
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05020103_StartVm_Once(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-01启动-03只运行一次
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试环境
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1
-#         LogPrint().info("Pre-Tests-1: Create vm '%s' for this TC." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机vm1创建一个磁盘disk1
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#     def test_StartVm_Once(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）运行虚拟机；
-#         @note: （2）操作成功，检查接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Start vm '%s' by 'once'." % self.dm.vm_name)
-#         r = vm_api.startVm(self.dm.vm_name, self.dm.xml_start_vm_once)
-#         def is_vm_up():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-#         if wait_until(is_vm_up, 300, 5):
-#             if r['status_code'] == self.dm.expected_status_code_start_vm_once:
-#                 if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_start_vm_once)['action'], vm_api.getVmInfo(self.dm.vm_name)['result']):
-#                     LogPrint().info("PASS: Start vm '%s' by 'once' SUCCESS." % self.dm.vm_name)
-#                     self.flag = True
-#                 else:
-#                     LogPrint().error("FAIL: Start vm '%s' SUCCESS, but its info not equals to 'xml_start_vm_once'." % self.dm.vm_name)
-#                     self.flag = False
-#             else:
-#                 LogPrint().error("FAIL: Start vm '%s' by 'once' FAILED. Returned status code '%s' is INCORRECT." % (self.dm.vm_name, r['status_code']))
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Start vm '%s' by 'once' FAILED. It's final state is not 'UP'." % self.dm.vm_name)
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机vm1
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05020104_StartVm_Paused(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-01启动-04以暂停方式启动
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试环境
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1（第一启动设备为cdrom）
-#         LogPrint().info("Pre-Test: Create vm '%s' with 'cdrom' as 1st start device." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_StartVm_Paused(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）以暂停方式运行虚拟机；
-#         @note: （2）操作成功，检查接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Start vm '%s' by 'paused'." % self.dm.vm_name)
-#         r = vm_api.startVm(self.dm.vm_name, self.dm.xml_start_vm_paused)
-#         def is_vm_paused():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='paused'
-#         if wait_until(is_vm_paused, 300, 5):
-#             if r['status_code'] == self.dm.expected_status_code_start_vm_paused:
-#                 LogPrint().info("PASS: Start vm '%s' by 'paused' SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Start vm '%s' by 'paused' FAILED. Returned status code '%s' is INCORRECT." % (self.dm.vm_name, r['status_code']))
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Start vm '%s' by 'paused' FAILED. It's final state is not 'Paused'." % self.dm.vm_name)
-#             self.flag = False
-#         self.assertTrue(self.flag)
-#         
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机vm1
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))            
-# 
-# class ITC05020201_StopVm_Up(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-02断电-01Up状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，并启动。
-#         LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         LogPrint().info("Pre-Test-2: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#     def test_StopVm_Up(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）对虚拟机进行断电操作；
-#         @note: （2）操作成功，验证接口返回的状态码、VM的最终状态是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Stop vm '%s' from 'up' state." % self.dm.vm_name)
-#         r = vm_api.stopVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_stop_vm:
-#             if vm_api.getVmStatus(self.dm.vm_name)=='down':
-#                 LogPrint().info("PASS: Stop vm '%s' from 'up' state SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Stop vm '%s' from 'up' state FAILED. Vm's final state is not 'down'." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05020202_StopVm_Suspended(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-02断电-02Suspended状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，启动，挂起。
-#         LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         LogPrint().info("Pre-Test-2: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         LogPrint().info("Pre-Test-3: Suspend a vm '%s' to 'suspended' state." % self.dm.vm_name)
-#         self.assertTrue(smart_suspend_vm(self.dm.vm_name))
-#         
-#     def test_StopVm_Suspended(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）对Suspended状态虚拟机进行断电操作；
-#         @note: （2）操作成功，验证接口返回的状态码、VM的最终状态是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         def is_vm_down():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='down'
-#         LogPrint().info("Test: Stop vm '%s' from 'suspended' state." % self.dm.vm_name)
-#         r = vm_api.stopVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_stop_vm:
-#             if wait_until(is_vm_down, 300, 5):
-#                 LogPrint().info("PASS: Stop vm '%s' from 'suspended' state SUCCESS." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Stop vm '%s' from 'suspended' state FAILED. Vm's final state is not 'down'." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))       
-# 
-# class ITC05020203_StopVm_Down(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-02断电-03Down状态失败
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，处于Down状态。
-#         LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_StopVm_Down(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）对Down状态虚拟机进行断电操作；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Stop vm '%s' from 'Down' state." % self.dm.vm_name)
-#         r = vm_api.stopVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_stop_vm_down:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_stop_vm_down), r['result']):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT while stopping vm '%s' from 'down' state." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are INCORRECT while stopping vm '%s' from 'down' state." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))   
-# 
-# # class ITC05020301_ShutdownVm_Up(BaseTestCase):
-# #     '''
-# #     @summary: ITC-05虚拟机管理-02生命周期管理-03关闭-01Up状态
-# #     @todo: 未完成，有OS的虚拟机才能正常shutdown，目前自动化测试环境中没有这样的虚拟机。
-# #     '''
-# #     def setUp(self):
-# #         '''
-# #         @summary: 初始化测试数据、测试环境。
-# #         '''
-# #         # 初始化测试数据
-# #         self.dm = super(self.__class__, self).setUp()
-# #         
-# #         # 前提1：创建一个虚拟机vm1，并启动。
-# #         LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
-# #         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-# #         LogPrint().info("Pre-Test-2: Start vm '%s' for test." % self.dm.vm_name)
-# #         self.assertTrue(smart_start_vm(self.dm.vm_name))
-# #         
-# #     def test_StopVm_Down(self):
-# #         '''
-# #         @summary: 测试步骤
-# #         @note: （1）对UP状态虚拟机进行Shutdown操作；
-# #         @note: （2）操作成功，验证接口返回的状态码、虚拟机最终状态是否正确。
-# #         '''
-# #         vm_api = VirtualMachineAPIs()
-# #         def is_vm_down():
-# #             return vm_api.getVmStatus(self.dm.vm_name)=='down'
-# #         LogPrint().info("Test: Shutdown vm '%s' from 'up' state." % self.dm.vm_name)
-# #         r = vm_api.shutdownVm(self.dm.vm_name)
-# #         if r['status_code']==self.dm.expected_status_code_shutdown_vm:
-# #             if wait_until(is_vm_down, 300, 5):
-# #                 LogPrint().info("PASS: Returned status code and info are CORRECT while shutdown vm '%s' from 'up' state." % self.dm.vm_name)
-# #                 self.flag = True
-# #             else:
-# #                 LogPrint().error("FAIL: Shutdown vm '%s' FAILED. It's final state is not 'down'." % self.dm.vm_name)
-# #                 self.flag = False
-# #         else:
-# #             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-# #             self.flag = False
-# #         self.assertTrue(self.flag)
-# # 
-# #     def tearDown(self):
-# #         '''
-# #         @summary: 资源清理
-# #         '''
-# #         # Post-Test：删除虚拟机
-# #         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-# #         self.assertTrue(smart_del_vm(self.dm.vm_name)) 
-# 
-# class ITC05020302_ShutdownVm_Suspended(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-03关闭-02Suspended状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，启动，挂起。
-#         LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         LogPrint().info("Pre-Test-2: Start vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         LogPrint().info("Pre-Test-3: Suspend vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_suspend_vm(self.dm.vm_name))
-#         
-#     def test_StopVm_Down(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）对Suspended状态虚拟机进行Shutdown操作；
-#         @note: （2）操作成功，验证接口返回的状态码、虚拟机最终状态是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         def is_vm_down():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='down'
-#         LogPrint().info("Test: Shutdown vm '%s' from 'suspended' state." % self.dm.vm_name)
-#         r = vm_api.shutdownVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_shutdown_vm_suspended:
-#             if wait_until(is_vm_down, 300, 5):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT while shutdown vm '%s' from 'suspended' state." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Shutdown vm '%s' in 'suspended' state FAILED. It's final state is not 'down'." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name)) 
-# 
-# class ITC05020303_ShutdownVm_Down(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-03关闭-03Down状态失败
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，处于Down状态。
-#         LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_StopVm_Down(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）对Down状态虚拟机进行Shutdown操作；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: SHUTDOWN vm '%s' from 'Down' state." % self.dm.vm_name)
-#         r = vm_api.shutdownVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_shutdown_vm_down:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_shutdown_vm_down), r['result']):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT while SHUTDOWN vm '%s' from 'down' state." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are INCORRECT while SHUTDOWN vm '%s' from 'down' state." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))   
-# 
-# class ITC05020401_SuspendVm_Up(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-04挂起-01Up状态
+#     @summary: ITC-05虚拟机管理-02生命周期管理-03关闭-01Up状态
+#     @todo: 未完成，有OS的虚拟机才能正常shutdown，目前自动化测试环境中没有这样的虚拟机。
 #     '''
 #     def setUp(self):
 #         '''
@@ -1208,23 +1065,23 @@ class ITC05_SetUp(BaseTestCase):
 #         LogPrint().info("Pre-Test-2: Start vm '%s' for test." % self.dm.vm_name)
 #         self.assertTrue(smart_start_vm(self.dm.vm_name))
 #         
-#     def test_SuspendVm_Up(self):
+#     def test_StopVm_Down(self):
 #         '''
 #         @summary: 测试步骤
-#         @note: （1）对UP状态虚拟机进行Suspend操作；
+#         @note: （1）对UP状态虚拟机进行Shutdown操作；
 #         @note: （2）操作成功，验证接口返回的状态码、虚拟机最终状态是否正确。
 #         '''
 #         vm_api = VirtualMachineAPIs()
-#         def is_vm_suspended():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='suspended'
-#         LogPrint().info("Test: Suspend vm '%s' from 'up' state." % self.dm.vm_name)
-#         r = vm_api.suspendVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_suspend_vm:
-#             if wait_until(is_vm_suspended, 300, 5):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT while SUSPEND vm '%s' from 'up' state." % self.dm.vm_name)
+#         def is_vm_down():
+#             return vm_api.getVmStatus(self.dm.vm_name)=='down'
+#         LogPrint().info("Test: Shutdown vm '%s' from 'up' state." % self.dm.vm_name)
+#         r = vm_api.shutdownVm(self.dm.vm_name)
+#         if r['status_code']==self.dm.expected_status_code_shutdown_vm:
+#             if wait_until(is_vm_down, 300, 5):
+#                 LogPrint().info("PASS: Returned status code and info are CORRECT while shutdown vm '%s' from 'up' state." % self.dm.vm_name)
 #                 self.flag = True
 #             else:
-#                 LogPrint().error("FAIL: SUSPEND vm '%s' FAILED. It's final state is not 'suspended'." % self.dm.vm_name)
+#                 LogPrint().error("FAIL: Shutdown vm '%s' FAILED. It's final state is not 'down'." % self.dm.vm_name)
 #                 self.flag = False
 #         else:
 #             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
@@ -1235,488 +1092,630 @@ class ITC05_SetUp(BaseTestCase):
 #         '''
 #         @summary: 资源清理
 #         '''
-#         # Post-Test-1：删除虚拟机
+#         # Post-Test：删除虚拟机
 #         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
 #         self.assertTrue(smart_del_vm(self.dm.vm_name)) 
-# 
-# class ITC05020402_SuspendVm_Down(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-04挂起-02Down状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，处于Down状态。
-#         LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#     def test_StopVm_Down(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）对Down状态虚拟机进行Suspend操作；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: SUSPEND vm '%s' from 'Down' state." % self.dm.vm_name)
-#         r = vm_api.suspendVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_suspend_vm_down:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_suspend_vm_down), r['result']):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT while SUSPEND vm '%s' from 'down' state." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are INCORRECT while SUSPEND vm '%s' from 'down' state." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))   
-# 
-# class ITC05020403_SuspendVm_Suspended(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-04挂起-03Suspend状态
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1，启动，挂起。
-#         LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         LogPrint().info("Pre-Test-2: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         LogPrint().info("Pre-Test-3: Suspend a vm '%s' to 'suspended' state." % self.dm.vm_name)
-#         self.assertTrue(smart_suspend_vm(self.dm.vm_name))
-#         
-#     def test_StopVm_Down(self):
-#         '''
-#         @summary: 测试步骤
-#         @note: （1）对Suspended状态虚拟机进行Suspend操作；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: SUSPEND vm '%s' from 'suspended' state." % self.dm.vm_name)
-#         r = vm_api.suspendVm(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_suspend_vm_suspended:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_suspend_vm_suspended), r['result']):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT while SUSPEND vm '%s' from 'suspended' state." % self.dm.vm_name)
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are INCORRECT while SUSPEND vm '%s' from 'suspended' state." % self.dm.vm_name)
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         '''
-#         # Post-Test：删除虚拟机
-#         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))  
-#                    
-# class ITC05020501_MigrateVm_AutoSelectHost(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-01自动选择主机
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1；
-#         LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机创建磁盘disk1；
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#         # 前提3：启动虚拟机（缺省运行在host1上）
-#         LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state on host '%s'." % (self.dm.vm_name, ModuleData.host1_name))
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#         # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
-#         LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
-#         smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
-#         
-#     def test_MigrateVm_AutoSelectHost(self):
-#         '''
-#         @summary: 操作步骤
-#         @note: （1）进行迁移操作，自动选择迁移主机；
-#         @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
-#         '''
-#         def is_vm_up():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-#         vm_api = VirtualMachineAPIs()
-#         host_api = HostAPIs()
-#         LogPrint().info("Test: Begin to migrate vm '%s' by Auto-Select host way." % self.dm.vm_name)
-#         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
-#         if r['status_code'] == self.dm.expected_status_code_migrate_vm:
-#             if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
-#                 LogPrint().info("PASS: Migrate vm '%s' from host '%s' to '%s' SUCCESS." % (self.dm.vm_name, ModuleData.host1_name, self.dm.host2_name))
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or vm is not running on host '%s'." % (self.dm.vm_name, self.dm.host2_name))
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Migrate vm '%s' FAILED. Returned status code '%s' is WRONG." % (self.dm.vm_name, r['status_code']))
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）掉电虚拟机；
-#         @note: （2）删除虚拟机及磁盘。
-#         '''
-#         # Post-Test-1：删除虚拟机及磁盘
-#         LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-#         
-#         # Post-Test-2: 删除主机host2
-#         LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
-#         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
-#         
-# class ITC05020502_MigrateVm_HandSelectHost(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-02手动选择主机
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1；
-#         LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机创建磁盘disk1；
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#         # 前提3：启动虚拟机（缺省运行在host1上）
-#         LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#         # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
-#         LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
-#         smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
-#         
-#     def test_MigrateVm_HandSelectHost(self):
-#         '''
-#         @summary: 操作步骤
-#         @note: （1）进行迁移操作，手动选择迁移主机；
-#         @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
-#         '''
-#         def is_vm_up():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-#         vm_api = VirtualMachineAPIs()
-#         host_api = HostAPIs()
-#         LogPrint().info("Test: Begin to migrate vm '%s' to host '%s' by Hand-Select." % (self.dm.vm_name, self.dm.host2_name))
-#         # xml_migrate_vm_option中定义的手动选择迁移的主机
-#         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
-#         if r['status_code'] == self.dm.expected_status_code_migrate_vm:
-#             if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
-#                 LogPrint().info("PASS: Migrate vm '%s' to '%s' by Hand-Select SUCCESS." % (self.dm.vm_name, ModuleData.host1_name))
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or it's not running on '%s'." % (self.dm.vm_name, self.dm.host2_name))
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Migrate vm '%s' FAILED. Returned status code '%s' is WRONG." % (self.dm.vm_name, r['status_code']))
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）掉电虚拟机；
-#         @note: （2）删除虚拟机及磁盘。
-#         '''
-#         # Post-Test-1：删除虚拟机及磁盘
-#         LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-#         
-#         # Post-Test-2: 删除主机host2
-#         LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
-#         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
-# 
-# class ITC05020503_MigrateVm_OnlyOneHost(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-03只有一个主机
-#     @note: 只有一个主机时，虚拟机无法迁移；
-#     @bug: 提示信息不完整，可能是问题。
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1；
-#         LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机创建磁盘disk1；
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#         # 前提3：启动虚拟机
-#         LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#     def test_MigrateVm_AutoSelectHost(self):
-#         '''
-#         @summary: 操作步骤
-#         @note: （1）进行迁移操作，自动选择迁移主机；
-#         @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Begin to migrate vm '%s' while only 1 host exist." % self.dm.vm_name)
-#         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
-#         if r['status_code'] == self.dm.expected_status_code_migrate_vm_fail:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_fail), r['result']):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with only 1 host.")
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with only 1 host.")
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with only 1 host." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）掉电虚拟机；
-#         @note: （2）删除虚拟机及磁盘。
-#         '''
-#         # Post-Test：删除虚拟机及磁盘
-#         LogPrint().info("Post-Test: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-# 
-# class ITC05020504_MigrateVm_NotAllowMigration(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-04虚拟机设置不允许迁移
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1（设置为不允许迁移）；
-#         LogPrint().info("Pre-Test-1: Create vm '%s' with 'Migration Not Allowed' option for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机创建磁盘disk1；
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#         # 前提3：启动虚拟机（缺省运行在host1上）
-#         LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#         # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
-#         LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
-#         smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
-#         
-#     def test_MigrateVm_NotAllowMigration(self):
-#         '''
-#         @summary: 操作步骤
-#         @note: （1）对设置为不允许迁移的VM进行迁移操作；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。 
-#         '''
-#         vm_api = VirtualMachineAPIs()
-#         LogPrint().info("Test: Migrate vm '%s' with 'Migration Not Allowed' option." % self.dm.vm_name)
-#         r = vm_api.migrateVm(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_migrate_vm_not_allow:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_not_allow), r['result']):
-#                 LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with 'Migration Not Allowed' option.")
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with 'Migration Not Allowed' option.")
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with 'Migration Not Allowed' option." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）掉电虚拟机；
-#         @note: （2）删除虚拟机及磁盘。
-#         '''
-#         # Post-Test-1：删除虚拟机及磁盘
-#         LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-#         
-#         # Post-Test-2: 删除主机host2
-#         LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
-#         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
-# 
-# class ITC05020601_CancelMigration_DuringMigration(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-06取消迁移-01迁移过程中
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1；
-#         LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机创建磁盘disk1；
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#         # 前提3：启动虚拟机（缺省运行在host1上）
-#         LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#         # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
-#         LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
-#         smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
-#         
-#     def test_MigrateVm_AutoSelectHost(self):
-#         '''
-#         @summary: 操作步骤
-#         @note: （1）进行迁移操作，自动选择迁移主机；
-#         @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
-#         '''
-#         def is_vm_migrating():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='migrating'
-#         def is_vm_up():
-#             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-#         vm_api = VirtualMachineAPIs()
-#         host_api = HostAPIs()
-#         LogPrint().info("Test-Step-1: Begin to migrate vm '%s'." % self.dm.vm_name)
-#         r = vm_api.migrateVm(self.dm.vm_name)
-#         if r['status_code'] == self.dm.expected_status_code_migrate_vm and wait_until(is_vm_migrating, 300, 5):
-#             LogPrint().info("Test-Step-1-PASS: Vm '%s' is in 'migrating' state." % self.dm.vm_name)
-#             LogPrint().info("Test-Step-2: Begin 'Cancel-Migration' action.")
-#             r1 = vm_api.cancelMigration(self.dm.vm_name)
-#             if r1['status_code']==self.dm.expected_status_code_cancel_migration:
-#                 if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(ModuleData.host1_name):
-#                     LogPrint().info("PASS: Cancel Migration SUCCESS.")
-#                     self.flag = True
-#                 else:
-#                     LogPrint().error("FAIL: Cancel Migration FAILED. Vm's final state is not 'Up' or vm's host is WRONG.")
-#                     self.flag = False
-#             else:
-#                 LogPrint().error("FAIL: Returned status code '%s' is WRONG while Cancel-Migration." % r1['status_code'])
-#                 self.flag = False
-#             self.assertTrue(self.flag)
-#         else:
-#             LogPrint().error("Test-Step-1-FAIL: Migrate vm '%s' FAILED. Maybe the vm's state is not 'migrating'." % self.dm.vm_name)
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）掉电虚拟机；
-#         @note: （2）删除虚拟机及磁盘。
-#         '''
-#         # Post-Test-1：删除虚拟机及磁盘
-#         LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-#         
-#         # Post-Test-2: 删除主机host2
-#         LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
-#         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
-# 
-# class ITC05020602_CancelMigration_NotDuringMigration(BaseTestCase):
-#     '''
-#     @summary: ITC-05虚拟机管理-02生命周期管理-06取消迁移-02非迁移过程中
-#     '''
-#     def setUp(self):
-#         '''
-#         @summary: 初始化测试数据、测试环境。
-#         '''
-#         # 初始化测试数据
-#         self.dm = super(self.__class__, self).setUp()
-#         
-#         # 前提1：创建一个虚拟机vm1；
-#         LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
-#         self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
-#         
-#         # 前提2：为虚拟机创建磁盘disk1；
-#         LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
-#         self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
-#         
-#         # 前提3：启动虚拟机（缺省运行在host1上）
-#         LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
-#         self.assertTrue(smart_start_vm(self.dm.vm_name))
-#         
-#         # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
-#         LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
-#         smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
-#         
-#     def test_CancelMigration_NotDuringMigration(self):
-#         '''
-#         @summary: 操作步骤
-#         @note: （1）进行迁移操作（自动选择迁移主机）；
-#         @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。 
-#         '''
-#         vm_api = VirtualMachineAPIs()
-# 
-#         LogPrint().info("Test: Begin 'Cancel-Migration' action while vm is not in migration progress.")
-#         r = vm_api.cancelMigration(self.dm.vm_name)
-#         if r['status_code']==self.dm.expected_status_code_cancel_migration_fail:
-#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_cancel_migration_fail), r['result']):
-#                 LogPrint().info("PASS: Retured status code and info are CORRECT.")
-#                 self.flag = True
-#             else:
-#                 LogPrint().error("FAIL: Returned info are INCORRECT.\n'%s'" % xmltodict.unparse(r['result'], pretty=True))
-#                 self.flag = False
-#         else:
-#             LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
-#             self.flag = False
-#         self.assertTrue(self.flag)
-# 
-#     def tearDown(self):
-#         '''
-#         @summary: 资源清理
-#         @note: （1）掉电虚拟机；
-#         @note: （2）删除虚拟机及磁盘。
-#         '''
-#         # Post-Test-1：删除虚拟机及磁盘
-#         LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
-#         self.assertTrue(smart_del_vm(self.dm.vm_name))
-#         
-#         # Post-Test-2: 删除主机host2
-#         LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
-#         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+ 
+class ITC05020302_ShutdownVm_Suspended(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-03关闭-02Suspended状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，启动，挂起。
+        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        LogPrint().info("Pre-Test-2: Start vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        LogPrint().info("Pre-Test-3: Suspend vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_suspend_vm(self.dm.vm_name))
+         
+    def test_StopVm_Down(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对Suspended状态虚拟机进行Shutdown操作；
+        @note: （2）操作成功，验证接口返回的状态码、虚拟机最终状态是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        def is_vm_down():
+            return vm_api.getVmStatus(self.dm.vm_name)=='down'
+        LogPrint().info("Test: Shutdown vm '%s' from 'suspended' state." % self.dm.vm_name)
+        r = vm_api.shutdownVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_shutdown_vm_suspended:
+            if wait_until(is_vm_down, 300, 5):
+                LogPrint().info("PASS: Returned status code and info are CORRECT while shutdown vm '%s' from 'suspended' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Shutdown vm '%s' in 'suspended' state FAILED. It's final state is not 'down'." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name)) 
+ 
+class ITC05020303_ShutdownVm_Down(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-03关闭-03Down状态失败
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，处于Down状态。
+        LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_StopVm_Down(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对Down状态虚拟机进行Shutdown操作；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: SHUTDOWN vm '%s' from 'Down' state." % self.dm.vm_name)
+        r = vm_api.shutdownVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_shutdown_vm_down:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_shutdown_vm_down), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT while SHUTDOWN vm '%s' from 'down' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are INCORRECT while SHUTDOWN vm '%s' from 'down' state." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))   
+ 
+class ITC05020401_SuspendVm_Up(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-04挂起-01Up状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，并启动。
+        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        LogPrint().info("Pre-Test-2: Start vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+    def test_SuspendVm_Up(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对UP状态虚拟机进行Suspend操作；
+        @note: （2）操作成功，验证接口返回的状态码、虚拟机最终状态是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        def is_vm_suspended():
+            return vm_api.getVmStatus(self.dm.vm_name)=='suspended'
+        LogPrint().info("Test: Suspend vm '%s' from 'up' state." % self.dm.vm_name)
+        r = vm_api.suspendVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_suspend_vm:
+            if wait_until(is_vm_suspended, 300, 5):
+                LogPrint().info("PASS: Returned status code and info are CORRECT while SUSPEND vm '%s' from 'up' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: SUSPEND vm '%s' FAILED. It's final state is not 'suspended'." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test-1：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name)) 
+ 
+class ITC05020402_SuspendVm_Down(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-04挂起-02Down状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，处于Down状态。
+        LogPrint().info("Pre-Test: Create a vm '%s' in 'Down' state for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+    def test_StopVm_Down(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对Down状态虚拟机进行Suspend操作；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: SUSPEND vm '%s' from 'Down' state." % self.dm.vm_name)
+        r = vm_api.suspendVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_suspend_vm_down:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_suspend_vm_down), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT while SUSPEND vm '%s' from 'down' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are INCORRECT while SUSPEND vm '%s' from 'down' state." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))   
+ 
+class ITC05020403_SuspendVm_Suspended(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-04挂起-03Suspend状态
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1，启动，挂起。
+        LogPrint().info("Pre-Test-1: Create a vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+        LogPrint().info("Pre-Test-2: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        LogPrint().info("Pre-Test-3: Suspend a vm '%s' to 'suspended' state." % self.dm.vm_name)
+        self.assertTrue(smart_suspend_vm(self.dm.vm_name))
+         
+    def test_StopVm_Down(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）对Suspended状态虚拟机进行Suspend操作；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: SUSPEND vm '%s' from 'suspended' state." % self.dm.vm_name)
+        r = vm_api.suspendVm(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_suspend_vm_suspended:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_suspend_vm_suspended), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT while SUSPEND vm '%s' from 'suspended' state." % self.dm.vm_name)
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are INCORRECT while SUSPEND vm '%s' from 'suspended' state." % self.dm.vm_name)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        '''
+        # Post-Test：删除虚拟机
+        LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))  
+                    
+class ITC05020501_MigrateVm_AutoSelectHost(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-01自动选择主机
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state on host '%s'." % (self.dm.vm_name, ModuleData.host1_name))
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+         
+    def test_MigrateVm_AutoSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，自动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        vm_api = VirtualMachineAPIs()
+        host_api = HostAPIs()
+        LogPrint().info("Test: Begin to migrate vm '%s' by Auto-Select host way." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm:
+            if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
+                LogPrint().info("PASS: Migrate vm '%s' from host '%s' to '%s' SUCCESS." % (self.dm.vm_name, ModuleData.host1_name, self.dm.host2_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or vm is not running on host '%s'." % (self.dm.vm_name, self.dm.host2_name))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Migrate vm '%s' FAILED. Returned status code '%s' is WRONG." % (self.dm.vm_name, r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+         
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+         
+class ITC05020502_MigrateVm_HandSelectHost(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-02手动选择主机
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+         
+    def test_MigrateVm_HandSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，手动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        vm_api = VirtualMachineAPIs()
+        host_api = HostAPIs()
+        LogPrint().info("Test: Begin to migrate vm '%s' to host '%s' by Hand-Select." % (self.dm.vm_name, self.dm.host2_name))
+        # xml_migrate_vm_option中定义的手动选择迁移的主机
+        r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm:
+            if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
+                LogPrint().info("PASS: Migrate vm '%s' to '%s' by Hand-Select SUCCESS." % (self.dm.vm_name, ModuleData.host1_name))
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Migrate vm '%s' FAILED. Vm's state is not 'up' or it's not running on '%s'." % (self.dm.vm_name, self.dm.host2_name))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Migrate vm '%s' FAILED. Returned status code '%s' is WRONG." % (self.dm.vm_name, r['status_code']))
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+         
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+ 
+class ITC05020503_MigrateVm_OnlyOneHost(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-03只有一个主机
+    @note: 只有一个主机时，虚拟机无法迁移；
+    @bug: 提示信息不完整，可能是问题。
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+        # 前提3：启动虚拟机
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+    def test_MigrateVm_AutoSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，自动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Begin to migrate vm '%s' while only 1 host exist." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_fail), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with only 1 host.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with only 1 host.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with only 1 host." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test：删除虚拟机及磁盘
+        LogPrint().info("Post-Test: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+ 
+class ITC05020504_MigrateVm_NotAllowMigration(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-05迁移-04虚拟机设置不允许迁移
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1（设置为不允许迁移）；
+        LogPrint().info("Pre-Test-1: Create vm '%s' with 'Migration Not Allowed' option for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+         
+    def test_MigrateVm_NotAllowMigration(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）对设置为不允许迁移的VM进行迁移操作；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。 
+        '''
+        vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Migrate vm '%s' with 'Migration Not Allowed' option." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm_not_allow:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_not_allow), r['result']):
+                LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with 'Migration Not Allowed' option.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with 'Migration Not Allowed' option.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with 'Migration Not Allowed' option." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+         
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+ 
+class ITC05020601_CancelMigration_DuringMigration(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-06取消迁移-01迁移过程中
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+         
+    def test_MigrateVm_AutoSelectHost(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作，自动选择迁移主机；
+        @note: （2）操作成功，验证接口返回的状态码、相关信息是否正确。 
+        '''
+        def is_vm_migrating():
+            return vm_api.getVmStatus(self.dm.vm_name)=='migrating'
+        def is_vm_up():
+            return vm_api.getVmStatus(self.dm.vm_name)=='up'
+        vm_api = VirtualMachineAPIs()
+        host_api = HostAPIs()
+        LogPrint().info("Test-Step-1: Begin to migrate vm '%s'." % self.dm.vm_name)
+        r = vm_api.migrateVm(self.dm.vm_name)
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm and wait_until(is_vm_migrating, 300, 5):
+            LogPrint().info("Test-Step-1-PASS: Vm '%s' is in 'migrating' state." % self.dm.vm_name)
+            LogPrint().info("Test-Step-2: Begin 'Cancel-Migration' action.")
+            r1 = vm_api.cancelMigration(self.dm.vm_name)
+            if r1['status_code']==self.dm.expected_status_code_cancel_migration:
+                if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(ModuleData.host1_name):
+                    LogPrint().info("PASS: Cancel Migration SUCCESS.")
+                    self.flag = True
+                else:
+                    LogPrint().error("FAIL: Cancel Migration FAILED. Vm's final state is not 'Up' or vm's host is WRONG.")
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Returned status code '%s' is WRONG while Cancel-Migration." % r1['status_code'])
+                self.flag = False
+            self.assertTrue(self.flag)
+        else:
+            LogPrint().error("Test-Step-1-FAIL: Migrate vm '%s' FAILED. Maybe the vm's state is not 'migrating'." % self.dm.vm_name)
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+         
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
+ 
+class ITC05020602_CancelMigration_NotDuringMigration(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-02生命周期管理-06取消迁移-02非迁移过程中
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 前提1：创建一个虚拟机vm1；
+        LogPrint().info("Pre-Test-1: Create vm '%s' for test." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.xml_vm_info))
+         
+        # 前提2：为虚拟机创建磁盘disk1；
+        LogPrint().info("Pre-Test-2: Create disk '%s' for vm '%s'." % (self.dm.disk_alias, self.dm.vm_name))
+        self.assertTrue(smart_create_vmdisk(self.dm.vm_name, self.dm.xml_disk_info, self.dm.disk_alias))
+         
+        # 前提3：启动虚拟机（缺省运行在host1上）
+        LogPrint().info("Pre-Test-3: Start vm '%s' to 'up' state." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+         
+        # 前提4：再新建一个主机host2（等待其变为UP状态，迁移用）
+        LogPrint().info("Pre-Test-4: Create 2nd host '%s' for vm migration." % self.dm.host2_name)
+        smart_create_host(self.dm.host2_name, self.dm.xml_host2_info)
+         
+    def test_CancelMigration_NotDuringMigration(self):
+        '''
+        @summary: 操作步骤
+        @note: （1）进行迁移操作（自动选择迁移主机）；
+        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。 
+        '''
+        vm_api = VirtualMachineAPIs()
+ 
+        LogPrint().info("Test: Begin 'Cancel-Migration' action while vm is not in migration progress.")
+        r = vm_api.cancelMigration(self.dm.vm_name)
+        if r['status_code']==self.dm.expected_status_code_cancel_migration_fail:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_cancel_migration_fail), r['result']):
+                LogPrint().info("PASS: Retured status code and info are CORRECT.")
+                self.flag = True
+            else:
+                LogPrint().error("FAIL: Returned info are INCORRECT.\n'%s'" % xmltodict.unparse(r['result'], pretty=True))
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def tearDown(self):
+        '''
+        @summary: 资源清理
+        @note: （1）掉电虚拟机；
+        @note: （2）删除虚拟机及磁盘。
+        '''
+        # Post-Test-1：删除虚拟机及磁盘
+        LogPrint().info("Post-Test-1: Delete vm '%s' and it's disk '%s'." % (self.dm.vm_name, self.dm.disk_alias))
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+         
+        # Post-Test-2: 删除主机host2
+        LogPrint().info("Post-Test-2: Delete host '%s'." % self.dm.host2_name)
+        self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_del_host_option))
 
 class ITC050301_GetVMDiskList(BaseTestCase):
     '''
@@ -2370,7 +2369,7 @@ class ITC05030702_deactiveVMDisk_vmdown(BaseTestCase):
         self.assertTrue(self.flag)
          
     def tearDown(self):
-        LogPrint().info("Post-Test: Delete disk %s."%(self.dm.disk_name ))
+        LogPrint().info("Post-Test: Delete disk %s."%(self.dm.disk_name))
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name))
   
 class ITC05030801_MoveactiveVMDisk_vmdown(BaseTestCase):
@@ -2391,7 +2390,7 @@ class ITC05030801_MoveactiveVMDisk_vmdown(BaseTestCase):
         @note: 操作成功，验证返回状态码及磁盘状态
         '''    
         self.flag=True
-        LogPrint().info("Test: Move disk %s."%(self.dm.disk_name, ModuleData.vm_name))
+        LogPrint().info("Test: Move disk %s."%(self.dm.disk_name))
         r=self.vmdisk_api.moveVmDisk(ModuleData.vm_name, self.dm.move_option, self.disk_id)
         def is_disk_ok():
             return VmDiskAPIs().getVmDiskStatus(ModuleData.vm_name, disk_id=self.disk_id)=='ok'
@@ -2514,7 +2513,7 @@ class ITC05030901_MovedeactiveVMDisk_vmdown(BaseTestCase):
         @note: 操作成功，验证返回状态码及磁盘状态
         '''    
         self.flag=True
-        LogPrint().info("Test: Move disk %s."%(self.dm.disk_name, ModuleData.vm_name))
+        LogPrint().info("Test: Move disk %s."%(self.dm.disk_name))
         r=self.vmdisk_api.moveVmDisk(ModuleData.vm_name, self.dm.move_option, self.disk_id)
         def is_disk_ok():
             return VmDiskAPIs().getVmDiskStatus(ModuleData.vm_name, disk_id=self.disk_id)=='ok'
@@ -2570,7 +2569,7 @@ class ITC05030902_MovedeactiveVMDisk_vmrun(BaseTestCase):
         @note: 操作成功，验证返回状态码及磁盘状态
         '''    
         self.flag=True
-        LogPrint().info("Test: Move disk %s."%(self.dm.disk_name, ModuleData.vm_name))
+        LogPrint().info("Test: Move disk %s."%(self.dm.disk_name))
         r=self.vmdisk_api.moveVmDisk(ModuleData.vm_name, self.dm.move_option, self.disk_id)
         def is_disk_ok():
             return VmDiskAPIs().getVmDiskStatus(ModuleData.vm_name, disk_id=self.disk_id)=='ok'
@@ -3311,7 +3310,7 @@ class ITC05_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
 
-    test_cases = ["VirtualMachine.ITC05040702_DeleteVmNic_vmrun_plugged"]
+    test_cases = ["VirtualMachine.ITC05010305_CreateVm_NoRequiredParams"]
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
