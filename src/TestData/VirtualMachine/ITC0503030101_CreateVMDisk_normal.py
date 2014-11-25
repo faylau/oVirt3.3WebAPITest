@@ -31,9 +31,9 @@ disk_info='''
     </storage_domains>
     <size>1059061760</size>
     <sparse>false</sparse>
-    <interface>virtio</interface>
-    <format>cow</format>
-    <bootable>true</bootable>
+    <interface>ide</interface>
+    <format>raw</format>
+    <bootable>false</bootable>
     <shareable>false</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>

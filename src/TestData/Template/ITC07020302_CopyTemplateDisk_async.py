@@ -1,4 +1,15 @@
 #encoding:utf-8
+__authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/09          初始版本                                                            Wei Keke 
+#---------------------------------------------------------------------------------
+'''
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 from TestData.Template import ITC07_SetUp as ModuleData
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs

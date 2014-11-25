@@ -478,7 +478,7 @@ class ITC09_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Profile.ITC09_TearDown"]
+    test_cases = ["Profile.ITC09_SetUp"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

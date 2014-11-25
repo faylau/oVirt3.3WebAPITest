@@ -1,6 +1,16 @@
 #encoding:utf-8
-from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
-from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorages
+__authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/09          初始版本                                                            Wei Keke 
+#---------------------------------------------------------------------------------
+'''
+from Configs.GlobalConfig import Hosts, DataStorages, ExportStorages
 
 '''
 ---------------------------------------------------------------------------------------------------
@@ -138,7 +148,7 @@ vm_info='''
         </os>
     </vm>
 '''%cluster_nfs_name
-sd_id = StorageDomainAPIs().getStorageDomainIdByName(data1_nfs_name)
+
 disk_name = 'testkeke'
 disk_info='''
 <disk>
@@ -155,7 +165,7 @@ disk_info='''
     <shareable>false</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''%sd_id
+'''
 '''
 ---------------------------------------------------------------------------------------------------
 @note: Post-Test-Data

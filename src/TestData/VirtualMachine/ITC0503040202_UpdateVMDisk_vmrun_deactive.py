@@ -1,7 +1,5 @@
 #encoding:utf-8
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
-from TestAPIs.ProfilesAPIs import ProfilesAPIs
-from TestAPIs.NetworkAPIs import NetworkAPIs
 import TestData.VirtualMachine.ITC05_SetUp as ModuleData
 '''
 @note: PreData
@@ -9,21 +7,10 @@ import TestData.VirtualMachine.ITC05_SetUp as ModuleData
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-nic_name = 'nic-ITC05'
+disk_name = 'DISK-1%s'%ModuleData.vm_name
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
-
-nic_info='''
-<nic>
-    <name>%s</name>
-    <interface>virtio</interface>
-    <linked>false</linked>
-    <plugged>true</plugged>
-</nic>
-'''%(nic_name)
-disk_name = 'disk-ITC05'
 disk_info='''
 <disk>
-    <alias>%s</alias>
     <name>%s</name>
     <storage_domains>
         <storage_domain id = "%s"/>
@@ -36,17 +23,21 @@ disk_info='''
     <shareable>true</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''%(disk_name,disk_name,sd_id)
+'''%(disk_name,sd_id)
 
-
-
+'''
+@note: TestData
+'''
+sd_id_new = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data2_nfs_name)
+disk_name_new = 'DISK-1-NEW%s'%ModuleData.vm_name
+update_disk_info='''
+<disk>
+    <name>%s</name>
+    <interface>ide</interface>
+    <shareable>false</shareable>
+</disk>
+'''%(disk_name_new)
 '''
 @note: ExpectedData
 '''
-expected_status_code = 409
-expected_info = '''
-<fault>
-    <reason>Operation Failed</reason>
-    <detail>[Cannot remove Interface. The VM Network Interface is plugged to a running VM.]</detail>
-</fault>
-'''
+expected_status_code = 200

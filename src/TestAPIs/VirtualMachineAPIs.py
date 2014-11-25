@@ -908,11 +908,16 @@ class VmNicAPIs(VirtualMachineAPIs):
         '''
         self.base_url = '%s/vms' % WebBaseApiUrl
         self.sub_url_nics = 'nics'
+        
     def isVmNicExist(self,vm_name,nic_name):
         '''
         @summary: 检查虚拟机的网络接口是否存在，存在返回True，否则返回False
         '''
-        nic_list = self.getVmNicsList(vm_name)['result']['nics']['nic']
+        nic_list = self.getVmNicsList(vm_name)['result']['nics']
+        if nic_list == None:
+            return False
+        else:
+            nic_list = self.getVmNicsList(vm_name)['result']['nics']['nic']
         flag = False
         if isinstance(nic_list, dict):
             if nic_list['name'] == nic_name:
@@ -1362,7 +1367,7 @@ if __name__=='__main__':
     vmapi = VirtualMachineAPIs()
     vmdiskapi = VmDiskAPIs()
     vmnicapi = VmNicAPIs()
-    print vmnicapi.isVmNicExist('vm-ITC05', 'nic3')
+    print vmnicapi.isVmNicExist('VM-ITC05', 'nic3')
     vmcdromapi = VmCdromAPIs()
     vmsnapshotapi = VmSnapshotAPIs()
     vmwatchdogapi = VmWatchdogAPIs()

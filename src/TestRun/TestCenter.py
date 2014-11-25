@@ -75,7 +75,7 @@ sys.setdefaultencoding('utf-8')
 
 
 tc_list = []        # 由xml文件解析出的配置文件中的信息
-test_cases = []     # 本次测试要执行的testcase
+test_cases = []      # 本次测试要执行的testcase
 
 def load_tests():
     '''

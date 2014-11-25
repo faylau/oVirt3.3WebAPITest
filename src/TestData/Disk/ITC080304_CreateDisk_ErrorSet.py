@@ -1,3 +1,14 @@
+__authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/09          ≥ı º∞Ê±æ                                                            Wei Keke 
+#---------------------------------------------------------------------------------
+'''
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 import TestData.Disk.ITC08_SetUp as ModuleData
 '''

@@ -152,7 +152,7 @@ class DiskAPIs(BaseAPIs):
     def getDiskStatus(self,disk_id):
         return DiskAPIs().getDiskInfo(disk_id)['result']['disk']['status']['state']
     
-    def createDisk(self, disk_info):
+    def createDisk(self, disk_info,sd_id=None):
         '''
         @summary: 创建磁盘
         @param disk_info: XML形式的集群信息，调用接口时需要传递此xml数据
@@ -164,9 +164,10 @@ class DiskAPIs(BaseAPIs):
         '''
         api_url = self.base_url
         method = 'POST'
-        r = HttpClient.sendRequest(method=method, api_url=api_url, data=disk_info)
-#         print r.status_code
-#         print r.text
+        if sd_id:
+            r = HttpClient.sendRequest(method=method, api_url=api_url, data=(disk_info %sd_id))
+        else: 
+            r = HttpClient.sendRequest(method=method, api_url=api_url, data=disk_info)                           
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     
