@@ -467,7 +467,7 @@ class ITC02010501_DeleteCluster_clear(BaseTestCase):
         r = clusterapi.delCluster(self.dm.cluster_name)
         if r['status_code'] == self.dm.status_code:
 #             print self.clusterapi.searchClusterByName(self.dm.cluster_name)['result']['clusters']
-            if not self.clusterapi.searchClusterByName(self.dm.cluster_name)['result']['clusters']:
+            if not clusterapi.searchClusterByName(self.dm.cluster_name)['result']['clusters']:
                 LogPrint().info("PASS: Delete Cluster '%s' info SUCCESS." % self.dm.cluster_name)
                 self.flag = True
             else:

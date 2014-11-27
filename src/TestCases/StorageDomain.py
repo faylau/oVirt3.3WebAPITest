@@ -933,7 +933,7 @@ class ITC04_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["StorageDomain.ITC04_TearDown"]
+    test_cases = ["StorageDomain.ITC04_SetUp"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

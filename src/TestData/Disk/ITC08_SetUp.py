@@ -23,7 +23,7 @@ from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorage
 ########################################################################
 # 1个数据中心信息                                                                                                                                    
 ########################################################################
-dc_nfs_name = 'DC-ITC01-NFS'
+dc_nfs_name = 'DC-ITC08-NFS'
 dc_name_list = [dc_nfs_name]
 xml_dc_info = '''
     <data_center>
@@ -36,7 +36,7 @@ xml_dc_info = '''
 ########################################################################
 # 1个集群信息                                                                                                                                    
 ########################################################################
-cluster_nfs_name = 'Cluster-ITC01-NFS'
+cluster_nfs_name = 'Cluster-ITC08-NFS'
 cluster_name_list = [cluster_nfs_name]
 xml_cluster_info = '''
     <cluster>
@@ -52,7 +52,7 @@ xml_cluster_info = '''
 # 1个主机信息（node1加入NFS数据中心）                                                                                                                                    
 ########################################################################
 host1 = Hosts['node1']
-host1_name = 'node-ITC01-1'
+host1_name = 'node-ITC08-1'
 host1_ip = host1['ip']
 host1_password = host1['password']
 xml_host_info = '''
@@ -69,11 +69,11 @@ xml_host_info = '''
 #######################################################################################
 # 4个存储域信息（data1/data2，1个ISO和1个Export域）                                                                                                                               
 #######################################################################################
-data1_nfs_name = 'data1-nfs-ITC01'
+data1_nfs_name = 'data1-nfs-ITC08'
 data1_nfs = DataStorages['nfs']['data1']
 data1_nfs_ip = data1_nfs['ip']
 data1_nfs_path = data1_nfs['path']
-data2_nfs_name = 'data2-nfs-ITC01'
+data2_nfs_name = 'data2-nfs-ITC08'
 data2_nfs = DataStorages['nfs']['data2']
 data2_nfs_ip = data2_nfs['ip']
 data2_nfs_path = data2_nfs['path']

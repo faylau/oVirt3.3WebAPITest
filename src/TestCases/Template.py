@@ -74,7 +74,7 @@ class ITC07_SetUp(BaseTestCase):
         LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data2_nfs_name))
-        self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+        #self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
         #创建一个虚拟机
         self.vmapi = VirtualMachineAPIs()
         r = self.vmapi.createVm(self.dm.vm_info)
@@ -439,7 +439,8 @@ class ITC070202_GetTemplateDiskInfo(BaseTestCase):
         r = tempdisk_api.getTemplateDiskInfo(self.dm.temp_name,self.dm.disk_name)  
         if r['status_code'] == self.dm.expected_status_code:
             dictCompare = DictCompare()
-            expected_result = xmltodict.parse(self.dm.disk_info)
+            sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
+            expected_result = xmltodict.parse(self.dm.disk_info %sd_id)
             actual_result = r['result']
             if dictCompare.isSubsetDict(expected_result,actual_result):
                 LogPrint().info("PASS: Get disk info of template %s SUCCESS."%self.dm.temp_name)
@@ -963,10 +964,10 @@ class ITC07_TearDown(BaseTestCase):
         dcapi = DataCenterAPIs()
         capi = ClusterAPIs()
         # Step2：将export存储域和data2存储域设置为Maintenance状态,然后从数据中心分离
-        LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.export1_name)
-        self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
-        LogPrint().info("Post-Module-Test-2: Detach storage domains '%s'." % self.dm.export1_name)
-        self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+#         LogPrint().info("Post-Module-Test-1: Deactivate storage domains '%s'." % self.dm.export1_name)
+#         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
+#         LogPrint().info("Post-Module-Test-2: Detach storage domains '%s'." % self.dm.export1_name)
+#         self.assertTrue(smart_detach_storage_domain(self.dm.dc_nfs_name, self.dm.export1_name))
         
         LogPrint().info("Post-Module-Test-3: Deactivate data storage domains '%s'." % self.dm.data2_nfs_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data2_nfs_name))
@@ -983,7 +984,7 @@ class ITC07_TearDown(BaseTestCase):
                  
         # Step5：删除3个Unattached状态存储域（data1/data2/export1）
         LogPrint().info("Post-Module-Test-7: Delete all unattached storage domains.")
-        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name,self.dm.export1_name]
+        dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name]
         for sd in dict_sd_to_host:
             smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
          
@@ -998,7 +999,7 @@ class ITC07_TearDown(BaseTestCase):
                                               
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Template.ITC07_TearDown"]
+    test_cases = ["Template.ITC070202_GetTemplateDiskInfo"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

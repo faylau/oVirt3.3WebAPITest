@@ -3310,7 +3310,7 @@ class ITC05_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
 
-    test_cases = ["VirtualMachine.ITC05010305_CreateVm_NoRequiredParams"]
+    test_cases = ["VirtualMachine.ITC05020302_ShutdownVm_Suspended"]
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

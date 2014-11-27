@@ -16,7 +16,7 @@ cluster_info='''
         <data_center id= "%s"/>
 </cluster>
 '''%(cluster_name,dc_id)
-nw_name = 'network-ITC02'
+nw_name = 'network_ITC02'
 nw_info = '''
 <network>
     <name>%s</name>

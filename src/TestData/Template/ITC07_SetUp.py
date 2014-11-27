@@ -105,22 +105,9 @@ xml_storage_info = '''
             <path>%s</path>
         </storage>
     </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>export</type>
-        <host>
-            <name>%s</name>
-        </host>
-        <storage>
-            <type>nfs</type>
-            <address>%s</address>
-            <path>%s</path>
-        </storage>
-    </storage_domain>
 </data_driver>
 ''' % (data1_nfs_name, host1_name, data1_nfs_ip, data1_nfs_path, 
-       data2_nfs_name, host1_name, data2_nfs_ip, data2_nfs_path, 
-       export1_name, host1_name, export1_ip, export1_path )
+       data2_nfs_name, host1_name, data2_nfs_ip, data2_nfs_path )
 
 
 '''
