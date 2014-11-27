@@ -47,7 +47,7 @@ class ITC06_Setup(BaseTestCase):
 
 class ITC060101_GetNetworkList(BaseTestCase):
     '''
-    @summary: ITCxxxx:
+    @summary: ITC-06网络管理-01基本操作-01获取网络列表
     '''
     def test_GetNetworkList(self):
         '''
@@ -68,7 +68,7 @@ class ITC060101_GetNetworkList(BaseTestCase):
     
 class ITC060102_GetNetworkInfo(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-02获取指定网络信息
+    @summary: ITC-06网络管理-01基本操作-02获取指定网络信息
     '''
     def setUp(self):
         '''
@@ -139,7 +139,7 @@ class ITC060102_GetNetworkInfo(BaseTestCase):
 
 class ITC06010301_CreateNetwork(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-01成功创建
+    @summary: ITC-06网络管理-01基本操作-03创建一个新的网络-01成功创建
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -175,7 +175,7 @@ class ITC06010301_CreateNetwork(BaseTestCase):
         
 class ITC06010302_CreateNetwork_VerifyName(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-02验证名称合法性
+    @summary: ITC-06网络管理-01基本操作-03创建一个新的网络-02验证名称合法性
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -208,7 +208,7 @@ class ITC06010302_CreateNetwork_VerifyName(BaseTestCase):
    
 class ITC06010303_CreateNetwork_DupName(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-03同一数据中心内网络重名
+    @summary: ITC-06网络管理-01基本操作-03创建一个新的网络-03同一数据中心内网络重名
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -247,7 +247,7 @@ class ITC06010303_CreateNetwork_DupName(BaseTestCase):
         
 class ITC06010304_CreateNetwork_NoRequired(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-04缺少必填项
+    @summary: ITC-06网络管理-01基本操作-03创建一个新的网络-04缺少必填项
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -282,7 +282,7 @@ class ITC06010304_CreateNetwork_NoRequired(BaseTestCase):
 
 class ITC06010305_CreateNetwork_DupVlan(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-03创建一个新的网络-05同一数据中心内网络vlan id重复
+    @summary: ITC-06网络管理-01基本操作-03创建一个新的网络-05同一数据中心内网络vlan id重复
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -317,7 +317,7 @@ class ITC06010305_CreateNetwork_DupVlan(BaseTestCase):
         
 class ITC06010401_UpdateNetwork(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-04编辑网络-01成功编辑
+    @summary: ITC-06网络管理-01基本操作-04编辑网络-01成功编辑
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -355,7 +355,7 @@ class ITC06010401_UpdateNetwork(BaseTestCase):
         
 class ITC06010402_UpdateNetwork_DupName(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-04编辑网络-02网络名称重复
+    @summary: ITC-06网络管理-01基本操作-04编辑网络-02网络名称重复
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -396,7 +396,7 @@ class ITC06010402_UpdateNetwork_DupName(BaseTestCase):
 
 class ITC060105_DeleteNetwork(BaseTestCase):
     '''
-    @summary: ITC-05网络管理-01基本操作-05删除网络
+    @summary: ITC-06网络管理-01基本操作-05删除网络
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -433,7 +433,7 @@ class ITC060105_DeleteNetwork(BaseTestCase):
 
 class ITC060201_GetNetworkProfileList(BaseTestCase):
     '''
-    @summary: 测试环境准备，创建一个网络并为它创建若干配置集
+    @summary: ITC-06网络管理-02配置集管理-01获取配置集列表
     '''
     def setUp(self):
         '''
@@ -478,7 +478,7 @@ class ITC060201_GetNetworkProfileList(BaseTestCase):
 
 class ITC060202_GetNetworkProfileInfo(BaseTestCase):
     '''
-    @summary: 测试环境准备，创建一个网络并为它创建若干配置集
+    @summary: ITC-06网络管理-02配置集管理-02获取配置集详情
     '''
     def setUp(self):
         '''
@@ -527,7 +527,7 @@ class ITC060202_GetNetworkProfileInfo(BaseTestCase):
 
 class ITC06_TearDown(BaseTestCase):
     '''
-    @summary: “集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
+    @summary: “网络管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
     @note: 删除数据中心；
     '''
     def test_TearDown(self):

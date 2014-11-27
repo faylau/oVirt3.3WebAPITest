@@ -1719,7 +1719,7 @@ class ITC05020602_CancelMigration_NotDuringMigration(BaseTestCase):
 
 class ITC050301_GetVMDiskList(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理 -01获取 磁盘列表
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理 -01获取磁盘列表
     '''
     def setUp(self):
         '''
@@ -1745,7 +1745,7 @@ class ITC050301_GetVMDiskList(BaseTestCase):
            
 class ITC050302_GetVMDiskInfo(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理 -02获取磁盘详情
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理 -02获取磁盘详情
     '''
     def setUp(self):
         '''
@@ -1779,7 +1779,7 @@ class ITC050302_GetVMDiskInfo(BaseTestCase):
           
 class ITC0503030101_CreateVMDisk_normal(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-01创建内部磁盘 -01成功创建 
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-01创建内部磁盘 -01成功创建 
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -1817,7 +1817,7 @@ class ITC0503030101_CreateVMDisk_normal(BaseTestCase):
    
 class ITC0503030102_CreateVMDisk_noRequired(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-01创建内部磁盘 -02参数完整性
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-01创建内部磁盘 -02参数完整性
     '''   
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -1854,7 +1854,7 @@ class ITC0503030102_CreateVMDisk_noRequired(BaseTestCase):
    
 class ITC05030302_CreateVMDisk_attach(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-02附加已有磁盘
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理 -03创建磁盘-02附加已有磁盘
     '''   
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -1893,7 +1893,7 @@ class ITC05030302_CreateVMDisk_attach(BaseTestCase):
    
 class ITC05030401_UpdateVMDisk_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-01虚拟机关机
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-01虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -1949,7 +1949,7 @@ class ITC05030401_UpdateVMDisk_vmdown(BaseTestCase):
    
 class ITC0503040201_UpdateVMDisk_vmrun_active(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行-01磁盘激活
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行-01磁盘激活
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2006,7 +2006,7 @@ class ITC0503040201_UpdateVMDisk_vmrun_active(BaseTestCase):
           
 class ITC0503040202_UpdateVMDisk_vmrun_deactive(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行-02磁盘非激活
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2063,7 +2063,7 @@ class ITC0503040202_UpdateVMDisk_vmrun_deactive(BaseTestCase):
                        
 class ITC05030501_DeleteVMDisk_option(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-01是否永久删除
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-01是否永久删除
     '''  
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2125,7 +2125,7 @@ class ITC05030501_DeleteVMDisk_option(BaseTestCase):
    
 class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-02磁盘激活状态，虚拟机运行
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-02磁盘激活状态，虚拟机运行
     ''' 
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2181,7 +2181,7 @@ class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):
            
 class ITC05030601_activeVMDisk_vmrun(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-06激活磁盘-01虚拟机运行
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-06激活磁盘-01虚拟机运行
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2241,7 +2241,7 @@ class ITC05030601_activeVMDisk_vmrun(BaseTestCase):
   
 class ITC05030602_activeVMDisk_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-06激活磁盘-02虚拟机关机
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-06激活磁盘-02虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2280,7 +2280,7 @@ class ITC05030602_activeVMDisk_vmdown(BaseTestCase):
   
 class ITC05030701_deactiveVMDisk_vmrun(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-07取消激活磁盘-01虚拟机运行
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-07取消激活磁盘-01虚拟机运行
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2337,7 +2337,7 @@ class ITC05030701_deactiveVMDisk_vmrun(BaseTestCase):
           
 class ITC05030702_deactiveVMDisk_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-07取消激活磁盘-02虚拟机关机
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-07取消激活磁盘-02虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2374,7 +2374,7 @@ class ITC05030702_deactiveVMDisk_vmdown(BaseTestCase):
   
 class ITC05030801_MoveactiveVMDisk_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-08移动激活的磁盘-01虚拟机关机
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-08移动激活的磁盘-01虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2417,7 +2417,7 @@ class ITC05030801_MoveactiveVMDisk_vmdown(BaseTestCase):
   
 # class ITC05030802_MoveactiveVMDisk_vmrun(BaseTestCase):
 #     '''
-#     @summary: 05虚拟机管理-03虚拟机磁盘管理-08移动激活的磁盘-02虚拟机运行
+#     @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-08移动激活的磁盘-02虚拟机运行
 #     @note: 虚拟机运行时，磁盘是否共享，移动激活磁盘结果不同
 #     '''
 #     def setUp(self):
@@ -2494,7 +2494,7 @@ class ITC05030801_MoveactiveVMDisk_vmdown(BaseTestCase):
 #  
 class ITC05030901_MovedeactiveVMDisk_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-09移动非激活的磁盘-01虚拟机关机
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-09移动非激活的磁盘-01虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2540,7 +2540,7 @@ class ITC05030901_MovedeactiveVMDisk_vmdown(BaseTestCase):
           
 class ITC05030902_MovedeactiveVMDisk_vmrun(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-09移动非激活的磁盘-02虚拟机运行
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-09移动非激活的磁盘-02虚拟机运行
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2606,7 +2606,7 @@ class ITC05030902_MovedeactiveVMDisk_vmrun(BaseTestCase):
   
 class ITC050310_statisticsVmDisk(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-03虚拟机磁盘管理-10磁盘统计信息
+    @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-10磁盘统计信息
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2633,7 +2633,7 @@ class ITC050310_statisticsVmDisk(BaseTestCase):
   
 class ITC050401_GetVmNicList(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-01获取网络接口列表
+    @summary: ITC-05虚拟机管理-04网络接口-01获取网络接口列表
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2655,7 +2655,7 @@ class ITC050401_GetVmNicList(BaseTestCase):
            
 class ITC050402_GetVmNicInfo(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-02获取网络接口详情
+    @summary: ITC-05虚拟机管理-04网络接口-02获取网络接口详情
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2689,7 +2689,7 @@ class ITC050402_GetVmNicInfo(BaseTestCase):
  
 class ITC05040301_CreateVmNic_normal(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-03创建-01正常创建
+    @summary: ITC-05虚拟机管理-04网络接口-03创建-01正常创建
     @note: 考虑有无配置集的两种情况
     '''
     def setUp(self): 
@@ -2740,7 +2740,7 @@ class ITC05040301_CreateVmNic_normal(BaseTestCase):
      
 class ITC05040302_CreateVmNic_dupname(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-03创建-02重名
+    @summary: ITC-05虚拟机管理-04网络接口-03创建-02重名
     '''
     def setUp(self): 
         self.dm = super(self.__class__, self).setUp()
@@ -2773,7 +2773,7 @@ class ITC05040302_CreateVmNic_dupname(BaseTestCase):
  
 class ITC05040303_CreateVmNic_norequired(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-03创建-03参数完整性
+    @summary: ITC-05虚拟机管理-04网络接口-03创建-03参数完整性
     '''
     def setUp(self): 
         self.dm = super(self.__class__, self).setUp()
@@ -2804,7 +2804,7 @@ class ITC05040303_CreateVmNic_norequired(BaseTestCase):
      
 class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-03创建-04验证名称合法性
+    @summary: ITC-05虚拟机管理-04网络接口-03创建-04验证名称合法性
     '''
     def setUp(self): 
         self.dm = super(self.__class__, self).setUp()
@@ -2837,7 +2837,7 @@ class ITC05040304_CreateVmNic_verifyname(BaseTestCase):
  
 class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性
+    @summary: ITC-05虚拟机管理-04网络接口-03创建-05 验证mac地址合法性
     '''
     def setUp(self): 
         self.dm = super(self.__class__, self).setUp()
@@ -2868,7 +2868,7 @@ class ITC05040305_CreateVmNic_verifymac(BaseTestCase):
  
 class ITC05040401_UpdateVmNic_normal(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-01正常编辑
+    @summary: ITC-05虚拟机管理-04网络接口-04编辑网络接口-01正常编辑
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2900,7 +2900,7 @@ class ITC05040401_UpdateVmNic_normal(BaseTestCase):
  
 class ITC05040402_UpdateVmNic_dupname(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-02重名
+    @summary: ITC-05虚拟机管理-04网络接口-04编辑网络接口-02重名
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -2934,7 +2934,7 @@ class ITC05040402_UpdateVmNic_dupname(BaseTestCase):
  
 class ITC05040403_UpdateVmNic_type(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-03编辑接口类型
+    @summary: ITC-05虚拟机管理-04网络接口-04编辑网络接口-03编辑接口类型
     @note: 虚拟机运行状态下
     '''
     def setUp(self):
@@ -2984,7 +2984,7 @@ class ITC05040403_UpdateVmNic_type(BaseTestCase):
  
 class ITC05040404_UpdateVmNic_dupmac(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-04编辑网络接口-04mac已被使用
+    @summary: ITC-05虚拟机管理-04网络接口-04编辑网络接口-04mac已被使用
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -3018,7 +3018,7 @@ class ITC05040404_UpdateVmNic_dupmac(BaseTestCase):
  
 class ITC05040501_ActiveVmNic_vmrun(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-05激活网络接口-01虚拟机运行
+    @summary: ITC-05虚拟机管理-04网络接口-05激活网络接口-01虚拟机运行
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -3057,7 +3057,7 @@ class ITC05040501_ActiveVmNic_vmrun(BaseTestCase):
  
 class ITC05040502_ActiveVmNic_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-05激活网络接口
+    @summary: ITC-05虚拟机管理-04网络接口-05激活网络接口-02虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -3089,7 +3089,7 @@ class ITC05040502_ActiveVmNic_vmdown(BaseTestCase):
  
 class ITC05040601_DeactiveVmNic_vmrun(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-06取消激活网络接口-01虚拟机运行
+    @summary: ITC-05虚拟机管理-04网络接口-06取消激活网络接口-01虚拟机运行
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -3128,7 +3128,7 @@ class ITC05040601_DeactiveVmNic_vmrun(BaseTestCase):
  
 class ITC05040602_DeactiveVmNic_vmdown(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-06取消激活网络接口
+    @summary: ITC-05虚拟机管理-04网络接口-06取消激活网络接口-02虚拟机关机
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
@@ -3160,7 +3160,7 @@ class ITC05040602_DeactiveVmNic_vmdown(BaseTestCase):
          
 class ITC05040701_DeleteVmNic_vmdown_plugged(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-07删除网络接口-01虚拟机down
+    @summary: ITC-05虚拟机管理-04网络接口-07删除网络接口-01虚拟机down
     '''
     def setUp(self):
         '''
@@ -3198,7 +3198,7 @@ class ITC05040701_DeleteVmNic_vmdown_plugged(BaseTestCase):
  
 class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
     '''
-    @summary: 05虚拟机管理-04网络接口-07删除网络接口-02虚拟机运行
+    @summary: ITC-05虚拟机管理-04网络接口-07删除网络接口-02虚拟机运行
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()

@@ -815,13 +815,13 @@
     </TestCase>
     
     <TestCase name="ITC050301_GetVMDiskList" id="ITC050301">
-        <description></description>
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理 -01获取磁盘列表</description>
         <operation modulename="VirtualMachine" classname="ITC050301_GetVMDiskList"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC050302_GetVMDiskInfo" id="ITC050302">
-        <description></description>
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理 -02获取磁盘详情</description>
         <operation modulename="VirtualMachine" classname="ITC050302_GetVMDiskInfo"/>
         <run>True</run>
     </TestCase>
@@ -850,9 +850,15 @@
         <run>True</run>
     </TestCase>
     
-    <TestCase name="ITC05030402_UpdateVMDisk_vmrun" id="ITC05030402">
-        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行</description>
-        <operation modulename="VirtualMachine" classname="ITC05030402_UpdateVMDisk_vmrun"/>
+    <TestCase name="ITC0503040201_UpdateVMDisk_vmrun_active" id="ITC0503040201">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行-01磁盘激活</description>
+        <operation modulename="VirtualMachine" classname="ITC0503040201_UpdateVMDisk_vmrun_active"/>
+        <run>True</run>
+    </TestCase>
+    
+    <TestCase name="ITC0503040202_UpdateVMDisk_vmrun_deactive" id="ITC0503040202">
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-04编辑磁盘-02虚拟机运行-02磁盘非激活</description>
+        <operation modulename="VirtualMachine" classname="ITC0503040202_UpdateVMDisk_vmrun_deactive"/>
         <run>True</run>
     </TestCase>
     
@@ -901,7 +907,7 @@
     <TestCase name="ITC05030802_MoveactiveVMDisk_vmrun" id="ITC05030802">
         <description>ITC-05虚拟机管理-03虚拟机磁盘管理-08移动激活的磁盘-02虚拟机运行</description>
         <operation modulename="VirtualMachine" classname="ITC05030802_MoveactiveVMDisk_vmrun"/>
-        <run>True</run>
+        <run>False</run>
     </TestCase>
     
     <TestCase name="ITC05030901_MovedeactiveVMDisk_vmdown" id="ITC05030901">
@@ -917,19 +923,19 @@
     </TestCase>
     
     <TestCase name="ITC050310_statisticsVmDisk" id="ITC050310">
-        <description></description>
+        <description>ITC-05虚拟机管理-03虚拟机磁盘管理-10磁盘统计信息</description>
         <operation modulename="VirtualMachine" classname="ITC050310_statisticsVmDisk"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC050401_GetVmNicList" id="ITC050401">
-        <description></description>
+        <description>ITC-05虚拟机管理-04网络接口-01获取网络接口列表</description>
         <operation modulename="VirtualMachine" classname="ITC050401_GetVmNicList"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC050402_GetVmNicInfo" id="ITC050402">
-        <description></description>
+        <description>ITC-05虚拟机管理-04网络接口-02获取网络接口详情</description>
         <operation modulename="VirtualMachine" classname="ITC050402_GetVmNicInfo"/>
         <run>True</run>
     </TestCase>
@@ -995,7 +1001,7 @@
     </TestCase>
     
     <TestCase name="ITC05040502_ActiveVmNic_vmdown" id="ITC05040502">
-        <description>ITC-05虚拟机管理-04网络接口-05激活网络接口</description>
+        <description>ITC-05虚拟机管理-04网络接口-05激活网络接口-02虚拟机关机</description>
         <operation modulename="VirtualMachine" classname="ITC05040502_ActiveVmNic_vmdown"/>
         <run>True</run>
     </TestCase>
@@ -1007,7 +1013,7 @@
     </TestCase>
     
     <TestCase name="ITC05040602_DeactiveVmNic_vmdown" id="ITC05040602">
-        <description>ITC-05虚拟机管理-04网络接口-06取消激活网络接口</description>
+        <description>ITC-05虚拟机管理-04网络接口-06取消激活网络接口-02虚拟机关机</description>
         <operation modulename="VirtualMachine" classname="ITC05040602_DeactiveVmNic_vmdown"/>
         <run>True</run>
     </TestCase>
@@ -1019,7 +1025,7 @@
     </TestCase>
     
     <TestCase name="ITC05040702_DeleteVmNic_vmrun_plugged" id="ITC05040702">
-        <description>ITC-05虚拟机管理-04网络接口-07删除网络接口-02虚拟机run</description>
+        <description>ITC-05虚拟机管理-04网络接口-07删除网络接口-02虚拟机运行</description>
         <operation modulename="VirtualMachine" classname="ITC05040702_DeleteVmNic_vmrun_plugged"/>
         <run>True</run>
     </TestCase>
@@ -1039,7 +1045,7 @@
     </TestCase>
     
     <TestCase name="ITC060101_GetNetworkList" id="ITC060101">
-        <description>ITCxxxx:</description>
+        <description>ITC-06网络管理-01基本操作-01获取网络列表</description>
         <operation modulename="Network" classname="ITC060101_GetNetworkList"/>
         <run>True</run>
     </TestCase>
@@ -1099,19 +1105,19 @@
     </TestCase>
     
     <TestCase name="ITC060201_GetNetworkProfileList" id="ITC060201">
-        <description>ITC-</description>
+        <description>ITC-06网络管理-02配置集管理-01获取配置集列表</description>
         <operation modulename="Network" classname="ITC060201_GetNetworkProfileList"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC060202_GetNetworkProfileInfo" id="ITC060202">
-        <description>ITC-</description>
+        <description>ITC-06网络管理-02配置集管理-02获取配置集详情</description>
         <operation modulename="Network" classname="ITC060202_GetNetworkProfileInfo"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC06_TearDown" id="ITC06">
-        <description>“集群管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
+        <description>“网络管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）</description>
         <operation modulename="Network" classname="ITC06_TearDown"/>
         <run>True</run>
     </TestCase>
@@ -1125,145 +1131,145 @@
     </TestCase>
     
     <TestCase name="ITC070101_GetTemplateList" id="ITC070101">
-        <description></description>
+        <description>07模板管理-01基本操作-01获取模板列表</description>
         <operation modulename="Template" classname="ITC070101_GetTemplateList"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC070102_GetTemplateInfo" id="ITC070102">
-        <description></description>
+        <description>07模板管理-01基本操作-02获取模板详情</description>
         <operation modulename="Template" classname="ITC070102_GetTemplateInfo"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0701030101_CreateTemplate" id="ITC0701030101">
-        <description>ITC-07模板管理-03创建模板-01成功创建-01最小测试集</description>
+        <description>07模板管理-01基本操作-03创建模板-01成功创建-01最小测试集</description>
         <operation modulename="Template" classname="ITC0701030101_CreateTemplate"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0701030102_CreateTemplate_SD" id="ITC0701030102">
-        <description>ITC-07模板管理-03创建模板-01成功创建-02指定存储域</description>
+        <description>07模板管理-01基本操作-03创建模板-01成功创建-02指定存储域</description>
         <operation modulename="Template" classname="ITC0701030102_CreateTemplate_SD"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0701030201_CreateTemplate_DupName" id="ITC0701030201">
-        <description>ITC-07模板管理-03创建模板-02创建失败-01模板重名</description>
+        <description>07模板管理-01基本操作-03创建模板-02创建失败-01模板重名</description>
         <operation modulename="Template" classname="ITC0701030201_CreateTemplate_DupName"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0701030202_CreateTemplate_VerifyName" id="ITC0701030202">
-        <description>ITC-07模板管理-03创建模板-02创建失败-02验证名称合法性</description>
+        <description>07模板管理-01基本操作-03创建模板-02创建失败-02验证名称合法性</description>
         <operation modulename="Template" classname="ITC0701030202_CreateTemplate_VerifyName"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0701030203_CreateTemplate_NoRequired" id="ITC0701030203">
-        <description>ITC-07模板管理-03创建模板-02创建失败-03验证参数完整性</description>
+        <description>07模板管理-01基本操作-03创建模板-02创建失败-03验证参数完整性</description>
         <operation modulename="Template" classname="ITC0701030203_CreateTemplate_NoRequired"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC070105_DeleteTemplate" id="ITC070105">
-        <description>ITC-07模板管理-01基本操作-05删除模板</description>
+        <description>07模板管理-01基本操作-05删除模板</description>
         <operation modulename="Template" classname="ITC070105_DeleteTemplate"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC07010601_ExportTemplate_sync" id="ITC07010601">
-        <description>ITC-07模板管理-01基本操作-06导出模板-01同步</description>
+        <description>07模板管理-01基本操作-06导出模板-01同步</description>
         <operation modulename="Template" classname="ITC07010601_ExportTemplate_sync"/>
-        <run>True</run>
+        <run>False</run>
     </TestCase>
     
     <TestCase name="ITC07010602_ExportTemplate_async" id="ITC07010602">
-        <description>ITC-07模板管理-01基本操作-06导出模板-02异步</description>
+        <description>07模板管理-01基本操作-06导出模板-02异步</description>
         <operation modulename="Template" classname="ITC07010602_ExportTemplate_async"/>
-        <run>True</run>
+        <run>False</run>
     </TestCase>
     
     <TestCase name="ITC070201_GetTemplateDiskList" id="ITC070201">
-        <description>ITC-07模板管理-02模板磁盘管理-01获取模板磁盘列表</description>
+        <description>07模板管理-02模板磁盘管理-01获取模板磁盘列表</description>
         <operation modulename="Template" classname="ITC070201_GetTemplateDiskList"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC070202_GetTemplateDiskInfo" id="ITC070202">
-        <description>ITC-07模板管理-02模板磁盘管理-02获取模板磁盘详情</description>
+        <description>07模板管理-02模板磁盘管理-02获取模板磁盘详情</description>
         <operation modulename="Template" classname="ITC070202_GetTemplateDiskInfo"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC07020301_CopyTemplateDisk_sync" id="ITC07020301">
-        <description>ITC-07模板管理-02模板磁盘管理-03复制模板-01同步</description>
+        <description>07模板管理-02模板磁盘管理-03复制模板-01同步</description>
         <operation modulename="Template" classname="ITC07020301_CopyTemplateDisk_sync"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC07020302_CopyTemplateDisk_async" id="ITC07020302">
-        <description>ITC-07模板管理-02模板磁盘管理-03复制模板-01异步</description>
+        <description>07模板管理-02模板磁盘管理-03复制模板-01异步</description>
         <operation modulename="Template" classname="ITC07020302_CopyTemplateDisk_async"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC07020303_CopyTemplateDisk_nosd" id="ITC07020303">
-        <description>ITC-07模板管理-02模板磁盘管理-03复制模板-03缺少存储域</description>
+        <description>07模板管理-02模板磁盘管理-03复制模板-03缺少存储域</description>
         <operation modulename="Template" classname="ITC07020303_CopyTemplateDisk_nosd"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC070301_GetTemplateNicList" id="ITC070301">
-        <description>ITC-07模板管理-03模板网络接口-01获取网络接口列表</description>
+        <description>07模板管理-03模板网络接口-01获取网络接口列表</description>
         <operation modulename="Template" classname="ITC070301_GetTemplateNicList"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC070302_GetTemplateNicInfo" id="ITC070302">
-        <description>ITC-07模板管理-03模板网络接口-02获取网络接口详情</description>
+        <description>07模板管理-03模板网络接口-02获取网络接口详情</description>
         <operation modulename="Template" classname="ITC070302_GetTemplateNicInfo"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0703030101_CreateTemplateNic" id="ITC0703030101">
-        <description>ITC-07模板管理-03模板网络接口-03新建网络接口-01成功创建-01测试最小集</description>
+        <description>07模板管理-03模板网络接口-03新建网络接口-01成功创建-01测试最小集</description>
         <operation modulename="Template" classname="ITC0703030101_CreateTemplateNic"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0703030102_CreateTemplateNic_proid" id="ITC0703030102">
-        <description>ITC-07模板管理-03模板网络接口-03新建网络接口-01成功创建-02指定配置集</description>
+        <description>07模板管理-03模板网络接口-03新建网络接口-01成功创建-02指定配置集</description>
         <operation modulename="Template" classname="ITC0703030102_CreateTemplateNic_proid"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0703030201_CreateTemplateNic_DupName" id="ITC0703030201">
-        <description>ITC-07模板管理-03模板网络接口-03新建网络接口-01创建失败-01重名</description>
+        <description>07模板管理-03模板网络接口-03新建网络接口-01创建失败-01重名</description>
         <operation modulename="Template" classname="ITC0703030201_CreateTemplateNic_DupName"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0703030202_CreateTemplateNic_VerifyName" id="ITC0703030202">
-        <description>ITC-07模板管理-03模板网络接口-03新建网络接口-01创建失败-02验证名称合法性</description>
+        <description>07模板管理-03模板网络接口-03新建网络接口-01创建失败-02验证名称合法性</description>
         <operation modulename="Template" classname="ITC0703030202_CreateTemplateNic_VerifyName"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC0703030203_CreateTemplateNic_NoRequired" id="ITC0703030203">
-        <description>ITC-07模板管理-03模板网络接口-03新建网络接口-01创建失败-03缺少必填项</description>
+        <description>07模板管理-03模板网络接口-03新建网络接口-01创建失败-03缺少必填项</description>
         <operation modulename="Template" classname="ITC0703030203_CreateTemplateNic_NoRequired"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC07030401_UpdateTemplateNic" id="ITC07030401">
-        <description>ITC-07模板管理-03模板网络接口-04编辑网络接口-01成功</description>
+        <description>07模板管理-03模板网络接口-04编辑网络接口-01成功</description>
         <operation modulename="Template" classname="ITC07030401_UpdateTemplateNic"/>
         <run>True</run>
     </TestCase>
     
     <TestCase name="ITC070305_DeleteTemplateNic" id="ITC070305">
-        <description>ITC-07模板管理-03模板网络接口-05删除网络接口</description>
+        <description>07模板管理-03模板网络接口-05删除网络接口</description>
         <operation modulename="Template" classname="ITC070305_DeleteTemplateNic"/>
         <run>True</run>
     </TestCase>
@@ -1315,7 +1321,7 @@
     <TestCase name="ITC080304_CreateDisk_ErrorSet" id="ITC080304">
         <description>ITC-08磁盘管理-03创建一个配置集-04错误配置</description>
         <operation modulename="Disk" classname="ITC080304_CreateDisk_ErrorSet"/>
-        <run>True</run>
+        <run>False</run>
     </TestCase>
     
     <TestCase name="ITC080401_DeleteDisk" id="ITC080401">
