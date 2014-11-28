@@ -46,23 +46,23 @@ class ITC05_SetUp(BaseTestCase):
     '''
     def setUp(self):
         self.dm = super(self.__class__, self).setUp()
-        
+         
     def test_CreateModuleTestEnv(self):
         dcapi = DataCenterAPIs()
         capi = ClusterAPIs()
-        
+         
         # 创建1个数据中心（nfs类型）
         LogPrint().info("Pre-Module-Test-1: Create DataCenter '%s'." % self.dm.dc_nfs_name)
         self.assertTrue(dcapi.createDataCenter(self.dm.xml_dc_info)['status_code']==self.dm.expected_status_code_create_dc)
-     
+      
         # 创建1个集群
         LogPrint().info("Pre-Module-Test-2: Create Cluster '%s' in DataCenter '%s'." % (self.dm.cluster_nfs_name, self.dm.dc_nfs_name))
         self.assertTrue(capi.createCluster(self.dm.xml_cluster_info)['status_code']==self.dm.expected_status_code_create_cluster)
-     
+      
         # 在NFS数据中心中创建一个主机，并等待主机UP。
         LogPrint().info("Pre-Module-Test-3: Create Host '%s' in Cluster '%s'." % (self.dm.host1_name, self.dm.cluster_nfs_name))
         self.assertTrue(smart_create_host(self.dm.host1_name, self.dm.xml_host_info))
-    
+     
         # 为NFS数据中心创建Data（data1/data2/export/iso）。
         @BaseTestCase.drive_data(self, self.dm.xml_storage_info)
         def create_storage_domains(xml_storage_domain_info):
@@ -70,7 +70,7 @@ class ITC05_SetUp(BaseTestCase):
             LogPrint().info("Pre-Module-Test-4: Create Data Storage '%s'." % sd_name)
             self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
         create_storage_domains()
-        
+         
         # 将创建的的data1、data2和export、iso域附加到NFS/ISCSI数据中心里。
         LogPrint().info("Pre-Module-Test-5: Attach the data storages to data centers.")
         self.assertTrue(smart_attach_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
@@ -643,7 +643,7 @@ class ITC0502010101_StartVm_Down_NoDisk_MultiStartDevices(BaseTestCase):
         r = vm_api.startVm(self.dm.vm_name)
         def is_vm_up():
             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 5):
+        if wait_until(is_vm_up, 600, 5):
             if r['status_code'] == 200:
                 LogPrint().info("PASS: Start vm '%s' SUCCESS." % self.dm.vm_name)
                 self.flag = True
@@ -736,7 +736,7 @@ class ITC0502010103_StartVm_Down_StartFromHd(BaseTestCase):
         r = vm_api.startVm(self.dm.vm_name)
         def is_vm_up():
             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 5):
+        if wait_until(is_vm_up, 600, 5):
             if r['status_code'] == self.dm.expected_status_code_start_vm_with_disk:
                 LogPrint().info("PASS: Start vm '%s' SUCCESS." % self.dm.vm_name)
                 self.flag = True
@@ -787,7 +787,7 @@ class ITC05020102_StartVm_Suspended(BaseTestCase):
         r = vm_api.startVm(self.dm.vm_name)
         def is_vm_up():
             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 5):
+        if wait_until(is_vm_up, 600, 5):
             if r['status_code'] == self.dm.expected_status_code_start_vm_from_suspended:
                 LogPrint().info("PASS: Start vm '%s' from 'suspended' state SUCCESS." % self.dm.vm_name)
                 self.flag = True
@@ -837,7 +837,7 @@ class ITC05020103_StartVm_Once(BaseTestCase):
         r = vm_api.startVm(self.dm.vm_name, self.dm.xml_start_vm_once)
         def is_vm_up():
             return vm_api.getVmStatus(self.dm.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 5):
+        if wait_until(is_vm_up, 600, 5):
             if r['status_code'] == self.dm.expected_status_code_start_vm_once:
                 if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_start_vm_once)['action'], vm_api.getVmInfo(self.dm.vm_name)['result']):
                     LogPrint().info("PASS: Start vm '%s' by 'once' SUCCESS." % self.dm.vm_name)
@@ -887,7 +887,7 @@ class ITC05020104_StartVm_Paused(BaseTestCase):
         r = vm_api.startVm(self.dm.vm_name, self.dm.xml_start_vm_paused)
         def is_vm_paused():
             return vm_api.getVmStatus(self.dm.vm_name)=='paused'
-        if wait_until(is_vm_paused, 300, 5):
+        if wait_until(is_vm_paused, 600, 5):
             if r['status_code'] == self.dm.expected_status_code_start_vm_paused:
                 LogPrint().info("PASS: Start vm '%s' by 'paused' SUCCESS." % self.dm.vm_name)
                 self.flag = True
@@ -984,7 +984,7 @@ class ITC05020202_StopVm_Suspended(BaseTestCase):
         LogPrint().info("Test: Stop vm '%s' from 'suspended' state." % self.dm.vm_name)
         r = vm_api.stopVm(self.dm.vm_name)
         if r['status_code']==self.dm.expected_status_code_stop_vm:
-            if wait_until(is_vm_down, 300, 5):
+            if wait_until(is_vm_down, 600, 5):
                 LogPrint().info("PASS: Stop vm '%s' from 'suspended' state SUCCESS." % self.dm.vm_name)
                 self.flag = True
             else:
@@ -1077,7 +1077,7 @@ class ITC05020203_StopVm_Down(BaseTestCase):
 #         LogPrint().info("Test: Shutdown vm '%s' from 'up' state." % self.dm.vm_name)
 #         r = vm_api.shutdownVm(self.dm.vm_name)
 #         if r['status_code']==self.dm.expected_status_code_shutdown_vm:
-#             if wait_until(is_vm_down, 300, 5):
+#             if wait_until(is_vm_down, 600, 5):
 #                 LogPrint().info("PASS: Returned status code and info are CORRECT while shutdown vm '%s' from 'up' state." % self.dm.vm_name)
 #                 self.flag = True
 #             else:
@@ -1127,7 +1127,7 @@ class ITC05020302_ShutdownVm_Suspended(BaseTestCase):
         LogPrint().info("Test: Shutdown vm '%s' from 'suspended' state." % self.dm.vm_name)
         r = vm_api.shutdownVm(self.dm.vm_name)
         if r['status_code']==self.dm.expected_status_code_shutdown_vm_suspended:
-            if wait_until(is_vm_down, 300, 5):
+            if wait_until(is_vm_down, 600, 5):
                 LogPrint().info("PASS: Returned status code and info are CORRECT while shutdown vm '%s' from 'suspended' state." % self.dm.vm_name)
                 self.flag = True
             else:
@@ -1219,7 +1219,7 @@ class ITC05020401_SuspendVm_Up(BaseTestCase):
         LogPrint().info("Test: Suspend vm '%s' from 'up' state." % self.dm.vm_name)
         r = vm_api.suspendVm(self.dm.vm_name)
         if r['status_code']==self.dm.expected_status_code_suspend_vm:
-            if wait_until(is_vm_suspended, 300, 5):
+            if wait_until(is_vm_suspended, 600, 5):
                 LogPrint().info("PASS: Returned status code and info are CORRECT while SUSPEND vm '%s' from 'up' state." % self.dm.vm_name)
                 self.flag = True
             else:
@@ -1370,7 +1370,7 @@ class ITC05020501_MigrateVm_AutoSelectHost(BaseTestCase):
         LogPrint().info("Test: Begin to migrate vm '%s' by Auto-Select host way." % self.dm.vm_name)
         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
         if r['status_code'] == self.dm.expected_status_code_migrate_vm:
-            if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
+            if wait_until(is_vm_up, 600, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
                 LogPrint().info("PASS: Migrate vm '%s' from host '%s' to '%s' SUCCESS." % (self.dm.vm_name, ModuleData.host1_name, self.dm.host2_name))
                 self.flag = True
             else:
@@ -1436,7 +1436,7 @@ class ITC05020502_MigrateVm_HandSelectHost(BaseTestCase):
         # xml_migrate_vm_option中定义的手动选择迁移的主机
         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
         if r['status_code'] == self.dm.expected_status_code_migrate_vm:
-            if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
+            if wait_until(is_vm_up, 600, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(self.dm.host2_name):
                 LogPrint().info("PASS: Migrate vm '%s' to '%s' by Hand-Select SUCCESS." % (self.dm.vm_name, ModuleData.host1_name))
                 self.flag = True
             else:
@@ -1620,12 +1620,12 @@ class ITC05020601_CancelMigration_DuringMigration(BaseTestCase):
         host_api = HostAPIs()
         LogPrint().info("Test-Step-1: Begin to migrate vm '%s'." % self.dm.vm_name)
         r = vm_api.migrateVm(self.dm.vm_name)
-        if r['status_code'] == self.dm.expected_status_code_migrate_vm and wait_until(is_vm_migrating, 300, 5):
+        if r['status_code'] == self.dm.expected_status_code_migrate_vm and wait_until(is_vm_migrating, 600, 5):
             LogPrint().info("Test-Step-1-PASS: Vm '%s' is in 'migrating' state." % self.dm.vm_name)
             LogPrint().info("Test-Step-2: Begin 'Cancel-Migration' action.")
             r1 = vm_api.cancelMigration(self.dm.vm_name)
             if r1['status_code']==self.dm.expected_status_code_cancel_migration:
-                if wait_until(is_vm_up, 300, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(ModuleData.host1_name):
+                if wait_until(is_vm_up, 600, 5) and vm_api.getVmInfo(self.dm.vm_name)['result']['vm']['host']['@id']==host_api.getHostIdByName(ModuleData.host1_name):
                     LogPrint().info("PASS: Cancel Migration SUCCESS.")
                     self.flag = True
                 else:
@@ -1962,7 +1962,7 @@ class ITC0503040201_UpdateVMDisk_vmrun_active(BaseTestCase):
         VirtualMachineAPIs().startVm(ModuleData.vm_name)
         def is_vm_up():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 10):
+        if wait_until(is_vm_up, 600, 10):
             LogPrint().info("Start vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -1995,7 +1995,7 @@ class ITC0503040201_UpdateVMDisk_vmrun_active(BaseTestCase):
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-        if wait_until(is_vm_down, 300, 10):
+        if wait_until(is_vm_down, 600, 10):
             LogPrint().info("Stop vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2019,7 +2019,7 @@ class ITC0503040202_UpdateVMDisk_vmrun_deactive(BaseTestCase):
         VirtualMachineAPIs().startVm(ModuleData.vm_name)
         def is_vm_up():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 10):
+        if wait_until(is_vm_up, 600, 10):
             LogPrint().info("Start vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2052,7 +2052,7 @@ class ITC0503040202_UpdateVMDisk_vmrun_deactive(BaseTestCase):
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-        if wait_until(is_vm_down, 300, 10):
+        if wait_until(is_vm_down, 600, 10):
             LogPrint().info("Stop vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2102,7 +2102,7 @@ class ITC05030501_DeleteVMDisk_option(BaseTestCase):
         '''
         self.flag=True
         LogPrint().info("Test: Remove disk %s from Vm %s."%(self.dm.disk_name, ModuleData.vm_name))
-        r=self.vmdisk_api.delVmDisk(ModuleData.vm_name, disk_id=self.disk_id,xml_del_disk_option=self.dm.del_disk_option_remove)
+        r=self.vmdisk_api.delVmDisk(ModuleData.vm_name, disk_id=self.disk_id, xml_del_disk_option=self.dm.del_disk_option_remove)
 #         time.sleep(30)
         if r['status_code']==self.dm.expected_status_code:
             if not self.vmdisk_api.is_vmdisk_exist(ModuleData.vm_name, self.disk_id) \
@@ -2120,7 +2120,7 @@ class ITC05030501_DeleteVMDisk_option(BaseTestCase):
         self.assertTrue(self.flag)
          
     def tearDown(self):
-        LogPrint().info("Post-Test: Delete disk %s.")
+        LogPrint().info("Post-Test: Delete disk %s."%self.dm.disk_name)
         self.assertTrue(smart_delete_disk(self.disk_id)) 
    
 class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):
@@ -2139,7 +2139,7 @@ class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):
         VirtualMachineAPIs().startVm(ModuleData.vm_name)
         def is_vm_up():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 10):
+        if wait_until(is_vm_up, 600, 10):
             LogPrint().info("Start vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2170,7 +2170,7 @@ class ITC05030502_DeleteActiveVMDisk_vmrun(BaseTestCase):
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-        if wait_until(is_vm_down, 300, 10):
+        if wait_until(is_vm_down, 600, 10):
             LogPrint().info("Stop vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2190,24 +2190,24 @@ class ITC05030601_activeVMDisk_vmrun(BaseTestCase):
         r=smart_create_vmdisk(ModuleData.vm_name, self.dm.disk_info, self.dm.disk_name)
         self.disk_id = r[1]
         self.assertTrue(r[0])
-        LogPrint().info("Pre-Test-2: Deactive disk %s for Vm %s."%(self.dm.disk_name, ModuleData.vm_name))
-        self.assertTrue(smart_deactive_vmdisk(ModuleData.vm_name, self.disk_id))
         #启动虚拟机
-        LogPrint().info("Pre-Test-3: Start Vm %s."%(ModuleData.vm_name))
+        LogPrint().info("Pre-Test-2: Start Vm %s."%(ModuleData.vm_name))
         VirtualMachineAPIs().startVm(ModuleData.vm_name)
         def is_vm_up():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 10):
+        if wait_until(is_vm_up, 600, 10):
             LogPrint().info("Start vm SUCCESS.")
             self.assertTrue(True)
         else:
             LogPrint().info("Start vm overtime.")
             self.assertTrue(False)
+        LogPrint().info("Pre-Test-3: Deactive disk %s for Vm %s."%(self.dm.disk_name, ModuleData.vm_name))
+        self.assertTrue(smart_deactive_vmdisk(ModuleData.vm_name, self.disk_id))
              
     def test_active(self):
         '''
         @summary: 虚拟机运行时，激活磁盘
-        @note: 操作成功，验证返回状态码及磁盘状态
+        @note: 操作失败，验证返回状态码及返回信息
         '''    
         self.flag=True
         LogPrint().info("Test: Active disk %s for Vm %s."%(self.dm.disk_name, ModuleData.vm_name))
@@ -2215,13 +2215,15 @@ class ITC05030601_activeVMDisk_vmrun(BaseTestCase):
         def is_disk_active():
             return VmDiskAPIs().getVmDiskInfo(ModuleData.vm_name, disk_id=self.disk_id)['result']['disk']['active']=='true'
         if r['status_code']==self.dm.expected_status_code:
-            if wait_until(is_disk_active, 60, 10):
-                LogPrint().info("PASS: Active vmdisk SUCCESS when vm is down.")
+            dictCompare = DictCompare()
+            print xmltodict.unparse(r['result'], pretty=True)
+            if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info), r['result']):
+                LogPrint().info("PASS: Returned status code and messages are CORRECT.")
             else:
-                LogPrint().error("FAIL: Active vmdisk overtime when vm is down.")
+                LogPrint().error("FAIL: Returned messages are WRONG.")
                 self.flag=False
         else:
-            LogPrint().error("FAIL: Active vmdisk fail when vm is down.Status_code is WRONG.")
+            LogPrint().error("FAIL: Returned status code are WRONG.")
             self.flag=False
         self.assertTrue(self.flag)
          
@@ -2230,7 +2232,7 @@ class ITC05030601_activeVMDisk_vmrun(BaseTestCase):
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-        if wait_until(is_vm_down, 300, 10):
+        if wait_until(is_vm_down, 600, 10):
             LogPrint().info("Stop vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2293,7 +2295,7 @@ class ITC05030701_deactiveVMDisk_vmrun(BaseTestCase):
         VirtualMachineAPIs().startVm(ModuleData.vm_name)
         def is_vm_up():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 10):
+        if wait_until(is_vm_up, 600, 10):
             LogPrint().info("Pre-Test:Start vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2326,7 +2328,7 @@ class ITC05030701_deactiveVMDisk_vmrun(BaseTestCase):
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-        if wait_until(is_vm_down, 300, 10):
+        if wait_until(is_vm_down, 600, 10):
             LogPrint().info("Stop vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2432,7 +2434,7 @@ class ITC05030801_MoveactiveVMDisk_vmdown(BaseTestCase):
 #         VirtualMachineAPIs().startVm(ModuleData.vm_name)
 #         def is_vm_up():
 #             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
-#         if wait_until(is_vm_up, 300, 10):
+#         if wait_until(is_vm_up, 600, 10):
 #             LogPrint().info("Pre-Test:Start vm SUCCESS.")
 #             self.assertTrue(True)
 #         else:
@@ -2483,7 +2485,7 @@ class ITC05030801_MoveactiveVMDisk_vmdown(BaseTestCase):
 #         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
 #         def is_vm_down():
 #             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-#         if wait_until(is_vm_down, 300, 10):
+#         if wait_until(is_vm_down, 600, 10):
 #             LogPrint().info("Stop vm SUCCESS.")
 #             self.assertTrue(True)
 #         else:
@@ -2554,7 +2556,7 @@ class ITC05030902_MovedeactiveVMDisk_vmrun(BaseTestCase):
         VirtualMachineAPIs().startVm(ModuleData.vm_name)
         def is_vm_up():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='up'
-        if wait_until(is_vm_up, 300, 10):
+        if wait_until(is_vm_up, 600, 10):
             LogPrint().info("Pre-Test:Start vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2595,7 +2597,7 @@ class ITC05030902_MovedeactiveVMDisk_vmrun(BaseTestCase):
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-        if wait_until(is_vm_down, 300, 10):
+        if wait_until(is_vm_down, 600, 10):
             LogPrint().info("Stop vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -2971,7 +2973,7 @@ class ITC05040403_UpdateVmNic_type(BaseTestCase):
         VirtualMachineAPIs().stopVm(ModuleData.vm_name)
         def is_vm_down():
             return VirtualMachineAPIs().getVmStatus(ModuleData.vm_name)=='down'
-        if wait_until(is_vm_down, 300, 10):
+        if wait_until(is_vm_down, 600, 10):
             LogPrint().info("Stop vm SUCCESS.")
             self.assertTrue(True)
         else:
@@ -3310,7 +3312,7 @@ class ITC05_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
 
-    test_cases = ["VirtualMachine.ITC05020302_ShutdownVm_Suspended"]
+    test_cases = ["VirtualMachine.ITC05030601_activeVMDisk_vmrun"]
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

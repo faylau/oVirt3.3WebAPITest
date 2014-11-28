@@ -143,9 +143,12 @@ encoding//src/TestData/VirtualMachine/ITC0503030102_CreateVMDisk_noRequired.py=u
 encoding//src/TestData/VirtualMachine/ITC05030302_CreateVMDisk_attach.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC0503040201_UpdateVMDisk_vmrun_active.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC0503040202_UpdateVMDisk_vmrun_deactive.py=utf-8
+encoding//src/TestData/VirtualMachine/ITC05030501_DeleteVMDisk_option.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05030502_DeleteActiveVMDisk_vmrun.py=utf-8
+encoding//src/TestData/VirtualMachine/ITC05030601_activeVMDisk_vmrun.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05040501_ActiveVmNic_vmrun.py=utf-8
 encoding//src/TestData/VirtualMachine/ITC05040702_DeleteVmNic_vmrun_plugged.py=utf-8
+encoding//src/TestData/VirtualMachine/ITC05_SetUp.py=utf-8
 encoding//src/TestRun/TestCenter.py=utf-8
 encoding//src/Utils/Util.py=utf-8
 href="http\://windows.github.com" aria-label\="Open this file in GitHub for Windows">

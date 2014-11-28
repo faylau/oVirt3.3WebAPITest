@@ -32,5 +32,16 @@ disk_info='''
 '''
 @note: ExpectedData
 '''
-expected_status_code = 200
+expected_status_code = 400
+expected_info = '''
+<action>
+    <status>
+        <state>failed</state>
+    </status>
+    <fault>
+        <reason>Operation Failed</reason>
+        <detail>[Failed to hot-plug disk]</detail>
+    </fault>
+</action>
+'''
 

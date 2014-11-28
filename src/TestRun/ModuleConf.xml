@@ -4,25 +4,25 @@
 	<module name="DataCenter" id="01">
 		<description>数据中心管理</description>
 		<filename>DataCenter.py</filename>
-		<run>True</run>
+		<run>False</run>
 	</module>
 
     <module name="Cluster" id="02">
         <description>集群管理</description>
         <filename>Cluster.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="Host" id="03">
         <description>虚拟化主机管理</description>
         <filename>Host.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="StorageDomain" id="04">
         <description>存储域管理</description>
         <filename>StorageDomain.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="VirtualMachine" id="05">
@@ -34,25 +34,25 @@
     <module name="Network" id="06">
         <description>逻辑网络管理</description>
         <filename>Network.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="Profile" id="07">
         <description>网络接口配置集管理</description>
         <filename>Profile.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="Template" id="08">
         <description>模板管理</description>
         <filename>Template.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
     <module name="Disk" id="09">
         <description>虚拟磁盘管理</description>
         <filename>Disk.py</filename>
-        <run>True</run>
+        <run>False</run>
     </module>
 
 </modules>
