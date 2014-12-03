@@ -21,7 +21,7 @@ from TestData.VirtualMachine import ITC05_SetUp as ModuleData
 ---------------------------------------------------------------------------------------------------
 '''
 # 前提1：创建虚拟机的信息
-vm_name = "vm-ITC05020501"
+vm_name = "vm-ITC05020504"
 xml_vm_info='''
 <vm>
     <name>%s</name>
@@ -43,7 +43,7 @@ xml_vm_info='''
 ''' % (vm_name, ModuleData.cluster_nfs_name)
 
 # 前提2：创建磁盘的信息
-disk_alias = 'disk-ITC05020501'
+disk_alias = 'disk-ITC05020504'
 xml_disk_info = '''
 <disk>
     <alias>%s</alias>
@@ -60,7 +60,7 @@ xml_disk_info = '''
 
 # 前提3：创建主机的信息
 host2 = Hosts['node1']
-host2_name = 'node-ITC05020501'
+host2_name = 'node-ITC05020504'
 host2_ip = host2['ip']
 host2_password = host2['password']
 xml_host2_info = '''
