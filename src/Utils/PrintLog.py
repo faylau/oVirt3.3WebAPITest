@@ -12,7 +12,6 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-import os
 import logging
 
 class LogPrint():
@@ -25,7 +24,7 @@ class LogPrint():
     def __init__(self, log_file="log.txt", log_level=logging.INFO):
         pass
         logging.basicConfig(level=log_level,
-                            format='%(asctime)s %(levelname)s\t| %(filename)s[line:%(lineno)d]\t| %(message)s',
+                            format='%(asctime)s %(levelname)-10s| %(filename)-20s[line:%(lineno)-5d]| %(message)s',
                             datefmt='%Y-%m-%d %H:%M:%S',
 #                             filename=log_file,
                             filemode="a")
