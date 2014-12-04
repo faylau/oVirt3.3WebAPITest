@@ -110,13 +110,13 @@ xml_storage_info = '''
        data2_nfs_name, host1_name, data2_nfs_ip, data2_nfs_path )
 
 
-'''
+'''---------------------------------------------------------------------------------------------------
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
-'''
-vm_name = 'vm3'
+---------------------------------------------------------------------------------------------------'''
+vm_name = 'VM-ITC07'
 vm_info='''
 <vm>
-        <name>vm3</name>
+        <name>%s</name>
         <description>Virtual Machine 2</description>
         <type>server</type>
         <memory>536870912</memory>
@@ -134,13 +134,13 @@ vm_info='''
             <boot dev="hd"/>
         </os>
     </vm>
-'''%cluster_nfs_name
+''' % (vm_name, cluster_nfs_name)
 
-disk_name = 'testkeke'
+disk_name = 'Disk1-VM-ITC07'
 disk_info='''
 <disk>
-    <alias>testkeke</alias>
-    <name>testkeke</name>
+    <alias>Disk1-VM-ITC07</alias>
+    <name>Disk1-VM-ITC07</name>
     <storage_domains>
         <storage_domain id = "%s"/>
     </storage_domains>

@@ -73,7 +73,7 @@ def smart_delete_disk(disk_id, status_code=200):
         else:
             r = disk_api.deleteDisk(disk_id)
             # 2014/11/13: Modified by LiuFei: add 'int' before status_code.
-            if r['status_code'] == int(status_code):
+            if r['status_code'] == 200:
                 if wait_until(is_disk_deleted, 60, 10):
                     LogPrint().info("INFO: Delete disk SUCCESS.")
                     return True

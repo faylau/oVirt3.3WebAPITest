@@ -1,4 +1,5 @@
 #encoding:utf-8
+
 __authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -12,24 +13,22 @@ __version__ = "V0.1"
 '''
 from TestData.Template import ITC07_SetUp as ModuleData
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs
-'''
-@note: TestData
-'''
-'''
-@note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
-'''
 
+'''---------------------------------------------------------------------------------------------------
+@note: TestData
+---------------------------------------------------------------------------------------------------'''
 vm_id = VirtualMachineAPIs().getVmIdByName(ModuleData.vm_name)
-temp_name = 'template#'
+temp_name = 'Template#-0701030202'
 temp_info='''
 <template>
     <name>%s</name>
     <vm id="%s"/>
 </template>
-'''%(temp_name,vm_id)
-'''
+'''% (temp_name, vm_id)
+
+'''---------------------------------------------------------------------------------------------------
 @note: ExpectedData
-'''
+---------------------------------------------------------------------------------------------------'''
 expected_status_code = 400
 expected_info = '''
 <fault>
