@@ -20,6 +20,7 @@ import ITC03_SetUp as DataModule
 -----------------------------------------------------------------------------------------'''
 host = GlobalConfig.Hosts['node1']
 host_name = 'node-ITC03010601'
+
 # 前提1：创建一个主机
 xml_host_info = '''
 <host>
