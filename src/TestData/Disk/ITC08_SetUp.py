@@ -13,7 +13,7 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 '''
 
-from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorages
+from Configs.GlobalConfig import Hosts, DataStorages
 
 '''
 ---------------------------------------------------------------------------------------------------

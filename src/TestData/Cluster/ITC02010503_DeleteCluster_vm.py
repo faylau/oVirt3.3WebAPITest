@@ -1,25 +1,37 @@
 #encoding:utf-8
-import TestData.Cluster.ITC02_Setup as ModuleData
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
-from Configs.GlobalConfig import Hosts
-dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
-cluster_name = 'test-cluster'
+
+__authors__ = ['wei keke']
+__version__ = "V0.1"
 
 '''
-@note: PreData
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                         
+#---------------------------------------------------------------------------------
 '''
+
+import TestData.Cluster.ITC02_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
+
+'''-----------------------------------------------------------------------------------------
+@note: PreData
+-----------------------------------------------------------------------------------------'''
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
+cluster_name = 'Cluster-ITC02010503'
 cluster_info = '''
 <cluster>
         <name>%s</name>
         <cpu id="Intel Penryn Family"/>
         <data_center  id="%s"/>
 </cluster>
-''' %(cluster_name,dc_id)
+''' % (cluster_name, dc_id)
 
-vm_name = 'vm3'
+vm_name = 'VM-ITC02010503'
 vm_info='''
 <vm>
-        <name>vm3</name>
+        <name>%s</name>
         <description>Virtual Machine 2</description>
         <type>server</type>
         <memory>536870912</memory>
@@ -37,11 +49,11 @@ vm_info='''
             <boot dev="hd"/>
         </os>
     </vm>
-'''%cluster_name
+''' % (vm_name, cluster_name)
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: TestData
-'''
+-----------------------------------------------------------------------------------------'''
 host_del_option = '''
 <action>
     <force>true</force>
@@ -49,9 +61,9 @@ host_del_option = '''
 </action>
 '''
 
-'''
+'''-----------------------------------------------------------------------------------------
 @note: ExpectedData
-'''
+-----------------------------------------------------------------------------------------'''
 status_code = 409
 expected_info = '''
 <fault>

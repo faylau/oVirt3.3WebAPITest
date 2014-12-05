@@ -1,4 +1,5 @@
 #encoding:utf-8
+
 __authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -10,14 +11,13 @@ __version__ = "V0.1"
 # V0.1           2014/10/09          初始版本                                                            Wei Keke 
 #---------------------------------------------------------------------------------
 '''
+
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 import TestData.Disk.ITC08_SetUp as ModuleData
-'''
+
+'''---------------------------------------------------------------------------------------------------
 @note: PreData
-'''
-'''
-@note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
-'''
+---------------------------------------------------------------------------------------------------'''
 disk_name = 'Test-DISK%'
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
 disk_info = '''
@@ -37,9 +37,9 @@ disk_info = '''
 </disk>
 '''% (disk_name, disk_name, sd_id)
 
-'''
+'''---------------------------------------------------------------------------------------------------
 @note: ExpectedData
-'''
+---------------------------------------------------------------------------------------------------'''
 expected_status_code = 400
 expected_info = '''
 <fault>

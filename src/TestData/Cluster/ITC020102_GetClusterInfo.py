@@ -1,13 +1,26 @@
 #encoding:utf-8
+
+__authors__ = ['wei keke']
+__version__ = "V0.1"
+
+'''
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                         
+#---------------------------------------------------------------------------------
+'''
+
 import TestData.Cluster.ITC02_Setup as ModuleData
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 
 
-'''
+'''-----------------------------------------------------------------------------------------------
 @note: PreData
-'''
+-----------------------------------------------------------------------------------------------'''
 dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
-cluster_name = 'cluster-ITC02'
+cluster_name = 'Cluster-ITC020102'
 cluster_info = '''
 <cluster>
         <name>%s</name>
@@ -19,6 +32,9 @@ cluster_info = '''
         <trusted_service>false</trusted_service> 
         <ballooning_enabled>true</ballooning_enabled>  
 </cluster>
-''' %(cluster_name,dc_id)
+''' % (cluster_name, dc_id)
 
+'''-----------------------------------------------------------------------------------------------
+@note: ExpectResult
+-----------------------------------------------------------------------------------------------'''
 status_code = 200
