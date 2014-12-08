@@ -18,7 +18,7 @@ import unittest
 from BaseTestCase import BaseTestCase
 from TestAPIs.DataCenterAPIs import DataCenterAPIs
 from TestAPIs.ClusterAPIs import ClusterAPIs, smart_create_cluster, smart_delete_cluster
-from TestAPIs.NetworkAPIs import NetworkAPIs, smart_create_network, smart_delete_network
+from TestAPIs.NetworkAPIs import smart_create_network, smart_delete_network
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare
 from TestData.Cluster import ITC02_Setup as ModuleData
@@ -783,7 +783,7 @@ class ITC02_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Cluster.ITC020203_attachNetworktoCluster"]
+    test_cases = ["Cluster.ITC02_TearDown"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

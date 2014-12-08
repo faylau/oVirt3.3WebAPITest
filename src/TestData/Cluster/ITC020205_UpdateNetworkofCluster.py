@@ -29,7 +29,8 @@ cluster_info='''
 </cluster>
 ''' % (cluster_name, dc_id)
 
-nw_name = 'network_ITC020205'
+# network name必须在15个字符以内，且只能是大小写字母、数字或_。
+nw_name = 'nw_ITC020205'
 nw_info = '''
 <network>
     <name>%s</name>
