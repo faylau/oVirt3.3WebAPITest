@@ -196,7 +196,7 @@ def exectueTest():
 
     exec_type = get_exec_type()
     
-    if exec_type == 'all':
+    if exec_type == 'all': 
         test_case_dir = get_testcase_dir()
         all_case_file = os.listdir(test_case_dir)
         all_case_module = deepcopy(all_case_file) # 遍历TestCase目录
