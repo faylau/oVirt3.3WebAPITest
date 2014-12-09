@@ -1,4 +1,5 @@
 #encoding:utf-8
+
 __authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -10,16 +11,15 @@ __version__ = "V0.1"
 # V0.1           2014/10/09          初始版本                                                            Wei Keke 
 #---------------------------------------------------------------------------------
 '''
+
 import TestData.Disk.ITC08_SetUp as ModuleData
-'''
+
+'''---------------------------------------------------------------------------------------------------
 @note: PreData
-'''
-'''
-@note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
-'''
+---------------------------------------------------------------------------------------------------'''
 sd_name = ModuleData.data1_nfs_name
 cluster_name = ModuleData.cluster_nfs_name
-vm_name = 'vm-ITC08'
+vm_name = 'VM-ITC080403'
 vm_info = '''
 <vm>
         <name>%s</name>
@@ -41,7 +41,8 @@ vm_info = '''
         </os>
     </vm>
 '''% (vm_name, cluster_name)
-disk_name = 'DISK-ITC08'
+
+disk_name = 'DISK-ITC080403'
 disk_info = '''
 <disk>
     <alias>%s</alias>
@@ -61,9 +62,9 @@ disk_info = '''
 </disk>
 '''% (disk_name, disk_name, sd_name)
 
-'''
+'''---------------------------------------------------------------------------------------------------
 @note: ExpectedData
-'''
+---------------------------------------------------------------------------------------------------'''
 expected_status_code = 409
 expected_info = '''
 <fault>

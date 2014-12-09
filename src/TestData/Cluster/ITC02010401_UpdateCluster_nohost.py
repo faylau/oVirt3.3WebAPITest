@@ -1,16 +1,30 @@
 #encoding:utf-8
-import TestData.Cluster.ITC02_Setup as ModuleData
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
-'''
-更新集群-01成功更改集群的名称和cpu类型
-'''
-dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
-cluster_name = 'cluster-ITC02'
-cluster_name_new = 'cluster-ITC02-new'
+
+__authors__ = ['wei keke']
+__version__ = "V0.1"
 
 '''
-@note: PreData
+# ChangeLog:
+#---------------------------------------------------------------------------------
+# Version        Date                Desc                            Author
+#---------------------------------------------------------------------------------
+# V0.1           2014/10/17          初始版本                                                         
+#---------------------------------------------------------------------------------
 '''
+
+import TestData.Cluster.ITC02_Setup as ModuleData
+from TestAPIs.DataCenterAPIs import DataCenterAPIs
+
+'''------------------------------------------------------------------------------------------------
+更新集群-01成功更改集群的名称和cpu类型
+------------------------------------------------------------------------------------------------'''
+dc_id = DataCenterAPIs().getDataCenterIdByName(ModuleData.dc_name)
+cluster_name = 'Cluster-ITC02010401'
+cluster_name_new = 'Cluster-ITC02010401-New'
+
+'''------------------------------------------------------------------------------------------------
+@note: PreData
+------------------------------------------------------------------------------------------------'''
 cluster_info = '''
 <cluster>
         <name>%s</name>
@@ -19,10 +33,10 @@ cluster_info = '''
 </cluster>
 ''' %(cluster_name,dc_id)
 
-'''
+'''------------------------------------------------------------------------------------------------
 @note: TestData
 @note: 当集群内无主机时，更改集群的名称、cpu类型以及升高cpu级别
-'''
+------------------------------------------------------------------------------------------------'''
 cluster_info_new = '''
 <data_driver>
 <cluster>
@@ -35,9 +49,9 @@ cluster_info_new = '''
         <name>%s</name>
 </cluster>
 </data_driver>
-''' %(cluster_name_new)
+''' % cluster_name_new
 
-'''
+'''------------------------------------------------------------------------------------------------
 @note: ExpectedData
-'''
+------------------------------------------------------------------------------------------------'''
 status_code = 200

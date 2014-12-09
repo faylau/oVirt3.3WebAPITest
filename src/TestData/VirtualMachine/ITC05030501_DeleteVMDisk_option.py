@@ -7,7 +7,7 @@ import TestData.VirtualMachine.ITC05_SetUp as ModuleData
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-disk_name = 'DISK-1%s'%ModuleData.vm_name
+disk_name = 'DISK-1-%s' % ModuleData.vm_name
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
 disk_info='''
 <disk>
@@ -19,9 +19,6 @@ disk_info='''
     <sparse>false</sparse>
     <interface>virtio</interface>
     <format>raw</format>
-    <bootable>true</bootable>
-    <shareable>true</shareable>
-    <wipe_after_delete>false</wipe_after_delete>
 </disk>
 '''%(disk_name,sd_id)
 

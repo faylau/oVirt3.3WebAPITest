@@ -1,4 +1,5 @@
 #encoding:utf-8
+
 __authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -12,18 +13,16 @@ __version__ = "V0.1"
 '''
 
 import TestData.Disk.ITC08_SetUp as ModuleData
-'''
+
+'''---------------------------------------------------------------------------------------------------
 @note: PreData
-'''
-'''
-@note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
-'''
+---------------------------------------------------------------------------------------------------'''
 sd_name = ModuleData.data1_nfs_name
 cluster_name = ModuleData.cluster_nfs_name
-vm_name = 'vm-ITC08'
+vm_name = 'VM-ITC080402'
 vm_info = '''
 <vm>
-        <name>vm-ITC08</name>
+        <name>%s</name>
         <description>Virtual Machine 2</description>
         <type>server</type>
         <memory>536870912</memory>
@@ -41,12 +40,13 @@ vm_info = '''
             <boot dev="hd"/>
         </os>
     </vm>
-'''%cluster_name
-disk_name = 'DISK-ITC08'
+''' % (vm_name, cluster_name)
+
+disk_name = 'DISK-ITC080402'
 disk_info = '''
 <disk>
-    <alias>DISK-ITC08</alias>
-    <name>DISK-ITC08</name>
+    <alias>%s</alias>
+    <name>DISK-ITC080402</name>
     <storage_domains>
         <storage_domain>
             <name>%s</name>
@@ -60,17 +60,19 @@ disk_info = '''
     <shareable>false</shareable>
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
-'''%sd_name
-temp_name = 'template-ITC08'
+''' % (disk_name, sd_name)
+
+temp_name = 'Template-ITC080402'
 temp_info = '''
 <template>
-    <name>template-ITC08</name>
+    <name>Template-ITC080402</name>
     <vm id="%s"/>
 </template>
 '''
-'''
+
+'''---------------------------------------------------------------------------------------------------
 @note: ExpectedData
-'''
+---------------------------------------------------------------------------------------------------'''
 expected_status_code = 400
 expected_info = '''
 <fault>

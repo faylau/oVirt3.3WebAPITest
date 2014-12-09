@@ -54,8 +54,6 @@ from copy import deepcopy
 from unittest import TestSuite, TestLoader
 import xmltodict
 
-from Utils.HTMLTestRunner import HTMLTestRunner
-
 
 def get_project_dir():
     '''
@@ -73,6 +71,7 @@ if get_project_dir() not in sys.path:
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+from Utils.HTMLTestRunner import HTMLTestRunner
 
 tc_list = []        # 由xml文件解析出的配置文件中的信息
 test_cases = []      # 本次测试要执行的testcase

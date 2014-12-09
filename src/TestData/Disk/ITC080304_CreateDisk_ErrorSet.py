@@ -1,3 +1,5 @@
+#encoding:utf-8
+
 __authors__ = ['"Wei Keke" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.1"
 
@@ -6,14 +8,16 @@ __version__ = "V0.1"
 #---------------------------------------------------------------------------------
 # Version        Date                Desc                            Author
 #---------------------------------------------------------------------------------
-# V0.1           2014/10/09          ��ʼ�汾                                                            Wei Keke 
+# V0.1           2014/10/09          初始版本                                                           Wei Keke 
 #---------------------------------------------------------------------------------
 '''
+
 from TestAPIs.StorageDomainAPIs import StorageDomainAPIs
 import TestData.Disk.ITC08_SetUp as ModuleData
-'''
+
+'''---------------------------------------------------------------------------------------------------
 @note: PreData
-'''
+---------------------------------------------------------------------------------------------------'''
 disk_name = 'Disk-test'
 sd_id = StorageDomainAPIs().getStorageDomainIdByName(ModuleData.data1_nfs_name)
 disk_info = '''
@@ -61,10 +65,11 @@ disk_info = '''
     <wipe_after_delete>false</wipe_after_delete>
 </disk>
 </data_driver>
-'''%(sd_id,sd_id,sd_id)
-'''
+''' % (sd_id, sd_id, sd_id)
+
+'''---------------------------------------------------------------------------------------------------
 @note: ExpectedData
-'''
+---------------------------------------------------------------------------------------------------'''
 expected_status_code = [400,400,409]
 expected_info_list = [
 '''
@@ -87,4 +92,4 @@ expected_info_list = [
     <detail>[Cannot add Virtual Machine Disk. Disk's volume format is not supported for shareable disk.]</detail>
 </fault>
 '''
-                      ]
+]

@@ -1662,7 +1662,6 @@ class ITC030112_CommitNetwork(BaseTestCase):
 class ITC03011301_SelectSpm_Up(BaseTestCase):
     '''
     @summary: ITC-03主机管理-01主机操作-13选择SPM-01选择UP主机
-    @todo: 未完成（需要创建存储域）
     '''
     def setUp(self):
         '''
@@ -1712,25 +1711,28 @@ class ITC03011301_SelectSpm_Up(BaseTestCase):
     def tearDown(self):
         '''
         @summary: 资源清理
-        @note: （1）将host2设置为维护状态，并删除；
-        @note: （2）将data1设置为维护状态；
-        @note: （3）删除数据中心（非强制，之后data存储域变为Unattached状态）
-        @note: （4）删除unattached状态的data1存储域；
-        @note: （5）删除主机host1;
-        @note: （6）删除集群。
+        @note: （1）将host1重新设置为SPM；
+        @note: （2）将host2设置为维护状态，并删除；
+        @note: （3）将data1设置为维护状态；
+        @note: （4）删除数据中心（非强制，之后data存储域变为Unattached状态）
+        @note: （5）删除unattached状态的data1存储域；
+        @note: （6）删除主机host1;
+        @note: （7）删除集群。
         '''
-        LogPrint().info("Post-Test-1: Delete host2 '%s'." % self.dm.host2_name)
+        LogPrint().info("Post-Test-1: Re-select host1 '%s' as SPM." % self.dm.host1_name)
+        self.assertTrue(self.host_api.forceSelectSPM(self.dm.host1_name)['status_code']==self.dm.expected_status_code_select_spm)
+        LogPrint().info("Post-Test-2: Delete host2 '%s'." % self.dm.host2_name)
         self.assertTrue(smart_del_host(self.dm.host2_name, self.dm.xml_host_del_option))
-        LogPrint().info("Post-Test-2: Deactivate storage domain '%s'." % self.dm.data1_nfs_name)
+        LogPrint().info("Post-Test-3: Deactivate storage domain '%s'." % self.dm.data1_nfs_name)
         self.assertTrue(smart_deactive_storage_domain(self.dm.dc1_name, self.dm.data1_nfs_name))
-        LogPrint().info("Post-Test-3: Delete DataCenter '%s'." % self.dm.dc1_name)
+        LogPrint().info("Post-Test-4: Delete DataCenter '%s'." % self.dm.dc1_name)
         if self.dc_api.searchDataCenterByName(self.dm.dc1_name)['result']['data_centers']:
             self.assertTrue(self.dc_api.delDataCenter(self.dm.dc1_name)['status_code']==self.dm.expected_status_code_del_dc)
-        LogPrint().info("Post-Test-4: Delete storage domain '%s'." % self.dm.data1_nfs_name)
+        LogPrint().info("Post-Test-5: Delete storage domain '%s'." % self.dm.data1_nfs_name)
         self.assertTrue(smart_del_storage_domain(self.dm.data1_nfs_name, self.dm.xml_del_sd_option))
-        LogPrint().info("Post-Test-5: Delete host '%s'." % self.dm.host1_name)
+        LogPrint().info("Post-Test-6: Delete host '%s'." % self.dm.host1_name)
         self.assertTrue(smart_del_host(self.dm.host1_name, self.dm.xml_host_del_option))
-        LogPrint().info("Post-Test-6: Delete cluster '%s'." % self.dm.cluster1_name)
+        LogPrint().info("Post-Test-7: Delete cluster '%s'." % self.dm.cluster1_name)
         self.assertTrue(self.cluster_api.delCluster(self.dm.cluster1_name)['status_code'] == self.dm.expected_status_code_del_cluster)
 
 class ITC030201_GetHostNicList(BaseTestCase):
@@ -1921,7 +1923,7 @@ class ITC03_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["Host.ITC03_TearDown"]
+    test_cases = ["Host.ITC03011301_SelectSpm_Up"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

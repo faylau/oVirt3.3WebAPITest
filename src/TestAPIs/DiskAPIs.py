@@ -63,30 +63,54 @@ def smart_delete_disk(disk_id, status_code=200):
     @return: True or False
     '''
     disk_api = DiskAPIs()
-    def is_disk_delete(disk_id):
-        return disk_api.isExist(disk_id) == 'False'
-    try:
-        disk_api.getDiskInfo(disk_id)
+    tmp_disk_id = disk_id
+    def is_disk_deleted(disk_id=tmp_disk_id):
+        return not disk_api.isExist(disk_id)
+    if DiskAPIs().isExist(disk_id):
         if disk_api.getDiskStatus(disk_id) != 'ok':
             LogPrint().warning("WARN: The disk is not 'ok'. It cannot be deleted.")
             return False
-        else: 
+        else:
             r = disk_api.deleteDisk(disk_id)
             # 2014/11/13: Modified by LiuFei: add 'int' before status_code.
-            if r['status_code'] == int(status_code):
-                if wait_until(is_disk_delete, 60, 10):
+            if r['status_code'] == 200:
+                if wait_until(is_disk_deleted, 60, 10):
                     LogPrint().info("INFO: Delete disk SUCCESS.")
                     return True
                 else:
                     LogPrint().error("INFO: Disk is still exist.")
                     return False
-
             else:
                 LogPrint().error("INFO: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
                 return False
-    except:
+    else:
         LogPrint().warning("INFO: Disk is not exist.")
         return True
+    
+    
+#     try:
+#         disk_api.getDiskInfo(disk_id)
+#         if disk_api.getDiskStatus(disk_id) != 'ok':
+#             LogPrint().warning("WARN: The disk is not 'ok'. It cannot be deleted.")
+#             return False
+#         else: 
+#             r = disk_api.deleteDisk(disk_id)
+#             # 2014/11/13: Modified by LiuFei: add 'int' before status_code.
+#             if r['status_code'] == int(status_code):
+#                 if wait_until(is_disk_delete, 60, 10):
+#                     LogPrint().info("INFO: Delete disk SUCCESS.")
+#                     return True
+#                 else:
+#                     LogPrint().error("INFO: Disk is still exist.")
+#                     return False
+# 
+#             else:
+#                 LogPrint().error("INFO: Returned status code '%s' is WRONG while deleting disk." % r['status_code'])
+#                 return False
+#     except Exception as e:
+#         LogPrint().warning("INFO: Disk is not exist.")
+#         print e
+#         return True
 
 class DiskAPIs(BaseAPIs):
     '''
@@ -113,18 +137,22 @@ class DiskAPIs(BaseAPIs):
         r = self.searchDiskByName(disk_alias)
         return r['result']['disks']['disk']['@id']
     
-    def isExist(self,disk_id):
+    def isExist(self, disk_id):
         '''
         @summary: 系统内磁盘是否存在
         '''
-        disk_list = DiskAPIs().getDisksList()['result']['disks']['disk']
-        flag=False
-        for disk in disk_list:
-            diskid = disk['@id']
-            if diskid == disk_id:
-                flag=True
-        return flag
-                
+        if DiskAPIs().getDisksList()['result']['disks']:
+            disks = DiskAPIs().getDisksList()['result']['disks']['disk']
+            if isinstance(disks, list):
+                for disk  in disks:
+                    if disk['@id'] == disk_id:
+                        return True
+                return False
+            else:
+                return disks['@id'] == disk_id
+        else:
+            LogPrint().warning("WARN: There is no disk in DataStorage.")
+            return False                
         
     def getDisksList(self):
         '''
