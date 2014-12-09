@@ -58,8 +58,7 @@ class HttpClient(object):
 
 if __name__ == "__main__":
 #     pass
-    dc_id = '66f3a0b3-33fd-4979-bbcb-c2a175f3cb51'
-    api_url = '%s/datacenters/%s' % (GlobalConfig.WebBaseApiUrl, dc_id)
-    method = 'DELETE'
+    api_url = '%s/datacenters' % (GlobalConfig.WebBaseApiUrl)
+    method = 'Get'
     r = HttpClient.sendRequest(method=method, api_url=api_url)
     print r.status_code, r.text

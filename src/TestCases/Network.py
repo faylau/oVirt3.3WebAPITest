@@ -537,8 +537,8 @@ class ITC06_TearDown(BaseTestCase):
             dcapi.delDataCenter(ModuleData.dc_name)   
 
 if __name__ == "__main__":
-
-    test_cases = ["Network.ITC06010305_CreateNetwork_DupVlan"]
+    
+    test_cases = ["Network.ITC06_TearDown"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

@@ -16,54 +16,58 @@ __version__ = "V0.2"
 
 import logging
 
-class ContextFilter(logging.Filter):
-    '''
-    @summary: 继承自logging.Filter，用于设定logging日志的过滤条件
-    '''
-    def filter(self, record):
-        '''
-        @summary: 将coonectionpool.py文件产生的日志过滤掉
-        '''
-        return record.filename != "connectionpool.py"
 
 class LogPrint():
     '''
     @summary: 日志打印及管理类
     '''
-#     src_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-#     log_file_path = src_dir + os.path.sep + 'Results'
-    
     def __init__(self, log_file="log.txt", log_level=logging.INFO):
-        logging.basicConfig(level=log_level,
-                            format='%(asctime)s %(levelname)-8s| %(filename)-15s[line:%(lineno)-.4d] | %(message)s',
-                            datefmt='%Y-%m-%d %H:%M:%S',
-#                             filename=log_file,
-                            filemode="a"
-                            )
+        '''
+        @summary: 初始化函数
+        '''
+        self.logger = logging.Logger('itest')
+        self.logger.setLevel(log_level)
+        hdr = logging.StreamHandler()
+        self.logger.addHandler(hdr)
+        formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s| %(filename)-10s[line:%(lineno)-.4d] | %(message)s',
+                                      datefmt='%Y-%m-%d %H:%M:%S')
+        hdr.setFormatter(formatter)
+        
+        
         # 为logging日志输出添加Filter
-        logging.getLogger().addFilter(ContextFilter())
+#         logging.getLogger().addFilter(ContextFilter())
+
+#         logging.basicConfig(level=log_level,
+#                             format='%(asctime)s %(levelname)-8s| %(filename)-15s[line:%(lineno)-.4d] | %(message)s',
+#                             datefmt='%Y-%m-%d %H:%M:%S',
+# #                             filename=log_file,
+#                             filemode="a"
+#                             )
+#         requests_log = logging.getLogger("requests.packages.urllib3")
+#         requests_log.setLevel(logging.WARN)
+#         requests_log.propagate = True
     
-    def set_log_level(self, log_level):
-        '''
-        @summary: 设置日志级别
-        @param log_level: 日志级别，取值包含DEBUG、INFO、ERROR、WARNING、CRITICAL
-        '''
-        self.log_level = log_level
+#     def set_log_level(self, log_level):
+#         '''
+#         @summary: 设置日志级别
+#         @param log_level: 日志级别，取值包含DEBUG、INFO、ERROR、WARNING、CRITICAL
+#         '''
+#         self.log_level = log_level
     
     def debug(self, msg):
-        logging.debug(msg)
+        self.logger.debug(msg)
     
     def info(self, msg):
-        logging.info(msg)
+        self.logger.info(msg)
     
     def error(self, msg):
-        logging.error(msg)
+        self.logger.error(msg)
     
     def warning(self, msg):
-        logging.warning(msg)
+        self.logger.warn(msg)
     
     def critical(self, msg):
-        logging.critical(msg)
+        self.logger.critical(msg)
         
 if __name__=='__main__':
     LogPrint().debug("This is a debug message.")
