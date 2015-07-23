@@ -9,6 +9,7 @@ __version__ = "V0.1"
 # Version        Date                Desc                            Author
 #---------------------------------------------------------------------------------
 # V0.1           2014/10/17          初始版本                                                            Liu Fei 
+# V0.2                                更改了报错提示信息                                      wei keke
 #---------------------------------------------------------------------------------
 '''
 
@@ -52,14 +53,14 @@ expected_status_code = 400
 expected_info_list = [
 '''
 <fault>
-    <reason>Operation Failed</reason>
-    <detail>[size must be between 1 and 255, Host name must be formed of alphanumeric characters, numbers or "-_."]</detail>
+    <reason>Incomplete parameters</reason>
+    <detail>Host [name] required for add</detail>
 </fault>
 ''',
 '''
 <fault>
-    <reason>Operation Failed</reason>
-    <detail>[Host address must be a FQDN or a valid IP address]</detail>
+    <reason>Incomplete parameters</reason>
+    <detail>Host [address] required for add</detail>
 </fault>
 ''',
 '''

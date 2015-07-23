@@ -36,11 +36,11 @@ xml_host_info = '''
 -----------------------------------------------------------------------------------------'''
 xml_host_update_info = '''
 <host>
-    <address>192.168.0.254</address>
-    <password>abcdefg</password>
     <cluster>
         <name>Default</name>
     </cluster>
+    <address>10.1.85.242</address>
+    <root_password>qwer1235</root_password>
 </host>
 '''
 

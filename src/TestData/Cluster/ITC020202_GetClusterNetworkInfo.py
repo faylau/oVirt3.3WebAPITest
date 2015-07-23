@@ -25,7 +25,7 @@ cluster_name = 'Cluster-ITC020202'
 cluster_info = '''
 <cluster>
         <name>%s</name>
-        <cpu id="Intel Penryn Family"/>
+        <cpu id="Intel Conroe Family"/>
         <data_center id="%s"/>
 </cluster>
 ''' % (cluster_name, dc_id)

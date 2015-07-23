@@ -47,12 +47,11 @@ def smart_del_storage_domain(sd_name, xml_del_option, host_name=None, status_cod
     @return: True or False
     '''
     sd_api = StorageDomainAPIs()
-    LogPrint().info("Post-Test: Delete StorageDomain '%s'." % sd_name)
     if sd_api.searchStorageDomainByName(sd_name)['result']['storage_domains']:
         r = sd_api.delStorageDomain(sd_name, xml_del_option, host_name)
         return (r['status_code']==status_code)
     else:
-        LogPrint().info("Post-Test: StorageDomain '%s' not exists." % sd_name)
+        LogPrint().info("Storage Domain '%s' not exists." % sd_name)
         return True
 
 class StorageDomainAPIs(BaseAPIs):
@@ -260,12 +259,8 @@ class StorageDomainAPIs(BaseAPIs):
                 <name>node2</name>
             </host>
             <format>true</format>
-            <destroy>true</destroy>
-            <async>false</async>
         </storage_domain>
-        @attention: 
-        (1) <host>字段是必须提供的；（2）<destroy>字段表示销毁操作，销毁时不需要另外指定<format>字段；
-        (3)<format>字段表示是否格式化域，在进行删除操作时必须指定该字段；（4）<async>表示是否异步返回。
+        @change: 对于data域，必须有host和format选项；其他类型数据域则只需有host；
         @attention: (1)Maintenance状态可以销毁；（2）游离状态可以删除。
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
@@ -809,12 +804,13 @@ if __name__ == "__main__":
     
     xml_del_sd_option = '''
     <storage_domain>
-        <host><name>node1.com</name></host>
-        <destroy>true</destroy>
-        <async>false</async>
+        <host>
+        <name>node-ITC01-1</name>
+        </host>
+        <format>true</format>
     </storage_domain>
     '''
-#     print sdapi.delStorageDomain('export', xml_del_sd_option)
+    print sdapi.delStorageDomain('data1-nfs-ITC01', xml_del_sd_option)
     
     xml_update_nfs_info = '''
     <storage_domain>
@@ -863,11 +859,11 @@ if __name__ == "__main__":
         <name>data1</name>
         <type>data</type>
         <host>
-            <name>node1.com</name>
+            <name>node1</name>
         </host>
         <storage>
             <type>nfs</type>
-            <address>10.1.167.2</address>
+            <address>10.1.164.104</address>
             <path>/storage/data1</path>
         </storage>
     </storage_domain>
@@ -877,7 +873,7 @@ if __name__ == "__main__":
         <name>Data2-ISCSI</name>
         <type>data</type>
         <host>
-            <name>node3.com</name>
+            <name>node1</name>
         </host>
         <storage>
             <type>iscsi</type>
@@ -908,7 +904,7 @@ if __name__ == "__main__":
         </storage>
     </storage_domain>
     '''
-#     print sdapi.createStorageDomain(xml_nfs_sd_info)
+    print sdapi.createStorageDomain(xml_nfs_sd_info)
     
 #     print sdapi.getStorageDomainInfo('data1')
 #     print xmltodict.unparse(sdapi.getStorageDomainInfo('data1')['result'], pretty=True)

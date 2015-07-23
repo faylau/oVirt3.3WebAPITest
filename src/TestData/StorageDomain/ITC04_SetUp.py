@@ -21,70 +21,37 @@ from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorage
 ---------------------------------------------------------------------------------------------------
 '''
 ########################################################################
-# 3个数据中心信息                                                                                                                                    
+# 数据中心信息                                                                                                                                 
 ########################################################################
-dc_nfs_name = 'DC-ITC04-NFS'
-dc_iscsi_name = 'DC-ITC04-ISCSI'
-dc_fc_name = 'DC-ITC04-FC'
-dc_name_list = [dc_nfs_name, dc_iscsi_name, dc_fc_name]
+dc_name = 'DC-ITC04'
 dc_info = '''
-<data_driver>
-    <data_center>
+<data_center>
         <name>%s</name>
-        <storage_type>nfs</storage_type>
-        <version minor="3" major="3"/>
-    </data_center>
-    <data_center>
-        <name>%s</name>
-        <storage_type>iscsi</storage_type>
-        <version minor="3" major="3"/>
-    </data_center>
-    <data_center>
-        <name>%s</name>
-        <storage_type>fcp</storage_type>
-        <version minor="3" major="3"/>
-    </data_center>
-</data_driver>
-''' % (dc_nfs_name, dc_iscsi_name, dc_fc_name)
+        <local>false</local>
+        <version minor="4" major="3"/>
+</data_center>   
+''' % dc_name
 
 ########################################################################
 # 3个集群信息                                                                                                                                    
 ########################################################################
-cluster_nfs_name = 'Cluster-ITC04-NFS'
-cluster_iscsi_name = 'Cluster-ITC04-ISCSI'
-cluster_fc_name = 'Cluster-ITC04-FC'
-cluster_name_list = [cluster_nfs_name, cluster_iscsi_name, cluster_fc_name]
-cluster_info = '''
-<data_driver>
-    <cluster>
-        <name>%s</name>
-        <cpu id="Intel Conroe Family"/>
-        <data_center>
-            <name>%s</name>
-        </data_center>
-    </cluster>
-    <cluster>
-        <name>%s</name>
-        <cpu id="Intel Conroe Family"/>
-        <data_center>
-            <name>%s</name>
-        </data_center>
-    </cluster>
-    <cluster>
-        <name>%s</name>
-        <cpu id="Intel Conroe Family"/>
-        <data_center>
-            <name>%s</name>
-        </data_center>
-    </cluster>
-</data_driver>
-''' % (cluster_nfs_name, dc_nfs_name, cluster_iscsi_name, dc_iscsi_name, cluster_fc_name, dc_fc_name)
+cluster_name = 'Cluster-ITC04'
 
+cluster_info = '''
+    <cluster>
+        <name>%s</name>
+        <cpu id="Intel Conroe Family"/>
+        <data_center>
+            <name>%s</name>
+        </data_center>
+    </cluster>
+    
+''' % (cluster_name, dc_name)
 ########################################################################
 # 2个主机信息（node1加入NFS数据中心，node4加入ISCSI数据中心）                                                                                                                                    
 ########################################################################
-host4 = Hosts['node4']
-host4_name = 'node-ITC04-4'
+host4 = Hosts['node2']
+host4_name = 'node-ITC04-2'
 host4_ip = host4['ip']
 host4_password = host4['password']
 
@@ -111,8 +78,8 @@ hosts_info_xml = '''
         <root_password>%s</root_password>
     </host>
 </data_driver>
-''' % (cluster_nfs_name, host1_name, host1_ip, host1_password,
-       cluster_iscsi_name, host4_name, host4_ip, host4_password)
+''' % (cluster_name, host1_name, host1_ip, host1_password,
+       cluster_name, host4_name, host4_ip, host4_password)
 
 #######################################################################################
 # 4个存储域信息（2个Data域分别附加到NFS/ISCSI数据中心，1个ISO和1个Export域附加到NFS数据中心）                                                                                                                               
@@ -121,12 +88,12 @@ data1_nfs_name = 'data1-nfs-ITC04'
 data1_nfs = DataStorages['nfs']['data1']
 data1_nfs_ip = data1_nfs['ip']
 data1_nfs_path = data1_nfs['path']
-data1_iscsi_name = 'data1-iscsi-ITC04'
-data1_iscsi = DataStorages['iscsi']['data1-iscsi']
-data1_iscsi_ip = data1_iscsi['ip']
-data1_iscsi_port = data1_iscsi['port']
-data1_iscsi_target = data1_iscsi['target']
-data1_iscsi_lun_id = data1_iscsi['lun_id']
+# data1_iscsi_name = 'data1-iscsi-ITC04'
+# data1_iscsi = DataStorages['iscsi']['data1-iscsi']
+# data1_iscsi_ip = data1_iscsi['ip']
+# data1_iscsi_port = data1_iscsi['port']
+# data1_iscsi_target = data1_iscsi['target']
+# data1_iscsi_lun_id = data1_iscsi['lun_id']
 iso1_name = 'iso1-ITC04'
 iso1 = IsoStorages['ISO-Storage1']
 iso1_ip = iso1['ip']
@@ -148,26 +115,6 @@ xml_datas_info = '''
             <type>nfs</type>
             <address>%s</address>
             <path>%s</path>
-        </storage>
-    </storage_domain>
-    <storage_domain>
-        <name>%s</name>
-        <type>data</type>
-        <host>
-            <name>%s</name>
-        </host>
-        <storage>
-            <type>iscsi</type>
-            <logical_unit id="%s">
-                <address>%s</address>
-                <port>%s</port>
-                <target>%s</target>
-                <serial>SLENOVO_LIFELINE-DISK</serial>
-                <vendor_id>LENOVO</vendor_id>
-                <product_id>LIFELINE-DISK</product_id>
-                <lun_mapping>0</lun_mapping>
-            </logical_unit>
-            <override_luns>true</override_luns>
         </storage>
     </storage_domain>
     <storage_domain>
@@ -196,7 +143,6 @@ xml_datas_info = '''
     </storage_domain>
 </data_driver>
 ''' % (data1_nfs_name, host1_name, data1_nfs_ip, data1_nfs_path, 
-       data1_iscsi_name, host4_name, data1_iscsi_lun_id, data1_iscsi_ip, data1_iscsi_port, data1_iscsi_target, 
        iso1_name, host1_name, iso1_ip, iso1_path, 
        export1_name, host1_name, export1_ip, export1_path )
 
@@ -218,7 +164,6 @@ xml_del_sd_option = '''
         <name>%s</name>
     </host>
     <format>true</format>
-    <async>false</async>
 </storage_domain>
 '''
 

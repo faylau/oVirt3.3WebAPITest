@@ -1,0 +1,1449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</title>
+    <meta name="generator" content="HTMLTestRunner 0.8.2"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    
+<style type="text/css" media="screen">
+body        { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; }
+table       { font-size: 100%; }
+pre         { }
+
+/* -- heading ---------------------------------------------------------------------- */
+h1 {
+	font-size: 16pt;
+	color: gray;
+}
+.heading {
+    margin-top: 0ex;
+    margin-bottom: 1ex;
+}
+
+.heading .attribute {
+    margin-top: 1ex;
+    margin-bottom: 0;
+}
+
+.heading .description {
+    margin-top: 4ex;
+    margin-bottom: 6ex;
+}
+
+/* -- css div popup ------------------------------------------------------------------------ */
+a.popup_link {
+}
+
+a.popup_link:hover {
+    color: red;
+}
+
+.popup_window {
+    display: none;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    /*border: solid #627173 1px; */
+    padding: 10px;
+    background-color: #E6E6D6;
+    font-family: "Lucida Console", "Courier New", Courier, monospace;
+    text-align: left;
+    font-size: 8pt;
+    width: 500px;
+}
+
+}
+/* -- report ------------------------------------------------------------------------ */
+#show_detail_line {
+    margin-top: 3ex;
+    margin-bottom: 1ex;
+}
+#result_table {
+    width: 80%;
+    border-collapse: collapse;
+    border: 1px solid #777;
+}
+#header_row {
+    font-weight: bold;
+    color: white;
+    background-color: #777;
+}
+#result_table td {
+    border: 1px solid #777;
+    padding: 2px;
+}
+#total_row  { font-weight: bold; }
+.passClass  { background-color: #6c6; }
+.failClass  { background-color: #c60; }
+.errorClass { background-color: #c00; }
+.passCase   { color: #6c6; }
+.failCase   { color: #c60; font-weight: bold; }
+.errorCase  { color: #c00; font-weight: bold; }
+.hiddenRow  { display: none; }
+.testcase   { margin-left: 2em; }
+
+
+/* -- ending ---------------------------------------------------------------------- */
+#ending {
+}
+
+</style>
+
+</head>
+<body>
+<script language="javascript" type="text/javascript"><!--
+output_list = Array();
+
+/* level - 0:Summary; 1:Failed; 2:All */
+function showCase(level) {
+    trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        tr = trs[i];
+        id = tr.id;
+        if (id.substr(0,2) == 'ft') {
+            if (level < 1) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+        if (id.substr(0,2) == 'pt') {
+            if (level > 1) {
+                tr.className = '';
+            }
+            else {
+                tr.className = 'hiddenRow';
+            }
+        }
+    }
+}
+
+
+function showClassDetail(cid, count) {
+    var id_list = Array(count);
+    var toHide = 1;
+    for (var i = 0; i < count; i++) {
+        tid0 = 't' + cid.substr(1) + '.' + (i+1);
+        tid = 'f' + tid0;
+        tr = document.getElementById(tid);
+        if (!tr) {
+            tid = 'p' + tid0;
+            tr = document.getElementById(tid);
+        }
+        id_list[i] = tid;
+        if (tr.className) {
+            toHide = 0;
+        }
+    }
+    for (var i = 0; i < count; i++) {
+        tid = id_list[i];
+        if (toHide) {
+            document.getElementById('div_'+tid).style.display = 'none'
+            document.getElementById(tid).className = 'hiddenRow';
+        }
+        else {
+            document.getElementById(tid).className = '';
+        }
+    }
+}
+
+
+function showTestDetail(div_id){
+    var details_div = document.getElementById(div_id)
+    var displayState = details_div.style.display
+    // alert(displayState)
+    if (displayState != 'block' ) {
+        displayState = 'block'
+        details_div.style.display = 'block'
+    }
+    else {
+        details_div.style.display = 'none'
+    }
+}
+
+
+function html_escape(s) {
+    s = s.replace(/&/g,'&amp;');
+    s = s.replace(/</g,'&lt;');
+    s = s.replace(/>/g,'&gt;');
+    return s;
+}
+
+/* obsoleted by detail in <div>
+function showOutput(id, name) {
+    var w = window.open("", //url
+                    name,
+                    "resizable,scrollbars,status,width=800,height=450");
+    d = w.document;
+    d.write("<pre>");
+    d.write(html_escape(output_list[id]));
+    d.write("\n");
+    d.write("<a href='javascript:window.close()'>close</a>\n");
+    d.write("</pre>\n");
+    d.close();
+}
+*/
+--></script>
+
+<div class='heading'>
+<h1>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</h1>
+<p class='attribute'><strong>Start Time:</strong> 2015-07-17 14:22:31</p>
+<p class='attribute'><strong>Duration:</strong> 0:01:45.005000</p>
+<p class='attribute'><strong>Status:</strong> Pass 8 Failure 8 Error 15</p>
+
+<p class='description'>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告
+测试执行方式：module</p>
+</div>
+
+
+
+<p id='show_detail_line'>Show
+<a href='javascript:showCase(0)'>Summary</a>
+<a href='javascript:showCase(1)'>Failed</a>
+<a href='javascript:showCase(2)'>All</a>
+</p>
+<table id='result_table'>
+<colgroup>
+<col align='left' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+</colgroup>
+<tr id='header_row'>
+    <td>Test Group/Test case</td>
+    <td>Count</td>
+    <td>Pass</td>
+    <td>Fail</td>
+    <td>Error</td>
+    <td>View</td>
+</tr>
+
+<tr class='failClass'>
+    <td>TestCases.DataCenter.ITC01_SetUp</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c1',1)">Detail</a></td>
+</tr>
+
+<tr id='ft1.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_CreateModuleTestEnv</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft1.1')" >
+        fail</a>
+
+    <div id='div_ft1.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft1.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft1.1: 2015-07-17 14:22:31 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-1: Create DataCenter 'DC-ITC01-NFS'.
+C:\Python27\lib\site-packages\requests-2.4.1-py2.7.egg\requests\packages\urllib3\connectionpool.py:730: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.org/en/latest/security.html (This warning will only appear once by default.)
+  InsecureRequestWarning)
+2015-07-17 14:22:32 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-2: Create Cluster 'Cluster-ITC01-NFS' in DataCenter 'DC-ITC01-NFS'.
+2015-07-17 14:22:32 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-3: Create Host 'node-ITC01-1' in Cluster 'Cluster-ITC01-NFS'.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31'), (u'@id', u'd4b4fdf4-358e-4389-adef-749a3da9fc31'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC01-1'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/d4b4fdf4-358e-4389-adef-749a3da9fc31/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.241'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.241')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/f25959cd-3aca-4a19-a34f-ed15667c694a'), (u'@id', u'f25959cd-3aca-4a19-a34f-ed15667c694a')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'47:40:ed:53:f6:1c:30:7b:64:95:c4:f4:c5:d1:84:4c')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-17 14:22:58 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC01-1' SUCCESS.
+2015-07-17 14:22:58 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-4: Create Data Storage 'data1-nfs-ITC01'.
+2015-07-17 14:22:58 WARNING | PrintLog.py[line:0067] | WARN: Storage Domain 'data1-nfs-ITC01' already exists.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 74, in test_CreateModuleTestEnv
+    create_storage_domains()
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\BaseTestCase.py", line 71, in __call
+    return_ = f(xmltodict.unparse(od))
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 73, in create_storage_domains
+    self.assertTrue(smart_create_storage_domain(sd_name, xml_storage_domain_info))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC010101_GetDCList</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c2',1)">Detail</a></td>
+</tr>
+
+<tr id='pt2.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetDataCentersList</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt2.1')" >
+        pass</a>
+
+    <div id='div_pt2.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt2.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt2.1: 2015-07-17 14:22:58 WARNING | PrintLog.py[line:0067] | The TestCase &lt;ITC010101_GetDCList&gt; has no data file.
+2015-07-17 14:22:58 INFO    | PrintLog.py[line:0061] | Test: Get all DataCenters lists.
+2015-07-17 14:22:58 INFO    | PrintLog.py[line:0061] | PASS: Get DataCenters list SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='failClass'>
+    <td>TestCases.DataCenter.ITC010102_GetDCInfo</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c3',1)">Detail</a></td>
+</tr>
+
+<tr id='ft3.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_GetDataCenterInfo</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft3.1')" >
+        fail</a>
+
+    <div id='div_ft3.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft3.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft3.1: 2015-07-17 14:22:58 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a DataCenter 'DC-ITC010201' for this TC.
+2015-07-17 14:22:58 INFO    | PrintLog.py[line:0061] | Test: Get DataCenter 'DC-ITC010201' info.
+[u'data_center', u'storage_type', u'nfs']
+2015-07-17 14:22:58 ERROR   | PrintLog.py[line:0064] | FAIL: Get DataCenter '%s' info INCORRECT.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 144, in test_GetDataCenterInfo
+    self.assertTrue(self.flag)
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC01010301_CreateDC</td>
+    <td>2</td>
+    <td>0</td>
+    <td>1</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c4',2)">Detail</a></td>
+</tr>
+
+<tr id='ft4.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_CreateDC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft4.1')" >
+        fail</a>
+
+    <div id='div_ft4.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft4.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft4.1: 2015-07-17 14:22:59 INFO    | PrintLog.py[line:0061] | Test: Create DC 'DC-ITC01010301-NFS'.
+[u'data_center', u'storage_type', u'nfs']
+2015-07-17 14:22:59 ERROR   | PrintLog.py[line:0064] | FAIL: Create DataCenter 'DC-ITC01010301-NFS' SUCCESS, but DataCenter info INCORRECT.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 193, in test_CreateDC
+    do_test()
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\BaseTestCase.py", line 71, in __call
+    return_ = f(xmltodict.unparse(od))
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 191, in do_test
+    self.assertTrue(self.flag)
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr id='ft4.2' class='none'>
+    <td class='errorCase'><div class='testcase'>test_CreateDC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft4.2')" >
+        error</a>
+
+    <div id='div_ft4.2' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft4.2').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft4.2: 2015-07-17 14:22:59 INFO    | PrintLog.py[line:0061] | Test: Create DC 'DC-ITC01010301-NFS'.
+[u'data_center', u'storage_type', u'nfs']
+2015-07-17 14:22:59 ERROR   | PrintLog.py[line:0064] | FAIL: Create DataCenter 'DC-ITC01010301-NFS' SUCCESS, but DataCenter info INCORRECT.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 202, in tearDown
+    self.dcapi.delDataCenter(dc)
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestAPIs\DataCenterAPIs.py", line 194, in delDataCenter
+    return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+  File "build\bdist.win32\egg\xmltodict.py", line 248, in parse
+    parser.Parse(xml_input, True)
+ExpatError: mismatched tag: line 1, column 944
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='failClass'>
+    <td>TestCases.DataCenter.ITC01010302_CreateExistDC</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c5',1)">Detail</a></td>
+</tr>
+
+<tr id='ft5.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_CreateExistDC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft5.1')" >
+        fail</a>
+
+    <div id='div_ft5.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft5.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft5.1: 2015-07-17 14:22:59 INFO    | PrintLog.py[line:0061] | Test: Create a DC with duplicate name.
+2015-07-17 14:22:59 ERROR   | PrintLog.py[line:0064] | FAIL: Returned status code is '201', INCORRECT. 
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 237, in test_CreateExistDC
+    self.assertTrue(self.flag)
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='failClass'>
+    <td>TestCases.DataCenter.ITC0101030301_CreateDC_NoRequiredParams</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c6',1)">Detail</a></td>
+</tr>
+
+<tr id='ft6.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_CreateDCWithoutRequiredParams</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft6.1')" >
+        fail</a>
+
+    <div id='div_ft6.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft6.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft6.1: 2015-07-17 14:22:59 INFO    | PrintLog.py[line:0061] | Test: Create a DC.
+2015-07-17 14:22:59 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT.
+2015-07-17 14:22:59 INFO    | PrintLog.py[line:0061] | Test: Create a DC.
+[u'fault', u'detail', u'DataCenter [storageType] required for add']
+2015-07-17 14:22:59 ERROR   | PrintLog.py[line:0064] | FAIL: Returned messages are INCORRECT.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 285, in test_CreateDCWithoutRequiredParams
+    do_test()
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\BaseTestCase.py", line 71, in __call
+    return_ = f(xmltodict.unparse(od))
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 282, in do_test
+    self.assertTrue(self.flag)
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC0101030302_CreateDC_VerifyName</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c7',1)">Detail</a></td>
+</tr>
+
+<tr id='pt7.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateDC_VerifyName</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt7.1')" >
+        pass</a>
+
+    <div id='div_pt7.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt7.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt7.1: 2015-07-17 14:23:00 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT.
+2015-07-17 14:23:00 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='failClass'>
+    <td>TestCases.DataCenter.ITC01010401_UpdateUninitializedDC</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c8',1)">Detail</a></td>
+</tr>
+
+<tr id='ft8.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_UpdateUninitializedDC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft8.1')" >
+        fail</a>
+
+    <div id='div_ft8.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft8.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft8.1: 2015-07-17 14:23:00 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a DataCenter 'DC-ITC01010401-1'.
+2015-07-17 14:23:00 INFO    | PrintLog.py[line:0061] | Test: Edit the Uninitialized DC include name/description/type/version.
+[u'data_center', u'storage_type', u'iscsi']
+2015-07-17 14:23:00 ERROR   | PrintLog.py[line:0064] | FAIL: Update DataCenter FAIL, the actual DC info not equals to expected.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 377, in test_UpdateUninitializedDC
+    self.assertTrue(self.flag)
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC01010403_UpdateDC_DupName</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c9',1)">Detail</a></td>
+</tr>
+
+<tr id='pt9.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateUninitializedDC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt9.1')" >
+        pass</a>
+
+    <div id='div_pt9.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt9.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt9.1: 2015-07-17 14:23:00 INFO    | PrintLog.py[line:0061] | Pre-Test: Create 2 DataCenters 'DC-ITC01010403-1 and DC-ITC01010403-2'.
+2015-07-17 14:23:00 INFO    | PrintLog.py[line:0061] | Test: Edit DC with a duplicate name.
+2015-07-17 14:23:01 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when Update DC with a Dup name.
+2015-07-17 14:23:01 INFO    | PrintLog.py[line:0061] | Post-Test: Delete the created/updated DataCenter 'DC-ITC01010403-1'.
+2015-07-17 14:23:01 INFO    | PrintLog.py[line:0061] | Post-Test: Delete the created/updated DataCenter 'DC-ITC01010403-2'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC01010404_UpdateDCVersion_HighToLow</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c10',1)">Detail</a></td>
+</tr>
+
+<tr id='pt10.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateDCVersion_HighToLow</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt10.1')" >
+        pass</a>
+
+    <div id='div_pt10.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt10.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt10.1: 2015-07-17 14:23:01 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a DataCenter '%s' with high version.
+2015-07-17 14:23:01 INFO    | PrintLog.py[line:0061] | Test: Edit DC's version from High to Low.
+2015-07-17 14:23:01 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when Update DC to lower version.
+2015-07-17 14:23:01 INFO    | PrintLog.py[line:0061] | Post-Test: Delete the created/updated DataCenter 'DC-ITC01010404'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC01010501_DelDC_Uninitialized</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c11',1)">Detail</a></td>
+</tr>
+
+<tr id='pt11.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DelDC_Uninitialized</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt11.1')" >
+        pass</a>
+
+    <div id='div_pt11.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt11.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt11.1: 2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a DataCenter 'DC-ITC01010501'.
+2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | Test: Delete DC 'DC-ITC01010501' in normal way.
+2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | PASS: Returned status code is CORRECT and Delete DC 'DC-ITC01010501' SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC01010502_DelDC_Force</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c12',1)">Detail</a></td>
+</tr>
+
+<tr id='pt12.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DelDC_Uninitialized</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt12.1')" >
+        pass</a>
+
+    <div id='div_pt12.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt12.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt12.1: 2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a DataCenter 'DC-ITC01010502' with Uninitialized state.
+2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | Test: Force delete DC 'DC-ITC01010502'.
+2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | PASS: Force-Delete DC 'DC-ITC01010502' SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC010201_GetStorageDomainsOfDC</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c13',1)">Detail</a></td>
+</tr>
+
+<tr id='pt13.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetStorageDomainsOfDC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt13.1')" >
+        pass</a>
+
+    <div id='div_pt13.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt13.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt13.1: 2015-07-17 14:23:02 WARNING | PrintLog.py[line:0067] | The TestCase &lt;ITC010201_GetStorageDomainsOfDC&gt; has no data file.
+2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | Test: Get storage domains list for DataCenter 'DC-ITC01-NFS'.
+2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | PASS: Get storage domains list for data center 'DC-ITC01-NFS' SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC010202_GetStorageDomainInfoInDC</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c14',1)">Detail</a></td>
+</tr>
+
+<tr id='ft14.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_GetStorageDomainInfoInDC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft14.1')" >
+        error</a>
+
+    <div id='div_ft14.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft14.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft14.1: 2015-07-17 14:23:02 INFO    | PrintLog.py[line:0061] | Test: Get storage domain 'data1-nfs-ITC01' info from DataCenter 'DC-ITC01-NFS'.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 620, in test_GetStorageDomainInfoInDC
+    r = dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name)
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestAPIs\DataCenterAPIs.py", line 221, in getDCStorageDomainInfo
+    return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+  File "build\bdist.win32\egg\xmltodict.py", line 248, in parse
+    parser.Parse(xml_input, True)
+ExpatError: mismatched tag: line 1, column 944
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102030101_AttachDataStorage_Master</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c15',1)">Detail</a></td>
+</tr>
+
+<tr id='ft15.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_AttachDataStorage_Master</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft15.1')" >
+        error</a>
+
+    <div id='div_ft15.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft15.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft15.1: Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 649, in setUp
+    self.dm = super(self.__class__, self).setUp()
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\BaseTestCase.py", line 28, in setUp
+    return self.initData()
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\BaseTestCase.py", line 46, in initData
+    return importlib.import_module(data_module)
+  File "C:\Python27\lib\importlib\__init__.py", line 37, in import_module
+    __import__(name)
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestData\DataCenter\ITC0102030101_AttachDataStorage_Master.py", line 53, in &lt;module&gt;
+    host = Hosts['node4']
+KeyError: 'node4'
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102030102_AttachDataStorage_NotMaster</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c16',1)">Detail</a></td>
+</tr>
+
+<tr id='ft16.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_AttachDataStorage_NotMaster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft16.1')" >
+        error</a>
+
+    <div id='div_ft16.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft16.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft16.1: 2015-07-17 14:23:03 INFO    | PrintLog.py[line:0061] | Pre-Test: Verify if the StorageDomain 'DC-ITC01-NFS' exists.
+2015-07-17 14:23:03 INFO    | PrintLog.py[line:0061] | Test: Attach data storage 'data2-nfs-ITC01' to datacenter 'DC-ITC01-NFS'.
+2015-07-17 14:24:09 INFO    | PrintLog.py[line:0061] | PASS: Attach data storage 'data2-nfs-ITC01' to data center 'DC-ITC01-NFS' SUCCESS.
+2015-07-17 14:24:09 INFO    | PrintLog.py[line:0061] | Post-Test-1: Deactivate storage domain to 'Maintenance'.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/datacenters/0a6bf037-7681-463e-993e-927bc9f4d812/storagedomains/360a9f5d-0eac-49b7-9542-a9c4a43ff041'), (u'@id', u'360a9f5d-0eac-49b7-9542-a9c4a43ff041'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/datacenters/0a6bf037-7681-463e-993e-927bc9f4d812/storagedomains/360a9f5d-0eac-49b7-9542-a9c4a43ff041/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/datacenters/0a6bf037-7681-463e-993e-927bc9f4d812/storagedomains/360a9f5d-0eac-49b7-9542-a9c4a43ff041/activate'), (u'@rel', u'activate')])])])), (u'link', OrderedDict([(u'@href', u'/api/datacenters/0a6bf037-7681-463e-993e-927bc9f4d812/storagedomains/360a9f5d-0eac-49b7-9542-a9c4a43ff041/disks'), (u'@rel', u'disks')])), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/0a6bf037-7681-463e-993e-927bc9f4d812'), (u'@id', u'0a6bf037-7681-463e-993e-927bc9f4d812')]))])), (u'job', OrderedDict([(u'@href', u'/api/jobs/3dc749ac-e3e8-4592-bee4-2942873aea5c'), (u'@id', u'3dc749ac-e3e8-4592-bee4-2942873aea5c')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-17 14:24:13 INFO    | PrintLog.py[line:0061] | Post-Test-2: Detach storage domain from data center.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 753, in tearDown
+    self.assertTrue(smart_detach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102030201_AttachIsoStorage</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c17',1)">Detail</a></td>
+</tr>
+
+<tr id='ft17.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_ITC0102030201_AttachIsoStorage</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft17.1')" >
+        error</a>
+
+    <div id='div_ft17.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft17.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft17.1: 2015-07-17 14:24:13 INFO    | PrintLog.py[line:0061] | Test: Begin to attach the ISO storage 'iso1-ITC01' to Data Center 'DC-ITC01-NFS'.
+2015-07-17 14:24:13 ERROR   | PrintLog.py[line:0064] | FAIL: Attach operation FAILED. Returned status code '409' is Wrong.
+2015-07-17 14:24:13 INFO    | PrintLog.py[line:0061] | Post-Test-1: Deactivate storage domain to 'Maintenance'.
+{'status_code': 409, 'result': OrderedDict([(u'action', OrderedDict([(u'status', OrderedDict([(u'state', u'failed')])), (u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u"[Cannot deactivate Storage. The relevant Storage Domain's status is Unknown.]")]))]))])}
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 796, in tearDown
+    self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102030202_AttachIsoStorage_Second</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c18',1)">Detail</a></td>
+</tr>
+
+<tr id='ft18.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_AttachIsoStorage_Second</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft18.1')" >
+        error</a>
+
+    <div id='div_ft18.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft18.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft18.1: 2015-07-17 14:24:13 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Attach ISO storage 'iso1-ITC01' to DataCenter 'DC-ITC01-NFS'.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 815, in setUp
+    self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102030301_AttachExportStorage</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c19',1)">Detail</a></td>
+</tr>
+
+<tr id='ft19.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test__AttachExportStorage</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft19.1')" >
+        error</a>
+
+    <div id='div_ft19.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft19.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft19.1: 2015-07-17 14:24:14 INFO    | PrintLog.py[line:0061] | Test: Attach the Export storage 'export1-ITC01' to Data Center 'DC-ITC01-NFS'.
+2015-07-17 14:24:14 ERROR   | PrintLog.py[line:0064] | FAIL: Attach operation FAILED. Returned status code '409' is Wrong.
+2015-07-17 14:24:14 INFO    | PrintLog.py[line:0061] | Post-Test-1: Deactivate storage domain 'export1-ITC01' to 'Maintenance'.
+{'status_code': 409, 'result': OrderedDict([(u'action', OrderedDict([(u'status', OrderedDict([(u'state', u'failed')])), (u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u"[Cannot deactivate Storage. The relevant Storage Domain's status is Unknown.]")]))]))])}
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 897, in tearDown
+    self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102030302_AttachExportStorage_Second</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c20',1)">Detail</a></td>
+</tr>
+
+<tr id='ft20.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_AttachExportStorage_Second</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft20.1')" >
+        error</a>
+
+    <div id='div_ft20.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft20.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft20.1: 2015-07-17 14:24:14 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Attach Export storage 'export1-ITC01' (already exist) to DataCenter 'DC-ITC01-NFS'.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 916, in setUp
+    self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102030401_AttachStorage_NoActiveDataStorage</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c21',1)">Detail</a></td>
+</tr>
+
+<tr id='ft21.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_AttachStorage_NoActiveDataStorage</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft21.1')" >
+        error</a>
+
+    <div id='div_ft21.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft21.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft21.1: 2015-07-17 14:24:14 INFO    | PrintLog.py[line:0061] | Pre-Test: Deactivate DataStorage 'data1-nfs-ITC01' for this test case.
+{'status_code': 409, 'result': OrderedDict([(u'action', OrderedDict([(u'status', OrderedDict([(u'state', u'failed')])), (u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u"[Cannot deactivate Storage. The relevant Storage Domain's status is Unknown.]")]))]))])}
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 971, in setUp
+    self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC01020401_DetachStorage_Iso</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c22',1)">Detail</a></td>
+</tr>
+
+<tr id='ft22.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_DetachStorage_Iso</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft22.1')" >
+        error</a>
+
+    <div id='div_ft22.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft22.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft22.1: 2015-07-17 14:24:14 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Attach the 'iso1-ITC01' storage to DataCenter 'DC-ITC01-NFS'.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1014, in setUp
+    self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.iso1_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC01020402_DetachStorage_Export</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c23',1)">Detail</a></td>
+</tr>
+
+<tr id='ft23.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_DetachStorage_Export</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft23.1')" >
+        error</a>
+
+    <div id='div_ft23.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft23.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft23.1: 2015-07-17 14:24:15 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Attach the 'export1-ITC01' storage to DataCenter 'DC-ITC01-NFS'.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1062, in setUp
+    self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.export1_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102040301_DetachStorage_Data_Normal</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c24',1)">Detail</a></td>
+</tr>
+
+<tr id='ft24.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_DetachStorage_Export</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft24.1')" >
+        error</a>
+
+    <div id='div_ft24.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft24.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft24.1: 2015-07-17 14:24:15 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Attach the 2nd DataStorage 'data2-nfs-ITC01' to DataCenter 'DC-ITC01-NFS'.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1110, in setUp
+    self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC0102040302_DetachStorage_Data_One</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c25',1)">Detail</a></td>
+</tr>
+
+<tr id='ft25.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_DetachStorage_Data_One</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft25.1')" >
+        error</a>
+
+    <div id='div_ft25.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft25.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft25.1: 2015-07-17 14:24:15 INFO    | PrintLog.py[line:0061] | Pre-Test: Set the DataStorage 'data1-nfs-ITC01' to 'maintenance' state.
+{'status_code': 409, 'result': OrderedDict([(u'action', OrderedDict([(u'status', OrderedDict([(u'state', u'failed')])), (u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u"[Cannot deactivate Storage. The relevant Storage Domain's status is Unknown.]")]))]))])}
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1158, in setUp
+    self.assertTrue(smart_deactive_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC01020501_ActivateStorage_Normal</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c26',1)">Detail</a></td>
+</tr>
+
+<tr id='ft26.1' class='none'>
+    <td class='errorCase'><div class='testcase'>test_ActivateStorage_Normal</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft26.1')" >
+        error</a>
+
+    <div id='div_ft26.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft26.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft26.1: 2015-07-17 14:24:15 INFO    | PrintLog.py[line:0061] | Pre-Test: Attach data storage 'data2-nfs-ITC01' and set it's state as 'Maintenance'.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1202, in setUp
+    self.assertTrue(smart_attach_storage_domain(ModuleData.dc_nfs_name, ModuleData.data2_nfs_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='errorClass'>
+    <td>TestCases.DataCenter.ITC01020601_DeactivateStorage_Normal</td>
+    <td>2</td>
+    <td>0</td>
+    <td>1</td>
+    <td>1</td>
+    <td><a href="javascript:showClassDetail('c27',2)">Detail</a></td>
+</tr>
+
+<tr id='ft27.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_DeactivateStorage_Normal</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft27.1')" >
+        fail</a>
+
+    <div id='div_ft27.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft27.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft27.1: 2015-07-17 14:24:16 INFO    | PrintLog.py[line:0061] | Test: Deactivate storage domain 'data1-nfs-ITC01'.
+2015-07-17 14:24:16 ERROR   | PrintLog.py[line:0064] | FAIL: Returned status code '409' is Wrong.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1264, in test_DeactivateStorage_Normal
+    self.assertTrue(self.flag)
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr id='ft27.2' class='none'>
+    <td class='errorCase'><div class='testcase'>test_DeactivateStorage_Normal</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft27.2')" >
+        error</a>
+
+    <div id='div_ft27.2' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft27.2').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft27.2: 2015-07-17 14:24:16 INFO    | PrintLog.py[line:0061] | Test: Deactivate storage domain 'data1-nfs-ITC01'.
+2015-07-17 14:24:16 ERROR   | PrintLog.py[line:0064] | FAIL: Returned status code '409' is Wrong.
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1271, in tearDown
+    self.assertTrue(smart_active_storage_domain(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.DataCenter.ITC010301_GetClustersInDataCenter</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c28',1)">Detail</a></td>
+</tr>
+
+<tr id='pt28.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetClustersInDataCenter</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt28.1')" >
+        pass</a>
+
+    <div id='div_pt28.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt28.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt28.1: 2015-07-17 14:24:16 INFO    | PrintLog.py[line:0061] | Test: Get clusters list in DataCenter 'DC-ITC01-NFS'.
+2015-07-17 14:24:16 INFO    | PrintLog.py[line:0061] | PASS: Get clustes list in DataCenter 'DC-ITC01-NFS' SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='failClass'>
+    <td>TestCases.DataCenter.ITC01_TearDown</td>
+    <td>1</td>
+    <td>0</td>
+    <td>1</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c29',1)">Detail</a></td>
+</tr>
+
+<tr id='ft29.1' class='none'>
+    <td class='failCase'><div class='testcase'>test_TearDown</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_ft29.1')" >
+        fail</a>
+
+    <div id='div_ft29.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_ft29.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+ft29.1: 2015-07-17 14:24:16 INFO    | PrintLog.py[line:0061] | Post-Module-Test-1: Deactivate data storage domains 'data1-nfs-ITC01'.
+{'status_code': 409, 'result': OrderedDict([(u'action', OrderedDict([(u'status', OrderedDict([(u'state', u'failed')])), (u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u"[Cannot deactivate Storage. The relevant Storage Domain's status is Unknown.]")]))]))])}
+Traceback (most recent call last):
+  File "E:\oVirt3.3WebAPITest\oVirt3.3WebAPITest\src\TestCases\DataCenter.py", line 1332, in test_TearDown
+    self.assertTrue(smart_deactive_storage_domain(self.dm.dc_nfs_name, self.dm.data1_nfs_name))
+AssertionError: False is not true
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr id='total_row'>
+    <td>Total</td>
+    <td>31</td>
+    <td>8</td>
+    <td>8</td>
+    <td>15</td>
+    <td>&nbsp;</td>
+</tr>
+</table>
+
+<div id='ending'>&nbsp;</div>
+
+</body>
+</html>

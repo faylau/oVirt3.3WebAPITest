@@ -1,0 +1,834 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</title>
+    <meta name="generator" content="HTMLTestRunner 0.8.2"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    
+<style type="text/css" media="screen">
+body        { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; }
+table       { font-size: 100%; }
+pre         { }
+
+/* -- heading ---------------------------------------------------------------------- */
+h1 {
+	font-size: 16pt;
+	color: gray;
+}
+.heading {
+    margin-top: 0ex;
+    margin-bottom: 1ex;
+}
+
+.heading .attribute {
+    margin-top: 1ex;
+    margin-bottom: 0;
+}
+
+.heading .description {
+    margin-top: 4ex;
+    margin-bottom: 6ex;
+}
+
+/* -- css div popup ------------------------------------------------------------------------ */
+a.popup_link {
+}
+
+a.popup_link:hover {
+    color: red;
+}
+
+.popup_window {
+    display: none;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    /*border: solid #627173 1px; */
+    padding: 10px;
+    background-color: #E6E6D6;
+    font-family: "Lucida Console", "Courier New", Courier, monospace;
+    text-align: left;
+    font-size: 8pt;
+    width: 500px;
+}
+
+}
+/* -- report ------------------------------------------------------------------------ */
+#show_detail_line {
+    margin-top: 3ex;
+    margin-bottom: 1ex;
+}
+#result_table {
+    width: 80%;
+    border-collapse: collapse;
+    border: 1px solid #777;
+}
+#header_row {
+    font-weight: bold;
+    color: white;
+    background-color: #777;
+}
+#result_table td {
+    border: 1px solid #777;
+    padding: 2px;
+}
+#total_row  { font-weight: bold; }
+.passClass  { background-color: #6c6; }
+.failClass  { background-color: #c60; }
+.errorClass { background-color: #c00; }
+.passCase   { color: #6c6; }
+.failCase   { color: #c60; font-weight: bold; }
+.errorCase  { color: #c00; font-weight: bold; }
+.hiddenRow  { display: none; }
+.testcase   { margin-left: 2em; }
+
+
+/* -- ending ---------------------------------------------------------------------- */
+#ending {
+}
+
+</style>
+
+</head>
+<body>
+<script language="javascript" type="text/javascript"><!--
+output_list = Array();
+
+/* level - 0:Summary; 1:Failed; 2:All */
+function showCase(level) {
+    trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        tr = trs[i];
+        id = tr.id;
+        if (id.substr(0,2) == 'ft') {
+            if (level < 1) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+        if (id.substr(0,2) == 'pt') {
+            if (level > 1) {
+                tr.className = '';
+            }
+            else {
+                tr.className = 'hiddenRow';
+            }
+        }
+    }
+}
+
+
+function showClassDetail(cid, count) {
+    var id_list = Array(count);
+    var toHide = 1;
+    for (var i = 0; i < count; i++) {
+        tid0 = 't' + cid.substr(1) + '.' + (i+1);
+        tid = 'f' + tid0;
+        tr = document.getElementById(tid);
+        if (!tr) {
+            tid = 'p' + tid0;
+            tr = document.getElementById(tid);
+        }
+        id_list[i] = tid;
+        if (tr.className) {
+            toHide = 0;
+        }
+    }
+    for (var i = 0; i < count; i++) {
+        tid = id_list[i];
+        if (toHide) {
+            document.getElementById('div_'+tid).style.display = 'none'
+            document.getElementById(tid).className = 'hiddenRow';
+        }
+        else {
+            document.getElementById(tid).className = '';
+        }
+    }
+}
+
+
+function showTestDetail(div_id){
+    var details_div = document.getElementById(div_id)
+    var displayState = details_div.style.display
+    // alert(displayState)
+    if (displayState != 'block' ) {
+        displayState = 'block'
+        details_div.style.display = 'block'
+    }
+    else {
+        details_div.style.display = 'none'
+    }
+}
+
+
+function html_escape(s) {
+    s = s.replace(/&/g,'&amp;');
+    s = s.replace(/</g,'&lt;');
+    s = s.replace(/>/g,'&gt;');
+    return s;
+}
+
+/* obsoleted by detail in <div>
+function showOutput(id, name) {
+    var w = window.open("", //url
+                    name,
+                    "resizable,scrollbars,status,width=800,height=450");
+    d = w.document;
+    d.write("<pre>");
+    d.write(html_escape(output_list[id]));
+    d.write("\n");
+    d.write("<a href='javascript:window.close()'>close</a>\n");
+    d.write("</pre>\n");
+    d.close();
+}
+*/
+--></script>
+
+<div class='heading'>
+<h1>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</h1>
+<p class='attribute'><strong>Start Time:</strong> 2015-07-21 11:44:26</p>
+<p class='attribute'><strong>Duration:</strong> 0:04:49.324000</p>
+<p class='attribute'><strong>Status:</strong> Pass 15</p>
+
+<p class='description'>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告
+测试执行方式：module</p>
+</div>
+
+
+
+<p id='show_detail_line'>Show
+<a href='javascript:showCase(0)'>Summary</a>
+<a href='javascript:showCase(1)'>Failed</a>
+<a href='javascript:showCase(2)'>All</a>
+</p>
+<table id='result_table'>
+<colgroup>
+<col align='left' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+</colgroup>
+<tr id='header_row'>
+    <td>Test Group/Test case</td>
+    <td>Count</td>
+    <td>Pass</td>
+    <td>Fail</td>
+    <td>Error</td>
+    <td>View</td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC04_SetUp</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c1',1)">Detail</a></td>
+</tr>
+
+<tr id='pt1.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_Create_DcAndCluster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1')" >
+        pass</a>
+
+    <div id='div_pt1.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt1.1: 2015-07-21 11:44:26 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-1: Create DataCenter 'DC-ITC04'.
+C:\Python27\lib\site-packages\requests-2.4.1-py2.7.egg\requests\packages\urllib3\connectionpool.py:730: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.org/en/latest/security.html (This warning will only appear once by default.)
+  InsecureRequestWarning)
+2015-07-21 11:44:27 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-2: Create Cluster 'Cluster-ITC04' in DataCenter 'DC-ITC04'.
+2015-07-21 11:44:27 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-3: Create Host 'node-ITC04-1' in Cluster 'Cluster-ITC04'.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b'), (u'@id', u'd38a7371-2fc7-455c-8ca6-fae12eb10b7b'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC04-1'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/d38a7371-2fc7-455c-8ca6-fae12eb10b7b/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.241'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.241')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/5cea47cd-526f-4232-a94e-a3f8c2277457'), (u'@id', u'5cea47cd-526f-4232-a94e-a3f8c2277457')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'47:40:ed:53:f6:1c:30:7b:64:95:c4:f4:c5:d1:84:4c')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-21 11:44:53 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC04-1' SUCCESS.
+2015-07-21 11:44:53 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-3: Create Host 'node-ITC04-2' in Cluster 'Cluster-ITC04'.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65'), (u'@id', u'06d303b6-1f5f-4bba-8b63-250557038e65'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC04-2'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/06d303b6-1f5f-4bba-8b63-250557038e65/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.205'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.205')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/5cea47cd-526f-4232-a94e-a3f8c2277457'), (u'@id', u'5cea47cd-526f-4232-a94e-a3f8c2277457')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'79:11:cb:2b:22:31:98:1b:87:7f:7a:c6:8c:6d:2e:45')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-21 11:45:14 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC04-2' SUCCESS.
+2015-07-21 11:45:14 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-4: Create Data Storage 'data1-nfs-ITC04'.
+2015-07-21 11:45:15 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-4: Create Data Storage 'iso1-ITC04'.
+2015-07-21 11:45:16 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-4: Create Data Storage 'export1-ITC04'.
+2015-07-21 11:45:17 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-5: Attach the data storages to data centers.
+2015-07-21 11:46:24 INFO    | PrintLog.py[line:0061] | Active storage ok.
+2015-07-21 11:46:46 INFO    | PrintLog.py[line:0061] | Active storage ok.
+2015-07-21 11:47:08 INFO    | PrintLog.py[line:0061] | Active storage ok.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC040101_GetStorageDomainsList</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c2',1)">Detail</a></td>
+</tr>
+
+<tr id='pt2.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetStorageDomainsList</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt2.1')" >
+        pass</a>
+
+    <div id='div_pt2.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt2.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt2.1: 2015-07-21 11:47:08 WARNING | PrintLog.py[line:0067] | The TestCase &lt;ITC040101_GetStorageDomainsList&gt; has no data file.
+2015-07-21 11:47:08 INFO    | PrintLog.py[line:0061] | Test: Get all Storage Domains list.
+2015-07-21 11:47:08 INFO    | PrintLog.py[line:0061] | PASS: Get StorageDomains list SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC040102_GetStorageDomainInfo</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c3',1)">Detail</a></td>
+</tr>
+
+<tr id='pt3.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetStorageDomainsInfo</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt3.1')" >
+        pass</a>
+
+    <div id='div_pt3.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt3.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt3.1: 2015-07-21 11:47:08 INFO    | PrintLog.py[line:0061] | Test: Get info of DataStorage 'data1-nfs-ITC04'.
+2015-07-21 11:47:08 INFO    | PrintLog.py[line:0061] | PASS: Get DataStorage 'data1-nfs-ITC04' info SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC0401030101_CreateNfsSd_Normal</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c4',1)">Detail</a></td>
+</tr>
+
+<tr id='pt4.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateNfsSd_Normal</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt4.1')" >
+        pass</a>
+
+    <div id='div_pt4.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt4.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt4.1: 2015-07-21 11:47:08 INFO    | PrintLog.py[line:0061] | Test: Start creating Data/ISO/Export DataStorages 'data2-nfs-ITC0401030101' with NFS type.
+OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/storagedomains/3c06605f-4899-45bb-9dbc-cad4463dfa81'), (u'@id', u'3c06605f-4899-45bb-9dbc-cad4463dfa81'), (u'name', u'data2-nfs-ITC0401030101'), (u'link', [OrderedDict([(u'@href', u'/api/storagedomains/3c06605f-4899-45bb-9dbc-cad4463dfa81/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/storagedomains/3c06605f-4899-45bb-9dbc-cad4463dfa81/disks'), (u'@rel', u'disks')]), OrderedDict([(u'@href', u'/api/storagedomains/3c06605f-4899-45bb-9dbc-cad4463dfa81/storageconnections'), (u'@rel', u'storageconnections')])]), (u'type', u'data'), (u'status', OrderedDict([(u'state', u'unknown')])), (u'master', u'false'), (u'storage', OrderedDict([(u'address', u'10.1.164.104'), (u'type', u'nfs'), (u'path', u'/storage/data2')])), (u'available', u'190052302848'), (u'used', u'16106127360'), (u'committed', u'0'), (u'storage_format', u'v1')]))])
+2015-07-21 11:47:09 INFO    | PrintLog.py[line:0061] | PASS: Create NFS type StorageDomain 'data2-nfs-ITC0401030101' SUCCESS.
+2015-07-21 11:47:09 INFO    | PrintLog.py[line:0061] | Test: Start creating Data/ISO/Export DataStorages 'iso1-ITC0401030101' with NFS type.
+OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/storagedomains/626aebe2-41af-4280-8ace-0882a5d4cbb0'), (u'@id', u'626aebe2-41af-4280-8ace-0882a5d4cbb0'), (u'name', u'iso1-ITC0401030101'), (u'link', [OrderedDict([(u'@href', u'/api/storagedomains/626aebe2-41af-4280-8ace-0882a5d4cbb0/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/storagedomains/626aebe2-41af-4280-8ace-0882a5d4cbb0/files'), (u'@rel', u'files')])]), (u'type', u'iso'), (u'status', OrderedDict([(u'state', u'unknown')])), (u'master', u'false'), (u'storage', OrderedDict([(u'address', u'10.1.164.104'), (u'type', u'nfs'), (u'path', u'/storage/iso2')])), (u'available', u'190052302848'), (u'used', u'16106127360'), (u'committed', u'0'), (u'storage_format', u'v1')]))])
+2015-07-21 11:47:10 INFO    | PrintLog.py[line:0061] | PASS: Create NFS type StorageDomain 'iso1-ITC0401030101' SUCCESS.
+2015-07-21 11:47:10 INFO    | PrintLog.py[line:0061] | Test: Start creating Data/ISO/Export DataStorages 'export1-ITC0401030101' with NFS type.
+OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/storagedomains/44d62c26-2662-4092-b606-e97c8630a01c'), (u'@id', u'44d62c26-2662-4092-b606-e97c8630a01c'), (u'name', u'export1-ITC0401030101'), (u'link', [OrderedDict([(u'@href', u'/api/storagedomains/44d62c26-2662-4092-b606-e97c8630a01c/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/storagedomains/44d62c26-2662-4092-b606-e97c8630a01c/templates'), (u'@rel', u'templates')]), OrderedDict([(u'@href', u'/api/storagedomains/44d62c26-2662-4092-b606-e97c8630a01c/vms'), (u'@rel', u'vms')]), OrderedDict([(u'@href', u'/api/storagedomains/44d62c26-2662-4092-b606-e97c8630a01c/disks'), (u'@rel', u'disks')])]), (u'type', u'export'), (u'status', OrderedDict([(u'state', u'unknown')])), (u'master', u'false'), (u'storage', OrderedDict([(u'address', u'10.1.164.104'), (u'type', u'nfs'), (u'path', u'/storage/export3')])), (u'available', u'190052302848'), (u'used', u'16106127360'), (u'committed', u'0'), (u'storage_format', u'v1')]))])
+2015-07-21 11:47:11 INFO    | PrintLog.py[line:0061] | PASS: Create NFS type StorageDomain 'export1-ITC0401030101' SUCCESS.
+2015-07-21 11:47:11 INFO    | PrintLog.py[line:0061] | Post-Test: Delete storage domain 'data2-nfs-ITC0401030101'.
+2015-07-21 11:47:12 INFO    | PrintLog.py[line:0061] | Post-Test: Delete storage domain 'iso1-ITC0401030101'.
+2015-07-21 11:47:13 INFO    | PrintLog.py[line:0061] | Post-Test: Delete storage domain 'export1-ITC0401030101'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC0401030104_CreateNfsSd_IpVerify</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c5',1)">Detail</a></td>
+</tr>
+
+<tr id='pt5.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateNfsSd_IpVerify</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt5.1')" >
+        pass</a>
+
+    <div id='div_pt5.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt5.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt5.1: 2015-07-21 11:47:13 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create storage domain with invalid IP address '256.1.1.1'.
+2015-07-21 11:47:13 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create storage domain with invalid IP address 'a.1.167.4'.
+2015-07-21 11:47:13 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create storage domain with invalid IP address '10.1.167'.
+2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create storage domain with invalid IP address '10.1.167.4#'.
+2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | Post-Test: Delete storage domain 'data2-ITC0401030104'.
+2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | Storage Domain 'data2-ITC0401030104' not exists.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC0401030105_CreateNfsSd_PathVerify</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c6',1)">Detail</a></td>
+</tr>
+
+<tr id='pt6.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateNfsSd_PathVerify</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt6.1')" >
+        pass</a>
+
+    <div id='div_pt6.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt6.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt6.1: 2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create storage domain with invalid Path ':/storage/data2'.
+2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create storage domain with invalid Path 'storage/data2'.
+2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | Post-Test: Delete storage domain 'data1-ITC0401030105'.
+2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | Storage Domain 'data1-ITC0401030105' not exists.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC0401040102_EditNfsSd_Unattached</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c7',1)">Detail</a></td>
+</tr>
+
+<tr id='pt7.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_EditNfsSd_Normal</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt7.1')" >
+        pass</a>
+
+    <div id='div_pt7.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt7.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt7.1: 2015-07-21 11:47:14 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a new NFS Data Storage 'data2-nfs-ITC0401040101'.
+2015-07-21 11:47:15 INFO    | PrintLog.py[line:0061] | Test: Edit NFS data storage 'data2-nfs-ITC0401040101' in 'Unattached' state.
+2015-07-21 11:47:15 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are INCORRECT while edit storage domain in 'unattached' state.
+2015-07-21 11:47:15 INFO    | PrintLog.py[line:0061] | Post-Test: Delete storage domain 'data2-nfs-ITC0401040101'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC0401050101_DelNfsSd_Unattached</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c8',1)">Detail</a></td>
+</tr>
+
+<tr id='pt8.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DelNfsSd_Unattached</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt8.1')" >
+        pass</a>
+
+    <div id='div_pt8.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt8.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt8.1: 2015-07-21 11:47:16 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a new NFS Data Storage 'data2-nfs-ITC0401050101'.
+2015-07-21 11:47:17 INFO    | PrintLog.py[line:0061] | Test: Delete NFS data storage 'data2-nfs-ITC0401050101' in 'Unattached' state.
+2015-07-21 11:47:17 INFO    | PrintLog.py[line:0061] | PASS: Delete unattached Storage Domain 'data2-nfs-ITC0401050101' SUCCESS.
+2015-07-21 11:47:17 INFO    | PrintLog.py[line:0061] | Post-Test: Delete storage domain 'data2-nfs-ITC0401050101'.
+2015-07-21 11:47:17 INFO    | PrintLog.py[line:0061] | Storage Domain 'data2-nfs-ITC0401050101' not exists.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC04010601_DestroySd_Unattached</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c9',1)">Detail</a></td>
+</tr>
+
+<tr id='pt9.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DestroySd_Unattached</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt9.1')" >
+        pass</a>
+
+    <div id='div_pt9.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt9.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt9.1: 2015-07-21 11:47:17 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a ISO storage domain 'iso1-ITC04010601' for test.
+2015-07-21 11:47:18 INFO    | PrintLog.py[line:0061] | Test: Destroy the ISO storage domain 'iso1-ITC04010601'.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/f5a8db7b-267f-42ef-836a-8ea9c5727e52'), (u'@id', u'f5a8db7b-267f-42ef-836a-8ea9c5727e52')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-21 11:47:18 INFO    | PrintLog.py[line:0061] | PASS: Destroy the ISO storage domain 'iso1-ITC04010601' SUCCESS.
+2015-07-21 11:47:18 INFO    | PrintLog.py[line:0061] | Post-Test-1: Import the destroyed storage domain 'iso1-ITC04010601' for deleting.
+2015-07-21 11:47:19 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete the imported storage domain 'iso1-ITC04010601' for reusing.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC04010701_ImportSd_Unattached</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c10',1)">Detail</a></td>
+</tr>
+
+<tr id='pt10.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DestroySd_Unattached</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt10.1')" >
+        pass</a>
+
+    <div id='div_pt10.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt10.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt10.1: 2015-07-21 11:47:20 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create a ISO storage domain 'iso1-ITC04010701' for import test.
+2015-07-21 11:47:21 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Destroy the ISO storage domain 'iso1-ITC04010701' for import test.
+2015-07-21 11:47:21 INFO    | PrintLog.py[line:0061] | Test: Import the destroyed ISO storage domain 'iso1-ITC04010701'.
+2015-07-21 11:47:22 INFO    | PrintLog.py[line:0061] | PASS: Import the destroyed ISO storage domain 'iso1-ITC04010701' SUCCESS.
+2015-07-21 11:47:22 INFO    | PrintLog.py[line:0061] | Post-Test: Delete the imported storage domain 'iso1-ITC04010701' for reusing later.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC040201_GetDisksFromDataStorage</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c11',1)">Detail</a></td>
+</tr>
+
+<tr id='pt11.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetDisksFromDataStorage</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt11.1')" >
+        pass</a>
+
+    <div id='div_pt11.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt11.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt11.1: 2015-07-21 11:47:22 INFO    | PrintLog.py[line:0061] | Pre-Test: Create disk 'disk-ITC040201-1' in data storage for this TC.
+2015-07-21 11:47:33 INFO    | PrintLog.py[line:0061] | INFO: Create disk 'disk-ITC040201-1' SUCCESS and it's state is 'ok'.
+2015-07-21 11:47:33 INFO    | PrintLog.py[line:0061] | Test: Get disks list of Data Storage 'data1-nfs-ITC04'.
+2015-07-21 11:47:33 INFO    | PrintLog.py[line:0061] | PASS: Get the disks list from Data Storage 'data1-nfs-ITC04' SUCCESS.
+2015-07-21 11:47:33 INFO    | PrintLog.py[line:0061] | Post-Test: Delete disk 'disk-ITC040201-1' from data storage 'data1-nfs-ITC04'.
+2015-07-21 11:47:34 WARNING | PrintLog.py[line:0067] | WARN: There is no disk in DataStorage.
+2015-07-21 11:47:34 INFO    | PrintLog.py[line:0061] | INFO: Delete disk SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC040202_GetDiskInfoFromDataStorage</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c12',1)">Detail</a></td>
+</tr>
+
+<tr id='pt12.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetDiskInfoFromDataStorage</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt12.1')" >
+        pass</a>
+
+    <div id='div_pt12.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt12.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt12.1: 2015-07-21 11:47:34 INFO    | PrintLog.py[line:0061] | Pre-Test: Create disk 'disk-ITC040202-1' for this TC.
+2015-07-21 11:47:39 INFO    | PrintLog.py[line:0061] | INFO: Create disk 'disk-ITC040202-1' SUCCESS and it's state is 'ok'.
+2015-07-21 11:47:39 INFO    | PrintLog.py[line:0061] | Test: Get disk 'disk-ITC040202-1' info from the data storage 'data1-nfs-ITC04'.
+2015-07-21 11:47:39 INFO    | PrintLog.py[line:0061] | PASS: Get disk 'disk-ITC040202-1' info from the data storage 'data1-nfs-ITC04' SUCCESS.
+2015-07-21 11:47:39 INFO    | PrintLog.py[line:0061] | Post-Test: Delete disk 'disk-ITC040202-1'.
+2015-07-21 11:47:40 WARNING | PrintLog.py[line:0067] | WARN: There is no disk in DataStorage.
+2015-07-21 11:47:40 INFO    | PrintLog.py[line:0061] | INFO: Delete disk SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC04020301_DelDiskFromDataStorage_OK</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c13',1)">Detail</a></td>
+</tr>
+
+<tr id='pt13.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DelDiskFromDataStorage_OK</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt13.1')" >
+        pass</a>
+
+    <div id='div_pt13.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt13.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt13.1: 2015-07-21 11:47:40 INFO    | PrintLog.py[line:0061] | Pre-Test: Create disk 'disk-ITC04020301-1' in the active data storage 'data1-nfs-ITC04'.
+2015-07-21 11:47:51 INFO    | PrintLog.py[line:0061] | INFO: Create disk 'disk-ITC04020301-1' SUCCESS and it's state is 'ok'.
+2015-07-21 11:47:51 INFO    | PrintLog.py[line:0061] | Test: Delete  the disk 'disk-ITC04020301-1' in 'OK' state.
+2015-07-21 11:47:51 INFO    | PrintLog.py[line:0061] | PASS: Delete disk 'disk-ITC04020301-1' from Data Storage 'data1-nfs-ITC04' SUCCESS.
+2015-07-21 11:47:51 INFO    | PrintLog.py[line:0061] | Post-Test: Delete disk 'disk-ITC04020301-1'.
+2015-07-21 11:47:51 WARNING | PrintLog.py[line:0067] | WARN: There is no disk in DataStorage.
+2015-07-21 11:47:51 WARNING | PrintLog.py[line:0067] | INFO: Disk is not exist.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC040301_GetFilesFromIsoStorage</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c14',1)">Detail</a></td>
+</tr>
+
+<tr id='pt14.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetFilesFromIsoStorage</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt14.1')" >
+        pass</a>
+
+    <div id='div_pt14.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt14.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt14.1: 2015-07-21 11:47:51 INFO    | PrintLog.py[line:0061] | Test: Get files list from ISO Storage 'iso1-ITC04'.
+2015-07-21 11:47:51 INFO    | PrintLog.py[line:0061] | PASS: Get files list SUCCESS from ISO Storage 'iso1-ITC04'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.StorageDomain.ITC04_TearDown</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c15',1)">Detail</a></td>
+</tr>
+
+<tr id='pt15.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_TearDown</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt15.1')" >
+        pass</a>
+
+    <div id='div_pt15.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt15.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt15.1: 2015-07-21 11:47:51 INFO    | PrintLog.py[line:0061] | Post-Module-Test-1: Deactivate ISO and Export storage domains.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/ac6d79c7-11e7-45f6-8218-e2bb96900039'), (u'@id', u'ac6d79c7-11e7-45f6-8218-e2bb96900039'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/ac6d79c7-11e7-45f6-8218-e2bb96900039/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/ac6d79c7-11e7-45f6-8218-e2bb96900039/activate'), (u'@rel', u'activate')])])])), (u'link', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/ac6d79c7-11e7-45f6-8218-e2bb96900039/disks'), (u'@rel', u'disks')])), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039'), (u'@id', u'ed82723a-dc11-431d-8eef-a2ba2e4bd039')]))])), (u'job', OrderedDict([(u'@href', u'/api/jobs/9007c801-9209-4e22-aeee-6b551dc35252'), (u'@id', u'9007c801-9209-4e22-aeee-6b551dc35252')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/186adcbd-e2a8-457d-b2a9-3f0c44cb31fd'), (u'@id', u'186adcbd-e2a8-457d-b2a9-3f0c44cb31fd'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/186adcbd-e2a8-457d-b2a9-3f0c44cb31fd/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/186adcbd-e2a8-457d-b2a9-3f0c44cb31fd/activate'), (u'@rel', u'activate')])])])), (u'link', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/186adcbd-e2a8-457d-b2a9-3f0c44cb31fd/disks'), (u'@rel', u'disks')])), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039'), (u'@id', u'ed82723a-dc11-431d-8eef-a2ba2e4bd039')]))])), (u'job', OrderedDict([(u'@href', u'/api/jobs/457d60ad-e520-4185-8784-fe9a63343d05'), (u'@id', u'457d60ad-e520-4185-8784-fe9a63343d05')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-21 11:47:53 INFO    | PrintLog.py[line:0061] | Post-Module-Test-2: Deattch ISO and Export storage domains.
+2015-07-21 11:48:16 INFO    | PrintLog.py[line:0061] | Post-Module-Test-3: Deactivate all data storage domains.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/56080e64-3cac-49fe-a27b-f19228fdb179'), (u'@id', u'56080e64-3cac-49fe-a27b-f19228fdb179'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/56080e64-3cac-49fe-a27b-f19228fdb179/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/56080e64-3cac-49fe-a27b-f19228fdb179/activate'), (u'@rel', u'activate')])])])), (u'link', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039/storagedomains/56080e64-3cac-49fe-a27b-f19228fdb179/disks'), (u'@rel', u'disks')])), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/ed82723a-dc11-431d-8eef-a2ba2e4bd039'), (u'@id', u'ed82723a-dc11-431d-8eef-a2ba2e4bd039')]))])), (u'job', OrderedDict([(u'@href', u'/api/jobs/ef5f88dc-a9fb-47cb-a4de-c9d42e3e9fe0'), (u'@id', u'ef5f88dc-a9fb-47cb-a4de-c9d42e3e9fe0')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-21 11:48:29 INFO    | PrintLog.py[line:0061] | Post-Module-Test-4: Delete DataCenter 'DC-ITC04'.
+2015-07-21 11:49:01 INFO    | PrintLog.py[line:0061] | Post-Module-Test-5: Delete all storage domains.
+2015-07-21 11:49:03 INFO    | PrintLog.py[line:0061] | Post-Module-Test-6: Delete all hosts.
+2015-07-21 11:49:03 INFO    | PrintLog.py[line:0061] | INFO: Deactivate host 'node-ITC04-1' from 'up' to 'maintenance' state.
+2015-07-21 11:49:09 INFO    | PrintLog.py[line:0061] | INFO: Delete host 'node-ITC04-1' from cluster.
+2015-07-21 11:49:09 INFO    | PrintLog.py[line:0061] | INFO: Deactivate host 'node-ITC04-2' from 'up' to 'maintenance' state.
+2015-07-21 11:49:15 INFO    | PrintLog.py[line:0061] | INFO: Delete host 'node-ITC04-2' from cluster.
+2015-07-21 11:49:15 INFO    | PrintLog.py[line:0061] | Post-Module-Test-7: Delete Cluster 'Cluster-ITC04'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr id='total_row'>
+    <td>Total</td>
+    <td>15</td>
+    <td>15</td>
+    <td>0</td>
+    <td>0</td>
+    <td>&nbsp;</td>
+</tr>
+</table>
+
+<div id='ending'>&nbsp;</div>
+
+</body>
+</html>

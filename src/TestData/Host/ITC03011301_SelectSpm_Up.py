@@ -43,7 +43,7 @@ xml_cluster1_info = '''
 
 # 配置host1和host2的相关信息
 host1 = GlobalConfig.Hosts['node1']
-host2 = GlobalConfig.Hosts['node4']
+host2 = GlobalConfig.Hosts['node2']
 host1_name = 'node-ITC03011301-1'
 host2_name = 'node-ITC03011301-2'
 xml_host1_info = '''
@@ -109,7 +109,6 @@ xml_del_sd_option = '''
         <name>%s</name>
     </host>
     <format>true</format>
-    <async>false</async>
 </storage_domain>
 ''' % host1_name
 

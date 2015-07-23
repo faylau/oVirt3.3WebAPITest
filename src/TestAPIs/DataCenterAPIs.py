@@ -1,4 +1,7 @@
 #coding:utf-8
+from compiler.pyassem import DONE
+from time import sleep
+from __builtin__ import True
 
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>']
@@ -22,7 +25,8 @@ from StorageDomainAPIs import StorageDomainAPIs
 from TestAPIs.StorageDomainAPIs import DataStorageAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
-
+from Utils.Util import wait_until
+from Utils.PrintLog import LogPrint
 
 def smart_attach_storage_domain(dc_name, sd_name, data=None):
     '''
@@ -30,12 +34,29 @@ def smart_attach_storage_domain(dc_name, sd_name, data=None):
     @param dc_name: 数据中心名称
     @param sd_name: 存储域名称
     @return: True or False
+    @change: 修改了检查存储域状态是一个重复循环的过程
     '''
     dc_api = DataCenterAPIs()
+    
     r = dc_api.attachStorageDomainToDC(dc_name, sd_name, data)
 #     print r['status_code']
 #     print dc_api.getDCStorageDomainStatus(dc_name, sd_name)
-    return (r['status_code'] == 201 and dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='active')
+    if r['status_code'] == 201:
+        #检查存储域最终状态是否为active
+        def is_storage_up():
+            return dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='active'
+        if wait_until(is_storage_up, 200, 5):
+            LogPrint().info("Active storage ok.")
+            return True
+        else:
+            LogPrint().info("Active storage overtime.")
+            return False
+    else:
+        LogPrint().info("Returned status code is wrong.")
+        return False
+            
+        
+        
 
 def smart_detach_storage_domain(dc_name, sd_name, data='<action><async>false</async></action>'):
     '''
@@ -159,6 +180,7 @@ class DataCenterAPIs(BaseAPIs):
         @summary: 创建数据中心
         @param dc_info: XML形式的数据中心信息，调用接口时需要传递此xml数据
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式）
+        @change: 数据中心类型更改为共享和本地，xml文件中将数据中心类型字段改为<local>,取值false和true
         '''
         api_url = self.base_url
         method = 'POST'
@@ -342,8 +364,13 @@ class DataCenterAPIs(BaseAPIs):
 
 if __name__ == "__main__":
     dcapi = DataCenterAPIs()
-    print dcapi.searchDataCenterByName('DC-ISCSI')
-    print dcapi.getDCStorageDomainStatus('DC-NFS', 'data1-nfs')
+    data = '''
+    <data_center>
+        <name>datacenter</name>
+        <local>false</local>
+        <version major="3" minor="4"/>
+    </data_center>
+    '''   
 #     r = dcapi.attachStorageDomainToDC('DC-NFS', 'data1-nfs')
 #     print dcapi.getDataCenterInfo(dc_id='8cfa5137-e11f-445b-bbd5-c5611338d8eb')
 #     data = '''
@@ -353,7 +380,7 @@ if __name__ == "__main__":
 #         <version minor="1" major="3"/>
 #     </data_center>
 #     '''
-#     dcapi.createDataCenter(data)
+#dcapi.createDataCenter(data)
 #     print dcapi.getDataCenterNameById('5849b030-626e-47cb-ad90-3ce782d831b3')
 #     print dcapi.getDCClustersList('Default')
 #     print dcapi.deactiveDCStorageDomain('Default', 'data1')
@@ -366,13 +393,13 @@ if __name__ == "__main__":
 #     d = dcapi.getDCStorageDomainInfo('Default', 'data1')
 #     print dcapi.getDCStorageDomainsList('Default')
 #     print dcapi.getDataCenterIdByName('DC-ISCSI')
-#     data = '''
-#     <action>
-#         <force>true</force>
-#         <async>false</async>
-#     </action>
-#     '''
-#     print dcapi.delDataCenter('ABC', data=data)
+data = '''
+     <action>
+         <force>true</force>
+         <async>false</async>
+     </action>
+     '''
+#print dcapi.delDataCenter('datacenter', data=data)
 
     
     

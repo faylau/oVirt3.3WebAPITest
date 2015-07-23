@@ -30,6 +30,7 @@ def smart_create_host(host_name, xml_host_info):
     '''
     host_api = HostAPIs()
     r = host_api.createHost(xml_host_info)
+    print r
     def is_host_up():
         return host_api.getHostStatus(host_name)=='up'
     if wait_until(is_host_up, 200, 5):
@@ -350,9 +351,14 @@ class HostNicAPIs(HostAPIs):
         @param host_name: 虚拟化主机名称
         @param nic_name: 虚拟化主机网络接口名称（如eth0等）
         @return: 虚拟化主机网络接口ID
+        @change: nic_list分为两种情况：只有一个对象和多个对象
         '''
+        #print self.getHostNicsList(host_name)['result']['host_nics']['host_nic']
         host_nics_list = self.getHostNicsList(host_name)['result']['host_nics']['host_nic']
+        if isinstance(host_nics_list, dict):
+                return host_nics_list['@id']
         for nic in host_nics_list:
+            print nic
             if nic['name']==nic_name:
                 return nic['@id']
             
@@ -561,40 +567,39 @@ if __name__ == "__main__":
 #     print hostnicapi.detachNicFromNetwork('node3.com', 'eth1', 'test1')
 #     print hostnicapi.attachNicWithNetwork('node3.com', 'eth1', 'test1')
 #     print hostnicapi.getHostNicInfo('node1.com', 'eth3')
-#     print hostnicapi.getHostNicIdByName('node1.com', 'eth1')
+# print hostnicapi.getHostNicIdByName('abcd', 'eth0')
 #     print hostnicapi.getHostNicsList('node3.com')
     
 #     print hostapi.getSPMInfo('node2')
 #     print hostapi.forceSelectSPM('node2')
 #     print hostapi.commitNetConfig('node3.com')
     
-    xml_target_info = '''
-    <action>
-        <iscsi>
-            <address>10.1.161.61</address>
-            <target>iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.mari</target>
-        </iscsi>
-    </action>
-    '''
-    print xmltodict.unparse(hostapi.iscsiLogin('node3.com', xml_target_info)['result'], pretty=True)
-    
-#     xml_iscsi_info = '''
+#     xml_target_info = '''
 #     <action>
 #         <iscsi>
 #             <address>10.1.161.61</address>
-#                 <port>3260</port>
+#             <target>iqn.2012-07.com.lenovoemc:ix12.px12-TI3111.mari</target>
 #         </iscsi>
 #     </action>
 #     '''
-#     print xmltodict.unparse(hostapi.iscsiDiscoverByHost('node3.com', xml_iscsi_info)['result'], pretty=True)
-    
+    #print xmltodict.unparse(hostapi.iscsiLogin('node3.com', xml_target_info)['result'], pretty=True)
+xml_iscsi_info = '''
+     <action>
+         <iscsi>
+             <address>10.1.161.61</address>
+                 <port>3260</port>
+         </iscsi>
+     </action>
+     '''
+
+#     
 #     xml_install_option = '''
 #     <action>
 #         <root_password>qwer1234</root_password>
 #     </action>
 #     '''
 #     print hostapi.installHost('node3.com', xml_install_option)
-    
+#     
 #     print hostapi.activeHost('node3.com')
 #     print hostapi.deactiveHost('node3.com')
 
@@ -625,21 +630,26 @@ if __name__ == "__main__":
 #     xml_host_info = '''
 #     <host>
 #         <cluster>
-#             <name>Cluster-ISCSI</name>
+#             <name>a</name>
 #         </cluster>
-#         <name>node3.com</name>
-#         <address>10.1.167.3</address>
+#         <name>node1</name>
+#         <address>10.1.85.241</address>
 #         <root_password>qwer1234</root_password>
 #     </host>
 #     '''
-#     print hostapi.createHost(xml_host_info)
+   # print hostapi.createHost(xml_host_info)
     
 #     xml_update_info = '''
 #     <host>
-#         <cluster><name>NewCluster</name></cluster>
+#         <cluster>
+#             <name>NewCluster</name>
+#         </cluster>
+#         <address>10.1.85.242</address>
+#         <root_password>qwer1235</root_password>
+#         
 #     </host>
 #     '''
-#     print hostapi.updateHost('node3.com', xml_update_info)
+#     print hostapi.updateHost('10.1.85.241', xml_update_info)
     
 
     

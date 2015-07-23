@@ -19,7 +19,7 @@ import ITC03_SetUp as DM
 @note: Pre-TestData
 -----------------------------------------------------------------------------------------'''
 host1 = GlobalConfig.Hosts['node1']
-host2 = GlobalConfig.Hosts['node4']
+host2 = GlobalConfig.Hosts['node2']
 host1_name = 'node-ITC03010403-1'
 host2_name = 'node-ITC03010403-2'
 xml_host1_info = '''

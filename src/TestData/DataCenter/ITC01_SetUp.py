@@ -28,8 +28,8 @@ dc_name_list = [dc_nfs_name]
 xml_dc_info = '''
     <data_center>
         <name>%s</name>
-        <storage_type>nfs</storage_type>
-        <version minor="3" major="3"/>
+        <local>false</local>
+        <version major="3" minor="4"/>
     </data_center>
 ''' % (dc_nfs_name)
 
@@ -160,7 +160,6 @@ xml_del_sd_option = '''
         <name>%s</name>
     </host>
     <format>true</format>
-    <async>false</async>
 </storage_domain>
 '''
 

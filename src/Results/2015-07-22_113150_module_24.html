@@ -1,0 +1,1234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</title>
+    <meta name="generator" content="HTMLTestRunner 0.8.2"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    
+<style type="text/css" media="screen">
+body        { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; }
+table       { font-size: 100%; }
+pre         { }
+
+/* -- heading ---------------------------------------------------------------------- */
+h1 {
+	font-size: 16pt;
+	color: gray;
+}
+.heading {
+    margin-top: 0ex;
+    margin-bottom: 1ex;
+}
+
+.heading .attribute {
+    margin-top: 1ex;
+    margin-bottom: 0;
+}
+
+.heading .description {
+    margin-top: 4ex;
+    margin-bottom: 6ex;
+}
+
+/* -- css div popup ------------------------------------------------------------------------ */
+a.popup_link {
+}
+
+a.popup_link:hover {
+    color: red;
+}
+
+.popup_window {
+    display: none;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    /*border: solid #627173 1px; */
+    padding: 10px;
+    background-color: #E6E6D6;
+    font-family: "Lucida Console", "Courier New", Courier, monospace;
+    text-align: left;
+    font-size: 8pt;
+    width: 500px;
+}
+
+}
+/* -- report ------------------------------------------------------------------------ */
+#show_detail_line {
+    margin-top: 3ex;
+    margin-bottom: 1ex;
+}
+#result_table {
+    width: 80%;
+    border-collapse: collapse;
+    border: 1px solid #777;
+}
+#header_row {
+    font-weight: bold;
+    color: white;
+    background-color: #777;
+}
+#result_table td {
+    border: 1px solid #777;
+    padding: 2px;
+}
+#total_row  { font-weight: bold; }
+.passClass  { background-color: #6c6; }
+.failClass  { background-color: #c60; }
+.errorClass { background-color: #c00; }
+.passCase   { color: #6c6; }
+.failCase   { color: #c60; font-weight: bold; }
+.errorCase  { color: #c00; font-weight: bold; }
+.hiddenRow  { display: none; }
+.testcase   { margin-left: 2em; }
+
+
+/* -- ending ---------------------------------------------------------------------- */
+#ending {
+}
+
+</style>
+
+</head>
+<body>
+<script language="javascript" type="text/javascript"><!--
+output_list = Array();
+
+/* level - 0:Summary; 1:Failed; 2:All */
+function showCase(level) {
+    trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        tr = trs[i];
+        id = tr.id;
+        if (id.substr(0,2) == 'ft') {
+            if (level < 1) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+        if (id.substr(0,2) == 'pt') {
+            if (level > 1) {
+                tr.className = '';
+            }
+            else {
+                tr.className = 'hiddenRow';
+            }
+        }
+    }
+}
+
+
+function showClassDetail(cid, count) {
+    var id_list = Array(count);
+    var toHide = 1;
+    for (var i = 0; i < count; i++) {
+        tid0 = 't' + cid.substr(1) + '.' + (i+1);
+        tid = 'f' + tid0;
+        tr = document.getElementById(tid);
+        if (!tr) {
+            tid = 'p' + tid0;
+            tr = document.getElementById(tid);
+        }
+        id_list[i] = tid;
+        if (tr.className) {
+            toHide = 0;
+        }
+    }
+    for (var i = 0; i < count; i++) {
+        tid = id_list[i];
+        if (toHide) {
+            document.getElementById('div_'+tid).style.display = 'none'
+            document.getElementById(tid).className = 'hiddenRow';
+        }
+        else {
+            document.getElementById(tid).className = '';
+        }
+    }
+}
+
+
+function showTestDetail(div_id){
+    var details_div = document.getElementById(div_id)
+    var displayState = details_div.style.display
+    // alert(displayState)
+    if (displayState != 'block' ) {
+        displayState = 'block'
+        details_div.style.display = 'block'
+    }
+    else {
+        details_div.style.display = 'none'
+    }
+}
+
+
+function html_escape(s) {
+    s = s.replace(/&/g,'&amp;');
+    s = s.replace(/</g,'&lt;');
+    s = s.replace(/>/g,'&gt;');
+    return s;
+}
+
+/* obsoleted by detail in <div>
+function showOutput(id, name) {
+    var w = window.open("", //url
+                    name,
+                    "resizable,scrollbars,status,width=800,height=450");
+    d = w.document;
+    d.write("<pre>");
+    d.write(html_escape(output_list[id]));
+    d.write("\n");
+    d.write("<a href='javascript:window.close()'>close</a>\n");
+    d.write("</pre>\n");
+    d.close();
+}
+*/
+--></script>
+
+<div class='heading'>
+<h1>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</h1>
+<p class='attribute'><strong>Start Time:</strong> 2015-07-22 11:31:50</p>
+<p class='attribute'><strong>Duration:</strong> 0:20:04.281000</p>
+<p class='attribute'><strong>Status:</strong> Pass 24</p>
+
+<p class='description'>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告
+测试执行方式：module</p>
+</div>
+
+
+
+<p id='show_detail_line'>Show
+<a href='javascript:showCase(0)'>Summary</a>
+<a href='javascript:showCase(1)'>Failed</a>
+<a href='javascript:showCase(2)'>All</a>
+</p>
+<table id='result_table'>
+<colgroup>
+<col align='left' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+</colgroup>
+<tr id='header_row'>
+    <td>Test Group/Test case</td>
+    <td>Count</td>
+    <td>Pass</td>
+    <td>Fail</td>
+    <td>Error</td>
+    <td>View</td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC07_SetUp</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c1',1)">Detail</a></td>
+</tr>
+
+<tr id='pt1.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateModuleTestEnv</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1')" >
+        pass</a>
+
+    <div id='div_pt1.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt1.1: 2015-07-22 11:31:50 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-1: Create DataCenter 'DC-ITC07-NFS'.
+C:\Python27\lib\site-packages\requests-2.4.1-py2.7.egg\requests\packages\urllib3\connectionpool.py:730: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.org/en/latest/security.html (This warning will only appear once by default.)
+  InsecureRequestWarning)
+2015-07-22 11:31:50 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-2: Create Cluster 'Cluster-ITC07-NFS' in DataCenter 'DC-ITC07-NFS'.
+2015-07-22 11:31:50 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-3: Create Host 'node-ITC07-1' in Cluster 'Cluster-ITC07-NFS'.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e'), (u'@id', u'0b4ebaf6-12fb-4890-af2d-4233a954f66e'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC07-1'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/0b4ebaf6-12fb-4890-af2d-4233a954f66e/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.241'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.241')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/b15d30f9-8edc-4291-96ea-15da7f117bd3'), (u'@id', u'b15d30f9-8edc-4291-96ea-15da7f117bd3')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'47:40:ed:53:f6:1c:30:7b:64:95:c4:f4:c5:d1:84:4c')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-22 11:32:16 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC07-1' SUCCESS.
+2015-07-22 11:32:16 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-4: Create Data Storage 'data1-nfs-ITC07'.
+2015-07-22 11:32:18 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-4: Create Data Storage 'data2-nfs-ITC07'.
+2015-07-22 11:32:19 INFO    | PrintLog.py[line:0061] | Pre-Module-Test-5: Attach the data storages to data centers.
+2015-07-22 11:33:25 INFO    | PrintLog.py[line:0061] | Active storage ok.
+2015-07-22 11:34:08 INFO    | PrintLog.py[line:0061] | Active storage ok.
+2015-07-22 11:34:29 INFO    | PrintLog.py[line:0061] | Create disk ok.
+2015-07-22 11:34:29 INFO    | PrintLog.py[line:0061] | Attach Disk to vm SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070101_GetTemplateList</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c2',1)">Detail</a></td>
+</tr>
+
+<tr id='pt2.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetTemplateList</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt2.1')" >
+        pass</a>
+
+    <div id='div_pt2.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt2.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt2.1: 2015-07-22 11:34:29 WARNING | PrintLog.py[line:0067] | The TestCase &lt;ITC070101_GetTemplateList&gt; has no data file.
+2015-07-22 11:34:29 INFO    | PrintLog.py[line:0061] | Test: Get template list.
+2015-07-22 11:34:29 INFO    | PrintLog.py[line:0061] | PASS: Get TemplateList SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070102_GetTemplateInfo</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c3',1)">Detail</a></td>
+</tr>
+
+<tr id='pt3.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetTemplateInfo</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt3.1')" >
+        pass</a>
+
+    <div id='div_pt3.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt3.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt3.1: 2015-07-22 11:34:29 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC070102 for TC.
+2015-07-22 11:35:00 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC070102 success
+2015-07-22 11:35:00 INFO    | PrintLog.py[line:0061] | Test: Get info of template Template-ITC070102.
+2015-07-22 11:35:00 INFO    | PrintLog.py[line:0061] | PASS: Get TemplateInfo SUCCESS.
+2015-07-22 11:35:00 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC070102.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/54da42f4-0c77-4977-b215-f848f1f253a9'), (u'@id', u'54da42f4-0c77-4977-b215-f848f1f253a9')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:35:11 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0701030101_CreateTemplate</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c4',1)">Detail</a></td>
+</tr>
+
+<tr id='pt4.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplate</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt4.1')" >
+        pass</a>
+
+    <div id='div_pt4.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt4.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt4.1: 2015-07-22 11:35:11 INFO    | PrintLog.py[line:0061] | Test: Create template Template1-ITC0701030101.
+2015-07-22 11:35:43 INFO    | PrintLog.py[line:0061] | PASS: Create Template 'Template1-ITC0701030101'ok.
+2015-07-22 11:35:43 INFO    | PrintLog.py[line:0061] | Test: Create template Template2_ITC0701030101.
+2015-07-22 11:36:14 INFO    | PrintLog.py[line:0061] | PASS: Create Template 'Template2_ITC0701030101'ok.
+2015-07-22 11:36:14 INFO    | PrintLog.py[line:0061] | Test: Create template Template3.ITC0701030101.
+2015-07-22 11:36:45 INFO    | PrintLog.py[line:0061] | PASS: Create Template 'Template3.ITC0701030101'ok.
+2015-07-22 11:36:45 INFO    | PrintLog.py[line:0061] | Test: Create template TEMPLATE4-ITC0701030101.
+2015-07-22 11:37:16 INFO    | PrintLog.py[line:0061] | PASS: Create Template 'TEMPLATE4-ITC0701030101'ok.
+2015-07-22 11:37:16 INFO    | PrintLog.py[line:0061] | Test: Create template 123456.
+2015-07-22 11:37:48 INFO    | PrintLog.py[line:0061] | PASS: Create Template '123456'ok.
+2015-07-22 11:37:48 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template1-ITC0701030101.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/f118ec8d-2d0c-40be-899a-44ee4745825b'), (u'@id', u'f118ec8d-2d0c-40be-899a-44ee4745825b')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:37:58 INFO    | PrintLog.py[line:0061] | Delete template success.
+2015-07-22 11:37:58 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template2_ITC0701030101.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/6dc999c9-c0f9-4862-a60b-3fde3c2fd386'), (u'@id', u'6dc999c9-c0f9-4862-a60b-3fde3c2fd386')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:38:09 INFO    | PrintLog.py[line:0061] | Delete template success.
+2015-07-22 11:38:09 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template3.ITC0701030101.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/8f34d691-0c22-4235-ba3b-b4608bbb6a21'), (u'@id', u'8f34d691-0c22-4235-ba3b-b4608bbb6a21')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:38:21 INFO    | PrintLog.py[line:0061] | Delete template success.
+2015-07-22 11:38:21 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template TEMPLATE4-ITC0701030101.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/eb4b9fc4-66b5-434c-a61b-6a5a66be2bc9'), (u'@id', u'eb4b9fc4-66b5-434c-a61b-6a5a66be2bc9')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:38:31 INFO    | PrintLog.py[line:0061] | Delete template success.
+2015-07-22 11:38:31 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template 123456.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/d20eaa3b-bd6d-486a-8e8d-e95730331488'), (u'@id', u'd20eaa3b-bd6d-486a-8e8d-e95730331488')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:38:42 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0701030102_CreateTemplate_SD</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c5',1)">Detail</a></td>
+</tr>
+
+<tr id='pt5.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplate_SD</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt5.1')" >
+        pass</a>
+
+    <div id='div_pt5.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt5.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt5.1: 2015-07-22 11:38:43 INFO    | PrintLog.py[line:0061] | Test: Create template Template-ITC0701030102.
+{'status_code': 202, 'result': OrderedDict([(u'template', OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0'), (u'@id', u'5180c6fe-9c60-4c1c-b85e-5c1a184493c0'), (u'actions', OrderedDict([(u'link', OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0/export'), (u'@rel', u'export')]))])), (u'name', u'Template-ITC0701030102'), (u'comment', None), (u'creation_status', OrderedDict([(u'state', u'pending')])), (u'link', [OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0/disks'), (u'@rel', u'disks')]), OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0/cdroms'), (u'@rel', u'cdroms')]), OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0/watchdogs'), (u'@rel', u'watchdogs')]), OrderedDict([(u'@href', u'/api/templates/5180c6fe-9c60-4c1c-b85e-5c1a184493c0/creation_status/7fa2f4cc-d379-4f02-a77f-2233823c2abf'), (u'@rel', u'creation_status')])]), (u'type', u'server'), (u'status', OrderedDict([(u'state', u'locked')])), (u'memory', u'536870912'), (u'cpu', OrderedDict([(u'topology', OrderedDict([(u'@sockets', u'2'), (u'@cores', u'1')])), (u'architecture', u'X86_64')])), (u'cpu_shares', u'0'), (u'os', OrderedDict([(u'@type', u'other'), (u'boot', [OrderedDict([(u'@dev', u'cdrom')]), OrderedDict([(u'@dev', u'hd')])])])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/b15d30f9-8edc-4291-96ea-15da7f117bd3'), (u'@id', u'b15d30f9-8edc-4291-96ea-15da7f117bd3')])), (u'creation_time', u'2015-07-22T11:38:44.201+08:00'), (u'origin', u'ovirt'), (u'high_availability', OrderedDict([(u'enabled', u'false'), (u'priority', u'0')])), (u'display', OrderedDict([(u'type', u'spice'), (u'monitors', u'1'), (u'single_qxl_pci', u'false'), (u'allow_override', u'false'), (u'smartcard_enabled', u'false')])), (u'stateless', u'false'), (u'delete_protected', u'false'), (u'sso', OrderedDict([(u'methods', OrderedDict([(u'method', OrderedDict([(u'@id', u'GUEST_AGENT')]))]))])), (u'console', OrderedDict([(u'@enabled', u'false')])), (u'usb', OrderedDict([(u'enabled', u'false')])), (u'migration_downtime', u'-1'), (u'virtio_scsi', OrderedDict([(u'@enabled', u'true')]))]))])}
+2015-07-22 11:39:14 INFO    | PrintLog.py[line:0061] | PASS: Create Template ok.
+2015-07-22 11:39:14 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC0701030102.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/3d2424c7-a8e1-4eec-b2e4-99dab4f40f3f'), (u'@id', u'3d2424c7-a8e1-4eec-b2e4-99dab4f40f3f')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:39:25 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0701030201_CreateTemplate_DupName</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c6',1)">Detail</a></td>
+</tr>
+
+<tr id='pt6.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplate_DupName</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt6.1')" >
+        pass</a>
+
+    <div id='div_pt6.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt6.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt6.1: 2015-07-22 11:39:25 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-0701030201 for TC.
+2015-07-22 11:39:56 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-0701030201 success
+2015-07-22 11:39:56 INFO    | PrintLog.py[line:0061] | Test: Create dupname template Template-0701030201.
+2015-07-22 11:39:56 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create host with dup name.
+2015-07-22 11:39:56 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-0701030201.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/c63d2e4e-f381-4fc8-a7b4-43cf589ecaa1'), (u'@id', u'c63d2e4e-f381-4fc8-a7b4-43cf589ecaa1')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:40:07 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0701030202_CreateTemplate_VerifyName</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c7',1)">Detail</a></td>
+</tr>
+
+<tr id='pt7.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplate_VerifyName</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt7.1')" >
+        pass</a>
+
+    <div id='div_pt7.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt7.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt7.1: 2015-07-22 11:40:07 INFO    | PrintLog.py[line:0061] | Test: Create template Template#-0701030202.
+2015-07-22 11:40:07 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT when create host with dup name.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0701030203_CreateTemplate_NoRequired</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c8',1)">Detail</a></td>
+</tr>
+
+<tr id='pt8.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplate_NoRequired</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt8.1')" >
+        pass</a>
+
+    <div id='div_pt8.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt8.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt8.1: 2015-07-22 11:40:07 INFO    | PrintLog.py[line:0061] | PASS: The returned status code and messages are CORRECT.
+2015-07-22 11:40:07 INFO    | PrintLog.py[line:0061] | PASS: The returned status code and messages are CORRECT.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070105_DeleteTemplate</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c9',1)">Detail</a></td>
+</tr>
+
+<tr id='pt9.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DeleteTemplate</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt9.1')" >
+        pass</a>
+
+    <div id='div_pt9.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt9.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt9.1: 2015-07-22 11:40:08 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC070105 for TC.
+2015-07-22 11:40:39 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC070105 success
+2015-07-22 11:40:39 INFO    | PrintLog.py[line:0061] | Test: Delete template Template-ITC070105.
+2015-07-22 11:40:45 INFO    | PrintLog.py[line:0061] | PASS: Delete Template SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070201_GetTemplateDiskList</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c10',1)">Detail</a></td>
+</tr>
+
+<tr id='pt10.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetTemplateDiskList</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt10.1')" >
+        pass</a>
+
+    <div id='div_pt10.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt10.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt10.1: 2015-07-22 11:40:45 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC070201 for TC.
+2015-07-22 11:41:16 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC070201 success
+2015-07-22 11:41:16 INFO    | PrintLog.py[line:0061] | Test: Get disk list of template Template-ITC070201.
+2015-07-22 11:41:16 INFO    | PrintLog.py[line:0061] | PASS: Get disk list of template Template-ITC070201 SUCCESS.
+2015-07-22 11:41:16 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC070201.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/78b716e0-2914-4bd0-a5c4-b0f984d98c16'), (u'@id', u'78b716e0-2914-4bd0-a5c4-b0f984d98c16')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:41:27 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070202_GetTemplateDiskInfo</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c11',1)">Detail</a></td>
+</tr>
+
+<tr id='pt11.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetTemplateDiskInfo</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt11.1')" >
+        pass</a>
+
+    <div id='div_pt11.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt11.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt11.1: 2015-07-22 11:41:27 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC070202 for TC.
+2015-07-22 11:41:58 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC070202 success
+2015-07-22 11:41:58 INFO    | PrintLog.py[line:0061] | Test: Get disk info of template Template-ITC070202.
+2015-07-22 11:41:59 INFO    | PrintLog.py[line:0061] | PASS: Get disk info of template Template-ITC070202 SUCCESS.
+2015-07-22 11:41:59 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC070202.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/2a958315-ff01-4efa-9563-1fda69156fc4'), (u'@id', u'2a958315-ff01-4efa-9563-1fda69156fc4')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:42:10 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC07020301_CopyTemplateDisk_sync</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c12',1)">Detail</a></td>
+</tr>
+
+<tr id='pt12.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CopyTemplateDisk_sync</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt12.1')" >
+        pass</a>
+
+    <div id='div_pt12.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt12.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt12.1: 2015-07-22 11:42:10 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC07020301 for TC.
+2015-07-22 11:42:31 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC07020301 success
+2015-07-22 11:42:31 INFO    | PrintLog.py[line:0061] | Test: Copy disk of template Template-ITC07020301 sync.
+2015-07-22 11:43:02 INFO    | PrintLog.py[line:0061] | PASS: Copy Template Disk sync SUCCESS.
+2015-07-22 11:43:02 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC07020301.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/a49f2235-ac4a-40f3-b69a-da62fc410c44'), (u'@id', u'a49f2235-ac4a-40f3-b69a-da62fc410c44')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:43:13 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC07020302_CopyTemplateDisk_async</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c13',1)">Detail</a></td>
+</tr>
+
+<tr id='pt13.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CopyTemplateDisk_async</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt13.1')" >
+        pass</a>
+
+    <div id='div_pt13.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt13.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt13.1: 2015-07-22 11:43:13 INFO    | PrintLog.py[line:0061] | Test: Copy disk of template Template-ITC07020302 sync.
+2015-07-22 11:43:34 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC07020302 success
+2015-07-22 11:43:34 INFO    | PrintLog.py[line:0061] | Test: Copy disk of template Template-ITC07020302 async.
+{'status_code': 202, 'result': OrderedDict([(u'action', OrderedDict([(u'@href', u'/api/templates/8c3b118f-96e6-469e-8e14-497e565cb5ee/disks/33e63ee7-ee01-4808-a3d0-efb0f5feebd2/copy/6ca59599-da1c-45c8-8630-cebb99ce8aba'), (u'@id', u'6ca59599-da1c-45c8-8630-cebb99ce8aba'), (u'link', [OrderedDict([(u'@href', u'/api/templates/8c3b118f-96e6-469e-8e14-497e565cb5ee/disks/33e63ee7-ee01-4808-a3d0-efb0f5feebd2'), (u'@rel', u'parent')]), OrderedDict([(u'@href', u'/api/templates/8c3b118f-96e6-469e-8e14-497e565cb5ee/disks/33e63ee7-ee01-4808-a3d0-efb0f5feebd2/copy'), (u'@rel', u'replay')])]), (u'async', u'true'), (u'storage_domain', OrderedDict([(u'@id', u'84782663-c9af-4365-8f5b-14a30dec1ce8')])), (u'job', OrderedDict([(u'@href', u'/api/jobs/ff678716-f2d7-419e-b6f9-a23238cf2f76'), (u'@id', u'ff678716-f2d7-419e-b6f9-a23238cf2f76')])), (u'status', OrderedDict([(u'state', u'pending')]))]))])}
+2015-07-22 11:44:18 INFO    | PrintLog.py[line:0061] | PASS: Copy Template Disk sync SUCCESS
+2015-07-22 11:44:18 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC07020302.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/c2e8768a-f07e-472d-9681-16e598517dba'), (u'@id', u'c2e8768a-f07e-472d-9681-16e598517dba')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:44:29 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC07020303_CopyTemplateDisk_nosd</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c14',1)">Detail</a></td>
+</tr>
+
+<tr id='pt14.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CopyTemplateDisk_nosd</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt14.1')" >
+        pass</a>
+
+    <div id='div_pt14.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt14.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt14.1: 2015-07-22 11:44:29 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC07020303 for TC.
+2015-07-22 11:45:00 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC07020303 success
+2015-07-22 11:45:00 INFO    | PrintLog.py[line:0061] | Test: Copy disk of template Template-ITC07020303 without SD.
+2015-07-22 11:45:01 INFO    | PrintLog.py[line:0061] | PASS: Returned status code ans messages are CORRECT.
+2015-07-22 11:45:01 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC07020303.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/51553339-d327-4ed1-b17b-f921964894d1'), (u'@id', u'51553339-d327-4ed1-b17b-f921964894d1')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:45:12 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070301_GetTemplateNicList</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c15',1)">Detail</a></td>
+</tr>
+
+<tr id='pt15.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetTemplateNicList</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt15.1')" >
+        pass</a>
+
+    <div id='div_pt15.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt15.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt15.1: 2015-07-22 11:45:13 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC070301 for TC.
+2015-07-22 11:45:34 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC070301 success
+2015-07-22 11:45:34 INFO    | PrintLog.py[line:0061] | Test: Get nic list of template Template-ITC070301.
+2015-07-22 11:45:34 INFO    | PrintLog.py[line:0061] | PASS: GetTemplateNicList SUCCESS.
+2015-07-22 11:45:34 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC070301.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/9c72d87f-1374-4fcf-8b50-4e141e1937f1'), (u'@id', u'9c72d87f-1374-4fcf-8b50-4e141e1937f1')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:45:45 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070302_GetTemplateNicInfo</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c16',1)">Detail</a></td>
+</tr>
+
+<tr id='pt16.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetTemplateNicInfo</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt16.1')" >
+        pass</a>
+
+    <div id='div_pt16.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt16.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt16.1: 2015-07-22 11:45:45 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create a template Template-ITC070302 for TC.
+2015-07-22 11:46:16 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC070302 success
+2015-07-22 11:46:16 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create a nic for template Template-ITC070302.
+2015-07-22 11:46:17 INFO    | PrintLog.py[line:0061] | Pre-Test:Create Nic for Template Template-ITC070302 success
+2015-07-22 11:46:17 INFO    | PrintLog.py[line:0061] | Test: Get nic nic1 info of template Template-ITC070302.
+2015-07-22 11:46:17 INFO    | PrintLog.py[line:0061] | PASS: Get nic nic1 info of template Template-ITC070302 SUCCESS.
+2015-07-22 11:46:17 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC070302.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/82661628-51b9-4a00-8811-08e60057b8c5'), (u'@id', u'82661628-51b9-4a00-8811-08e60057b8c5')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:46:29 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0703030101_CreateTemplateNic</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c17',1)">Detail</a></td>
+</tr>
+
+<tr id='pt17.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplateNic</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt17.1')" >
+        pass</a>
+
+    <div id='div_pt17.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt17.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt17.1: 2015-07-22 11:46:29 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create a template Template-ITC0703030101 for TC.
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC0703030101 success
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | Test: Create nic nic1 for template Template-ITC0703030101.
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;nic&gt;&lt;name&gt;nic1&lt;/name&gt;&lt;/nic&gt;
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | PASS: Create Nic nic1 SUCCESS.
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | Test: Create nic nic-1 for template Template-ITC0703030101.
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;nic&gt;&lt;name&gt;nic-1&lt;/name&gt;&lt;/nic&gt;
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | PASS: Create Nic nic-1 SUCCESS.
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | Test: Create nic nic_1 for template Template-ITC0703030101.
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;nic&gt;&lt;name&gt;nic_1&lt;/name&gt;&lt;/nic&gt;
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | PASS: Create Nic nic_1 SUCCESS.
+2015-07-22 11:47:00 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC0703030101.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/9b7b842a-017f-4a87-bae9-a011401941c1'), (u'@id', u'9b7b842a-017f-4a87-bae9-a011401941c1')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:47:11 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0703030102_CreateTemplateNic_proid</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c18',1)">Detail</a></td>
+</tr>
+
+<tr id='pt18.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplateNic_proid</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt18.1')" >
+        pass</a>
+
+    <div id='div_pt18.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt18.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt18.1: 2015-07-22 11:47:12 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create a template Template-ITC0703030102 for TC.
+2015-07-22 11:47:33 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC0703030102 success
+2015-07-22 11:47:33 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create a profile pp for ovirtmgmt.
+61fd78d2-6d47-47cc-a3aa-1d1e8c96b155
+2015-07-22 11:47:33 INFO    | PrintLog.py[line:0061] | Create Profile SUCCESS.
+2015-07-22 11:47:33 INFO    | PrintLog.py[line:0061] | Test-: Create a nic nic1 with profile pp for template Template-ITC0703030102.
+2015-07-22 11:47:33 INFO    | PrintLog.py[line:0061] | PASS: Create a nic nic1 with profile pp for template Template-ITC0703030102 SUCCESS.
+2015-07-22 11:47:33 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete template Template-ITC0703030102.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/969d39a7-d274-4329-8806-c9f8bc10c444'), (u'@id', u'969d39a7-d274-4329-8806-c9f8bc10c444')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:47:44 INFO    | PrintLog.py[line:0061] | Delete template success.
+2015-07-22 11:47:44 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete profile pp.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0703030201_CreateTemplateNic_DupName</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c19',1)">Detail</a></td>
+</tr>
+
+<tr id='pt19.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplateNic_DupName</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt19.1')" >
+        pass</a>
+
+    <div id='div_pt19.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt19.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt19.1: 2015-07-22 11:47:45 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create a template Template-ITC0703030201 for TC.
+2015-07-22 11:48:16 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC0703030201 success
+2015-07-22 11:48:16 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create a nic nic1 for this template.
+2015-07-22 11:48:16 INFO    | PrintLog.py[line:0061] | Pre-Test:Create Nic for Template Template-ITC0703030201 success
+2015-07-22 11:48:16 INFO    | PrintLog.py[line:0061] | Test: Create dupname nic nic1 for this template.
+2015-07-22 11:48:16 INFO    | PrintLog.py[line:0061] | PASS: The returned status code and messages are CORRECT.
+2015-07-22 11:48:16 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC0703030201.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/b03ff613-1f71-423d-ae5d-65242197a862'), (u'@id', u'b03ff613-1f71-423d-ae5d-65242197a862')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:48:28 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0703030202_CreateTemplateNic_VerifyName</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c20',1)">Detail</a></td>
+</tr>
+
+<tr id='pt20.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplateNic_VerifyName</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt20.1')" >
+        pass</a>
+
+    <div id='div_pt20.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt20.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt20.1: 2015-07-22 11:48:28 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC0703030202 for TC.
+2015-07-22 11:48:59 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC0703030202 success
+2015-07-22 11:48:59 INFO    | PrintLog.py[line:0061] | Test: Create nic nic1% for this template.
+2015-07-22 11:48:59 INFO    | PrintLog.py[line:0061] | PASS: The returned status code and messages are CORRECT.
+2015-07-22 11:48:59 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC0703030202.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/fddf676d-f843-4c25-a3e4-f94aed8edcb4'), (u'@id', u'fddf676d-f843-4c25-a3e4-f94aed8edcb4')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:49:10 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC0703030203_CreateTemplateNic_NoRequired</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c21',1)">Detail</a></td>
+</tr>
+
+<tr id='pt21.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateTemplateNic_NoRequired</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt21.1')" >
+        pass</a>
+
+    <div id='div_pt21.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt21.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt21.1: 2015-07-22 11:49:10 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a template Template-ITC0703030203 for TC.
+2015-07-22 11:49:41 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC0703030203 success
+2015-07-22 11:49:41 INFO    | PrintLog.py[line:0061] | Test: Create nic for this template.
+2015-07-22 11:49:42 INFO    | PrintLog.py[line:0061] | PASS: The returned status code and messages are CORRECT.
+2015-07-22 11:49:42 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC0703030203.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/fdfd1eda-3bf6-41bd-b505-9b3533eda484'), (u'@id', u'fdfd1eda-3bf6-41bd-b505-9b3533eda484')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:49:53 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC07030401_UpdateTemplateNic</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c22',1)">Detail</a></td>
+</tr>
+
+<tr id='pt22.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateTemplateNic</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt22.1')" >
+        pass</a>
+
+    <div id='div_pt22.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt22.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt22.1: 2015-07-22 11:49:53 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create a template Template-ITC07030401 for TC.
+2015-07-22 11:50:14 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC07030401 success
+2015-07-22 11:50:14 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create a nic nic1 for this template.
+2015-07-22 11:50:14 INFO    | PrintLog.py[line:0061] | Pre-Test:Create Nic for Template Template-ITC07030401 success
+2015-07-22 11:50:14 INFO    | PrintLog.py[line:0061] | Create Profile SUCCESS.
+2015-07-22 11:50:14 INFO    | PrintLog.py[line:0061] | Test: Update nic nic1 for this template.
+2015-07-22 11:50:15 INFO    | PrintLog.py[line:0061] | PASS: UpdateTemplateNic SUCCESS.
+2015-07-22 11:50:15 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete template Template-ITC07030401.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/fee39eb5-e673-4a04-b303-b387016a0cac'), (u'@id', u'fee39eb5-e673-4a04-b303-b387016a0cac')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:50:26 INFO    | PrintLog.py[line:0061] | Delete template success.
+2015-07-22 11:50:26 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete profile Profile-ITC07030401.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC070305_DeleteTemplateNic</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c23',1)">Detail</a></td>
+</tr>
+
+<tr id='pt23.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DeleteTemplateNic</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt23.1')" >
+        pass</a>
+
+    <div id='div_pt23.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt23.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt23.1: 2015-07-22 11:50:26 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create a template Template-ITC070305 for TC.
+2015-07-22 11:50:57 INFO    | PrintLog.py[line:0061] | INFO:Create Template Template-ITC070305 success
+2015-07-22 11:50:57 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create a nic nic1-ITC070305 for this template.
+2015-07-22 11:50:57 INFO    | PrintLog.py[line:0061] | Pre-Test:Create Nic for Template Template-ITC070305 success
+2015-07-22 11:50:57 INFO    | PrintLog.py[line:0061] | Test: Delete nic nic1-ITC070305 for this template Template-ITC070305.
+2015-07-22 11:50:58 INFO    | PrintLog.py[line:0061] | PASS: Delete nic nic1-ITC070305 for this template Template-ITC070305 SUCCESS.
+2015-07-22 11:50:58 INFO    | PrintLog.py[line:0061] | Post-Test: Delete template Template-ITC070305.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'job', OrderedDict([(u'@href', u'/api/jobs/6bf296e6-37e1-42b2-8489-98fbec56320f'), (u'@id', u'6bf296e6-37e1-42b2-8489-98fbec56320f')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:51:09 INFO    | PrintLog.py[line:0061] | Delete template success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Template.ITC07_TearDown</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c24',1)">Detail</a></td>
+</tr>
+
+<tr id='pt24.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_TearDown</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt24.1')" >
+        pass</a>
+
+    <div id='div_pt24.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt24.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt24.1: 2015-07-22 11:51:10 INFO    | PrintLog.py[line:0061] | Post-Module-Test-3: Deactivate data storage domains 'data2-nfs-ITC07'.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/84782663-c9af-4365-8f5b-14a30dec1ce8'), (u'@id', u'84782663-c9af-4365-8f5b-14a30dec1ce8'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/84782663-c9af-4365-8f5b-14a30dec1ce8/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/84782663-c9af-4365-8f5b-14a30dec1ce8/activate'), (u'@rel', u'activate')])])])), (u'link', OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/84782663-c9af-4365-8f5b-14a30dec1ce8/disks'), (u'@rel', u'disks')])), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481'), (u'@id', u'c7def9f0-93c5-4edf-a724-1f54ebfab481')]))])), (u'job', OrderedDict([(u'@href', u'/api/jobs/3981c973-d46a-4200-af25-7ed897800315'), (u'@id', u'3981c973-d46a-4200-af25-7ed897800315')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:51:13 INFO    | PrintLog.py[line:0061] | Post-Module-Test-4: Detach data storage domains 'data2-nfs-ITC07'.
+2015-07-22 11:51:13 INFO    | PrintLog.py[line:0061] | Post-Module-Test-5: Deactivate data storage domains 'data1-nfs-ITC07'.
+{'status_code': 200, 'result': OrderedDict([(u'action', OrderedDict([(u'storage_domain', OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/dad50fff-7d72-4a8f-a4f2-2169d8e31836'), (u'@id', u'dad50fff-7d72-4a8f-a4f2-2169d8e31836'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/dad50fff-7d72-4a8f-a4f2-2169d8e31836/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/dad50fff-7d72-4a8f-a4f2-2169d8e31836/activate'), (u'@rel', u'activate')])])])), (u'link', OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481/storagedomains/dad50fff-7d72-4a8f-a4f2-2169d8e31836/disks'), (u'@rel', u'disks')])), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/c7def9f0-93c5-4edf-a724-1f54ebfab481'), (u'@id', u'c7def9f0-93c5-4edf-a724-1f54ebfab481')]))])), (u'job', OrderedDict([(u'@href', u'/api/jobs/201a0798-7153-4483-9add-49326e92ad6a'), (u'@id', u'201a0798-7153-4483-9add-49326e92ad6a')])), (u'status', OrderedDict([(u'state', u'complete')]))]))])}
+2015-07-22 11:51:19 INFO    | PrintLog.py[line:0061] | Post-Module-Test-6: Delete DataCenter 'DC-ITC07-NFS'.
+2015-07-22 11:51:47 INFO    | PrintLog.py[line:0061] | Post-Module-Test-7: Delete all unattached storage domains.
+2015-07-22 11:51:48 INFO    | PrintLog.py[line:0061] | Post-Module-Test-8: Delete host 'node-ITC07-1'.
+2015-07-22 11:51:48 INFO    | PrintLog.py[line:0061] | INFO: Deactivate host 'node-ITC07-1' from 'up' to 'maintenance' state.
+2015-07-22 11:51:54 INFO    | PrintLog.py[line:0061] | INFO: Delete host 'node-ITC07-1' from cluster.
+2015-07-22 11:51:54 INFO    | PrintLog.py[line:0061] | Post-Module-Test-9: Delete Cluster 'Cluster-ITC07-NFS'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr id='total_row'>
+    <td>Total</td>
+    <td>24</td>
+    <td>24</td>
+    <td>0</td>
+    <td>0</td>
+    <td>&nbsp;</td>
+</tr>
+</table>
+
+<div id='ending'>&nbsp;</div>
+
+</body>
+</html>

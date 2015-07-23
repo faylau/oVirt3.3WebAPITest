@@ -28,7 +28,7 @@ cluster_name = 'Cluster-ITC0201040201'
 cluster_info = '''
 <cluster>
         <name>%s</name>
-        <cpu id="Intel Penryn Family"/>
+        <cpu id="Intel Conroe Family"/>
         <data_center  id="%s"/>
 </cluster>
 ''' % (cluster_name, dc_id)
@@ -73,6 +73,6 @@ status_code = 409
 expected_info = '''
 <fault>
     <reason>Operation Failed</reason>
-    <detail>[Cannot change Cluster CPU type when there are Hosts attached to this Cluster.]</detail>
+    <detail>[Cannot change Cluster CPU type when all Hosts attached to this Cluster are not in Maintenance.]</detail>
 </fault>
 '''

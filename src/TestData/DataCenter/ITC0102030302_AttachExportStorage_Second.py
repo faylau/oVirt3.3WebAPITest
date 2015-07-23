@@ -67,8 +67,6 @@ xml_del_export_option = '''
     <host>
         <name>%s</name>
     </host>
-    <format>true</format>
-    <async>false</async>
 </storage_domain>
 '''
 

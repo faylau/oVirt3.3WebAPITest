@@ -10,6 +10,7 @@ __version__ = "V0.1"
 # Version        Date                Desc                            Author
 #---------------------------------------------------------------------------------
 # V0.1           2014/10/24          初始版本                                                            Liu Fei 
+# V0.2                               更改为共享和本地                                             wei keke
 #---------------------------------------------------------------------------------
 '''
 
@@ -18,27 +19,22 @@ __version__ = "V0.1"
 @note: TestData
 ----------------------------------------------------------------------------------
 '''
-dc_name = ['DC-ITC01010301-NFS', 'DC-ITC01010301-ISCSI', 'DC-ITC01010301-FC']
+dc_name = ['DC-ITC01010301-share', 'DC-ITC01010301-local']
 
 dc_info = '''
 <data_driver>
     <data_center>
         <name>%s</name>
-        <storage_type>nfs</storage_type>
-        <version minor="3" major="3"/>
+        <local>false</local>
+        <version minor="4" major="3"/>
     </data_center>
     <data_center>
         <name>%s</name>
-        <storage_type>iscsi</storage_type>
-        <version minor="2" major="3"/>
-    </data_center>
-    <data_center>
-        <name>%s</name>
-        <storage_type>fcp</storage_type>
-        <version minor="1" major="3"/>
+        <local>true</local>
+        <version minor="4" major="3"/>
     </data_center>
 </data_driver>
-''' % (dc_name[0], dc_name[1], dc_name[2])
+''' % (dc_name[0], dc_name[1])
 
 '''
 ----------------------------------------------------------------------------------

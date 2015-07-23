@@ -127,7 +127,6 @@ xml_del_sd_option = '''
         <name>%s</name>
     </host>
     <format>true</format>
-    <async>false</async>
 </storage_domain>
 '''
 

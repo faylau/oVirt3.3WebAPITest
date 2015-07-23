@@ -94,7 +94,7 @@ expected_info_migrate_vm_fail = '''
     </status>
     <fault>
         <reason>Operation Failed</reason>
-        <detail>[Cannot migrate VM. There is no host that satisfies current scheduling constraints. See bellow for details:]</detail>
+        <detail>[Cannot migrate VM. There is no host that satisfies current scheduling constraints. See below for details:]</detail>
     </fault>
 </action>
 '''

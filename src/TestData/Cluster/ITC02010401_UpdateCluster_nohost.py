@@ -40,7 +40,7 @@ cluster_info = '''
 cluster_info_new = '''
 <data_driver>
 <cluster>
-        <cpu id="Intel Haswell"/>
+        <cpu id="Intel Haswell Family"/>
 </cluster>
 <cluster>
         <cpu id="AMD Opteron G3"/>

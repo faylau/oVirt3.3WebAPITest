@@ -40,7 +40,7 @@ xml_cluster_info = '''
 ########################################################################
 # 1个主机信息（node1加入NFS数据中心）                                                                                                                                    
 ########################################################################
-host1 = Hosts['node4']
+host1 = Hosts['node1']
 host1_name = 'node-ITC05-1'
 host1_ip = host1['ip']
 host1_password = host1['password']
@@ -177,7 +177,6 @@ xml_del_sd_option = '''
         <name>%s</name>
     </host>
     <format>true</format>
-    <async>false</async>
 </storage_domain>
 '''
 

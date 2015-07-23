@@ -167,6 +167,7 @@ class ITC02010302_CreateCluster_Dup(BaseTestCase):
         '''
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
+        LogPrint().info("Pre-Test: Create a cluster %s"%self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         
     def test_CreateCluster_Dup(self):
@@ -178,6 +179,7 @@ class ITC02010302_CreateCluster_Dup(BaseTestCase):
         clusterapi = ClusterAPIs()
         LogPrint().info("Test: Create a cluster with dup name.")
         r = clusterapi.createCluster(self.dm.cluster_info)
+        print r
         if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.error_info)
@@ -307,8 +309,10 @@ class ITC0201040201_UpdateCluster_host_cputype(BaseTestCase):
         # 初始化测试数据
         self.dm = super(self.__class__, self).setUp()
         # 前提1：创建一个集群
+        LogPrint().info("Pre-Test-1: Create cluster '%s' for this TC." % self.dm.cluster_name)
         self.assertTrue(smart_create_cluster(self.dm.cluster_info, self.dm.cluster_name))
         # 前提2：创建一个主机
+        LogPrint().info("Pre-Test-2: Create host '%s' for this TC." % self.dm.host_name)
         self.assertTrue(smart_create_host(self.dm.host_name, self.dm.host_info))
         
     def test_UpdateCluster_host(self):
@@ -323,6 +327,8 @@ class ITC0201040201_UpdateCluster_host_cputype(BaseTestCase):
         if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.expected_info)
+            print dict_actual
+            print dict_expected
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
                 LogPrint().info("PASS: ITC0201040201_test_UpdateCluster_host_cputype SUCCESS." )
@@ -371,6 +377,8 @@ class ITC0201040202_UpdateCluster_host_upcpu(BaseTestCase):
         if r['status_code'] == self.dm.status_code:
             dict_actual = r['result']
             dict_expected = xmltodict.parse(self.dm.expected_info)
+            print dict_actual
+            print dict_expected
             dictCompare = DictCompare()
             if dictCompare.isSubsetDict(dict_expected, dict_actual):
                 LogPrint().info("PASS: ITC0201040202_test_UpdateCluster_host_upcpu SUCCESS." )

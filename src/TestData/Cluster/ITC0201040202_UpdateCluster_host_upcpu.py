@@ -28,7 +28,7 @@ cluster_name = 'Cluster-ITC0201040202'
 cluster_info = '''
 <cluster>
         <name>%s</name>
-        <cpu id="Intel Penryn Family"/>
+        <cpu id="Intel Conroe Family"/>
         <data_center  id="%s"/>
 </cluster>
 ''' % (cluster_name, dc_id)
@@ -54,7 +54,7 @@ host_info = '''
 cluster_info_new = '''
 <cluster>
         <name>%s</name>
-        <cpu id="Intel Haswell"/>
+        <cpu id="Intel Haswell Family"/>
         <data_center  id="%s"/>
 </cluster>
 ''' %(cluster_name,dc_id)

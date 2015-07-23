@@ -1367,12 +1367,11 @@ if __name__=='__main__':
     vmapi = VirtualMachineAPIs()
     vmdiskapi = VmDiskAPIs()
     vmnicapi = VmNicAPIs()
-    print vmnicapi.isVmNicExist('VM-ITC05', 'nic3')
     vmcdromapi = VmCdromAPIs()
     vmsnapshotapi = VmSnapshotAPIs()
     vmwatchdogapi = VmWatchdogAPIs()
     vmappapi = VmAppAPIs()
-    print vmdiskapi.is_vmdisk_exist('vm-ITC05', 'f3057dff-5f5d-4b80-87e6-3f9884e72f57')
+    
     
 #     print vmdiskapi.getVmDiskInfo('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')
 #     print vmdiskapi.getVmDiskStatus('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')
@@ -1596,7 +1595,7 @@ if __name__=='__main__':
         <type>server</type>
         <memory>536870912</memory>
         <cluster>
-            <name>Cluster-ISCSI</name>
+            <name>a</name>
         </cluster>
         <template>
             <name>Blank</name>
@@ -1610,7 +1609,7 @@ if __name__=='__main__':
         </os>
     </vm>
     '''
-#     print vmapi.createVm(xml_vm_info)
+    print vmapi.createVm(xml_vm_info)
 #     print vmapi.getVmInfo('VM11')
 #     print vmapi.getVmIdByName('VM11')
 #     print vmapi.searchVmByName('VM11')

@@ -1497,12 +1497,13 @@ class ITC05020503_MigrateVm_OnlyOneHost(BaseTestCase):
         vm_api = VirtualMachineAPIs()
         LogPrint().info("Test: Begin to migrate vm '%s' while only 1 host exist." % self.dm.vm_name)
         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
+        #print xmltodict.unparse(r['result'], pretty=True)
         if r['status_code'] == self.dm.expected_status_code_migrate_vm_fail:
             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_fail), r['result']):
                 LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with only 1 host.")
                 self.flag = True
             else:
-                LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with only 1 host.")
+                LogPrint().error("FAIL: Returned info are INCORRECT when migrating vm with only 1 host.")
                 self.flag = False
         else:
             LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with only 1 host." % r['status_code'])

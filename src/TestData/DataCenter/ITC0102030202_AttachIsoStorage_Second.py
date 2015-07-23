@@ -66,8 +66,6 @@ xml_del_iso_option = '''
     <host>
         <name>%s</name>
     </host>
-    <format>true</format>
-    <async>false</async>
 </storage_domain>
 '''
 

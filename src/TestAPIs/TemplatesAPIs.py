@@ -238,6 +238,11 @@ class TemplatesAPIs(BaseAPIs):
               </disks>
            </vm> ;为虚拟机的某个磁盘指定存放的存储域
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容（dict格式）
+        @change: 新增模板子模板功能。对应xml文件中增加如下字段（不是必需）：
+        <version>
+        <base_template id="00000000-0000-0000-0000-000000000000"/>
+        <version_name>temp3</version_name>
+        </version>
         '''
         api_url = self.base_url
         method = 'POST'
@@ -575,19 +580,22 @@ if __name__=='__main__':
     #print tempapi.getTemplatesList()
     #print tempapi.getTemplateInfo('temp3')
 
-    '''
-     <vm id="3bf9130a-b9ed-4345-a282-9487663b1a8a"/>     
-    '''
+    
+    base_temp_id = tempapi.getTemplateIdByName("temp1")
     temp_info1 = '''
     <template>
     <name>temp1</name>
     <vm>
-        <name>vm3</name>
+        <name>vm2</name>
     </vm>
+    <version>
+        <base_template id="%s"/>
+        <version_name>temp4</version_name>
+    </version>
     </template>
-    '''
+    '''%base_temp_id
     
-    temp_info2 = '''
+    update_temp_info = '''
     <template>
     <name>template00</name>
     <vm id="%s">
@@ -611,7 +619,7 @@ if __name__=='__main__':
     <async>true</async>
     </action>
     '''
-    #print xmltodict.unparse(tempapi.createTemplate(temp_info1)['result'],pretty=True)
+#     print xmltodict.unparse(tempapi.createTemplate(temp_info1)['result'],pretty=True)
     #print tempapi.delTemplate("123456",xml_async)
     #print tempapi.searchTemplateByName('aa')
     

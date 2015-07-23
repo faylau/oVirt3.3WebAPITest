@@ -20,8 +20,8 @@ dc_name = 'DC-ITC01010404'
 pre_dc_info = '''
 <data_center>
     <name>%s</name>
-    <storage_type>nfs</storage_type>
-    <version minor="3" major="3"/>
+    <local>true</local>
+    <version minor="4" major="3"/>
 </data_center>
 ''' % dc_name
 
@@ -30,7 +30,7 @@ pre_dc_info = '''
 ---------------------------------------------------------------------------------'''
 update_dc_info = '''
 <data_center>
-    <version minor="1" major="3"/>
+    <version minor="3" major="3"/>
 </data_center>
 '''
 

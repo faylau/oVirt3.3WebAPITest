@@ -999,7 +999,7 @@ class ITC07_TearDown(BaseTestCase):
                                               
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Template.ITC070202_GetTemplateDiskInfo"]
+    test_cases = ["Template.ITC07_TearDown"]
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()
     tests = loader.loadTestsFromNames(test_cases)

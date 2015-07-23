@@ -49,8 +49,6 @@ xml_del_sd_option = '''
         <name>%s</name>
     </host>
     <format>true</format>
-    <destroy>false</destroy>
-    <async>true</async>
 </storage_domain>
 ''' % ModuleData.host1_name
 

@@ -44,7 +44,6 @@ xml_destroy_iso_option = '''
         <name>%s</name>
     </host>
     <destroy>true</destroy>
-    <async>false</async>
 </storage_domain>
 ''' % ModuleData.host1_name
 
@@ -75,7 +74,6 @@ xml_del_iso_option = '''
     <storage_domain>
         <host id="%s"/>
         <format>true</format>
-        <async>false</async>
     </storage_domain>
 ''' % host_id
 

@@ -174,7 +174,7 @@ class ITC080301_CreateDisk(BaseTestCase):
         if r['status_code'] == self.dm.expected_status_code:
             self.disk_id = r['result']['disk']['@id']
             #如果磁盘状态在给定时间内变为ok状态，则继续验证状态码和磁盘信息
-            if wait_until(is_disk_ok, 200, 5):
+            if wait_until(is_disk_ok, 500, 5):
                 dict_actual = r['result']
                 dict_expected = xmltodict.parse(self.dm.disk_info_cow)
                 dictCompare = DictCompare()
@@ -636,7 +636,7 @@ class ITC08_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']
-    test_cases = ["Disk.ITC0802_GetDiskInfo"]
+    test_cases = ["Disk.ITC08_SetUp","Disk.ITC08_TearDown"]
     #ITC080403_DeleteDisk_AttachtoRunVm
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

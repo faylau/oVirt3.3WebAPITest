@@ -61,8 +61,6 @@ xml_del_sd_option = '''
         <name>%s</name>
     </host>
     <format>true</format>
-    <destroy>false</destroy>
-    <async>true</async>
 </storage_domain>
 ''' % ModuleData.host1_name
 
@@ -76,8 +74,7 @@ expected_status_code_edit_sd_unattached = 409
 expected_info_edit_sd_unattached = '''
 <fault>
     <reason>Operation Failed</reason>
-    <detail>[Cannot edit Storage. The relevant Storage Domain is inaccessible.
--Please handle Storage Domain issues and retry the operation.]</detail>
+    <detail>[Cannot edit Storage. The relevant Storage Domain's status is Unknown.]</detail>
 </fault>
 '''
 expected_status_code_del_sd = 200

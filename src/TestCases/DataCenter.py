@@ -154,8 +154,8 @@ class ITC010102_GetDCInfo(BaseTestCase):
 class ITC01010301_CreateDC(BaseTestCase):
     '''
     @summary: ITC-01数据中心管理-01数据中心操作-03创建-01正常创建
-    @note: 包括3种类型数据中心（NFS、ISCSI和FC）
-    @note: 包括3种兼容版本（3.1、3.2、3.3）
+    @note: 包括共享和本地
+    @note: 包括4种兼容版本（3.1、3.2、3.3、3.4）
     '''
     def setUp(self):
         '''
@@ -245,7 +245,8 @@ class ITC01010302_CreateExistDC(BaseTestCase):
 class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
     '''
     @summary: ITC-01数据中心管理-01数据中心操作-03创建-03参数验证-01缺少必填参数
-    @note: 创建数据中心，缺少必需要的参数（数据中心有3个必需参数：名称、存储域、兼容版本），验证接口返回状态码及提示信息是否符合预期。
+    @note: 创建数据中心，缺少必需要的参数（数据中心有两个必需参数：名称、类型），验证接口返回状态码及提示信息是否符合预期。
+    @change: 类型改为共享和本地，且兼容性不是必须参数
     '''
     def setUp(self):
         '''
@@ -257,7 +258,7 @@ class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
     def test_CreateDCWithoutRequiredParams(self):
         '''
         @summary: 测试步骤
-        @note: （1）创建数据中心，缺少必需要的参数（数据中心有3个必需参数：名称、存储域、兼容版本）；
+        @note: （1）创建数据中心，缺少必需要的参数（数据中心有3个必需参数：名称、类型）；
         @note: （2）操作失败，验证接口返回的状态码以及提示信息是否符合预期。
         '''
         dcapi = DataCenterAPIs()
@@ -269,6 +270,7 @@ class ITC0101030301_CreateDC_NoRequiredParams(BaseTestCase):
             self.flag = True
             LogPrint().info("Test: Create a DC.")
             r = dcapi.createDataCenter(xml_info)
+            print r
             if r['status_code'] == self.dm.expected_status_code:
                 dictCompare = DictCompare()
                 if dictCompare.isSubsetDict(xmltodict.parse(self.dm.expected_info_list[self.expected_result_index]), r['result']):
@@ -618,6 +620,7 @@ class ITC010202_GetStorageDomainInfoInDC(BaseTestCase):
         dc_api = DataCenterAPIs()
         LogPrint().info("Test: Get storage domain '%s' info from DataCenter '%s'." % (ModuleData.data1_nfs_name, ModuleData.dc_nfs_name))
         r = dc_api.getDCStorageDomainInfo(ModuleData.dc_nfs_name, ModuleData.data1_nfs_name)
+        print r
         if r['status_code'] == self.dm.expected_status_code_get_sd_info:
             d1 = xmltodict.parse(self.dm.xml_sd_info)
             if DictCompare().isSubsetDict(d1, r['result']):
@@ -822,10 +825,10 @@ class ITC0102030202_AttachIsoStorage_Second(BaseTestCase):
         '''
         @summary: 测试步骤
         @note: （1）附加多个ISO域到同一个数据中心；
-        @note: （2）操作失败，验证接口返回的状态码、提示信息是否正确。
+        @note: 
         '''
         dc_api = DataCenterAPIs()
-        # Test-1: 将ISO2附加到数据中心（预期操作失败）
+        # Test-1: 将ISO2附加到数据中心（）
         LogPrint().info("Test: Attach more than 1 iso storages to DataCenter.")
         r = dc_api.attachStorageDomainToDC(ModuleData.dc_nfs_name, self.dm.iso2_name)
         if r['status_code'] == self.dm.expected_status_code_attach_sd_fail:
@@ -1068,7 +1071,6 @@ class ITC01020402_DetachStorage_Export(BaseTestCase):
     def test_DetachStorage_Export(self):
         '''
         @summary: 测试步骤
-        @note: （1）将export1设置为维护状态；
         @note: （2）将export1从数据中心分离；
         @note: （3）操作成功，验证接口返回的状态码、相关信息是否正确。
         '''
@@ -1116,7 +1118,6 @@ class ITC0102040301_DetachStorage_Data_Normal(BaseTestCase):
     def test_DetachStorage_Export(self):
         '''
         @summary: 测试步骤
-        @note: （1）将data2设置为维护状态；
         @note: （2）将data2从数据中心分离；
         @note: （3）操作成功，验证接口返回的状态码、相关信息是否正确。
         '''
@@ -1340,7 +1341,7 @@ class ITC01_TearDown(BaseTestCase):
         LogPrint().info("Post-Module-Test-3: Delete all unattached storage domains.")
         dict_sd_to_host = [self.dm.data1_nfs_name, self.dm.data2_nfs_name, self.dm.iso1_name, self.dm.export1_name]
         for sd in dict_sd_to_host:
-            smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name)
+            self.assertTrue(smart_del_storage_domain(sd, self.dm.xml_del_sd_option, host_name=self.dm.host1_name))
         
         # Step4：删除主机（host1）
         LogPrint().info("Post-Module-Test-4: Delete host '%s'." % self.dm.host1_name)
@@ -1353,7 +1354,7 @@ class ITC01_TearDown(BaseTestCase):
 
 if __name__ == "__main__":
     # 建立测试套件 testSuite，并添加多个测试用例
-    test_cases = ["DataCenter.ITC01_TearDown"]
+    test_cases = ["DataCenter.ITC01_SetUp","DataCenter.ITC01_TearDown"]
   
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

@@ -1,0 +1,972 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</title>
+    <meta name="generator" content="HTMLTestRunner 0.8.2"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    
+<style type="text/css" media="screen">
+body        { font-family: verdana, arial, helvetica, sans-serif; font-size: 80%; }
+table       { font-size: 100%; }
+pre         { }
+
+/* -- heading ---------------------------------------------------------------------- */
+h1 {
+	font-size: 16pt;
+	color: gray;
+}
+.heading {
+    margin-top: 0ex;
+    margin-bottom: 1ex;
+}
+
+.heading .attribute {
+    margin-top: 1ex;
+    margin-bottom: 0;
+}
+
+.heading .description {
+    margin-top: 4ex;
+    margin-bottom: 6ex;
+}
+
+/* -- css div popup ------------------------------------------------------------------------ */
+a.popup_link {
+}
+
+a.popup_link:hover {
+    color: red;
+}
+
+.popup_window {
+    display: none;
+    position: relative;
+    left: 0px;
+    top: 0px;
+    /*border: solid #627173 1px; */
+    padding: 10px;
+    background-color: #E6E6D6;
+    font-family: "Lucida Console", "Courier New", Courier, monospace;
+    text-align: left;
+    font-size: 8pt;
+    width: 500px;
+}
+
+}
+/* -- report ------------------------------------------------------------------------ */
+#show_detail_line {
+    margin-top: 3ex;
+    margin-bottom: 1ex;
+}
+#result_table {
+    width: 80%;
+    border-collapse: collapse;
+    border: 1px solid #777;
+}
+#header_row {
+    font-weight: bold;
+    color: white;
+    background-color: #777;
+}
+#result_table td {
+    border: 1px solid #777;
+    padding: 2px;
+}
+#total_row  { font-weight: bold; }
+.passClass  { background-color: #6c6; }
+.failClass  { background-color: #c60; }
+.errorClass { background-color: #c00; }
+.passCase   { color: #6c6; }
+.failCase   { color: #c60; font-weight: bold; }
+.errorCase  { color: #c00; font-weight: bold; }
+.hiddenRow  { display: none; }
+.testcase   { margin-left: 2em; }
+
+
+/* -- ending ---------------------------------------------------------------------- */
+#ending {
+}
+
+</style>
+
+</head>
+<body>
+<script language="javascript" type="text/javascript"><!--
+output_list = Array();
+
+/* level - 0:Summary; 1:Failed; 2:All */
+function showCase(level) {
+    trs = document.getElementsByTagName("tr");
+    for (var i = 0; i < trs.length; i++) {
+        tr = trs[i];
+        id = tr.id;
+        if (id.substr(0,2) == 'ft') {
+            if (level < 1) {
+                tr.className = 'hiddenRow';
+            }
+            else {
+                tr.className = '';
+            }
+        }
+        if (id.substr(0,2) == 'pt') {
+            if (level > 1) {
+                tr.className = '';
+            }
+            else {
+                tr.className = 'hiddenRow';
+            }
+        }
+    }
+}
+
+
+function showClassDetail(cid, count) {
+    var id_list = Array(count);
+    var toHide = 1;
+    for (var i = 0; i < count; i++) {
+        tid0 = 't' + cid.substr(1) + '.' + (i+1);
+        tid = 'f' + tid0;
+        tr = document.getElementById(tid);
+        if (!tr) {
+            tid = 'p' + tid0;
+            tr = document.getElementById(tid);
+        }
+        id_list[i] = tid;
+        if (tr.className) {
+            toHide = 0;
+        }
+    }
+    for (var i = 0; i < count; i++) {
+        tid = id_list[i];
+        if (toHide) {
+            document.getElementById('div_'+tid).style.display = 'none'
+            document.getElementById(tid).className = 'hiddenRow';
+        }
+        else {
+            document.getElementById(tid).className = '';
+        }
+    }
+}
+
+
+function showTestDetail(div_id){
+    var details_div = document.getElementById(div_id)
+    var displayState = details_div.style.display
+    // alert(displayState)
+    if (displayState != 'block' ) {
+        displayState = 'block'
+        details_div.style.display = 'block'
+    }
+    else {
+        details_div.style.display = 'none'
+    }
+}
+
+
+function html_escape(s) {
+    s = s.replace(/&/g,'&amp;');
+    s = s.replace(/</g,'&lt;');
+    s = s.replace(/>/g,'&gt;');
+    return s;
+}
+
+/* obsoleted by detail in <div>
+function showOutput(id, name) {
+    var w = window.open("", //url
+                    name,
+                    "resizable,scrollbars,status,width=800,height=450");
+    d = w.document;
+    d.write("<pre>");
+    d.write(html_escape(output_list[id]));
+    d.write("\n");
+    d.write("<a href='javascript:window.close()'>close</a>\n");
+    d.write("</pre>\n");
+    d.close();
+}
+*/
+--></script>
+
+<div class='heading'>
+<h1>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告</h1>
+<p class='attribute'><strong>Start Time:</strong> 2015-07-20 15:43:29</p>
+<p class='attribute'><strong>Duration:</strong> 0:02:15.731000</p>
+<p class='attribute'><strong>Status:</strong> Pass 18</p>
+
+<p class='description'>中标麒麟虚拟化管理平台V6.2－HTTP接口自动化测试报告
+测试执行方式：module</p>
+</div>
+
+
+
+<p id='show_detail_line'>Show
+<a href='javascript:showCase(0)'>Summary</a>
+<a href='javascript:showCase(1)'>Failed</a>
+<a href='javascript:showCase(2)'>All</a>
+</p>
+<table id='result_table'>
+<colgroup>
+<col align='left' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+<col align='right' />
+</colgroup>
+<tr id='header_row'>
+    <td>Test Group/Test case</td>
+    <td>Count</td>
+    <td>Pass</td>
+    <td>Fail</td>
+    <td>Error</td>
+    <td>View</td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02_Setup</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c1',1)">Detail</a></td>
+</tr>
+
+<tr id='pt1.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_Create_DC</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt1.1')" >
+        pass</a>
+
+    <div id='div_pt1.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt1.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt1.1: 2015-07-20 15:43:29 INFO    | PrintLog.py[line:0061] | Pre-Module-Test: Create DataCenter 'DC-ITC02-NFS'.
+C:\Python27\lib\site-packages\requests-2.4.1-py2.7.egg\requests\packages\urllib3\connectionpool.py:730: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.org/en/latest/security.html (This warning will only appear once by default.)
+  InsecureRequestWarning)
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC020101_GetClustersList</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c2',1)">Detail</a></td>
+</tr>
+
+<tr id='pt2.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetClustersList</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt2.1')" >
+        pass</a>
+
+    <div id='div_pt2.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt2.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt2.1: 2015-07-20 15:43:29 WARNING | PrintLog.py[line:0067] | The TestCase &lt;ITC020101_GetClustersList&gt; has no data file.
+2015-07-20 15:43:29 INFO    | PrintLog.py[line:0061] | Test: Get all clusters list.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | PASS: Get Clusters list SUCCESS.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC020102_GetClusterInfo</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c3',1)">Detail</a></td>
+</tr>
+
+<tr id='pt3.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetClusterInfo</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt3.1')" >
+        pass</a>
+
+    <div id='div_pt3.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt3.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt3.1: 2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a cluster 'Cluster-ITC020102' for this TC.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC020102'success.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Test: Get cluster's ('Cluster-ITC020102') info.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | PASS: Get Cluster 'Cluster-ITC020102' info SUCCESS.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Post-Test: Delete cluster 'Cluster-ITC020102'.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC020102'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02010301_CreateCluster</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c4',1)">Detail</a></td>
+</tr>
+
+<tr id='pt4.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateCluster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt4.1')" >
+        pass</a>
+
+    <div id='div_pt4.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt4.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt4.1: 2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Test: Create a cluster 'Cluster-ITC02010301'.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | PASS: Create Cluster 'Cluster-ITC02010301' SUCCESS.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Post-Test: Delete cluster 'Cluster-ITC02010301'.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC02010301'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02010302_CreateCluster_Dup</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c5',1)">Detail</a></td>
+</tr>
+
+<tr id='pt5.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateCluster_Dup</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt5.1')" >
+        pass</a>
+
+    <div id='div_pt5.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt5.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt5.1: 2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a cluster cluster-ITC02
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Create Cluster 'cluster-ITC02'success.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Test: Create a cluster with dup name.
+{'status_code': 409, 'result': OrderedDict([(u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u'[Cannot create Cluster. Cluster name is already in use.]')]))])}
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and info are CORRECT while creating cluster with dup name.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Post-Test: Delete cluster 'cluster-ITC02'.
+2015-07-20 15:43:30 INFO    | PrintLog.py[line:0061] | Delete Cluster 'cluster-ITC02'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02010303_CreateClusterNoRequired</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c6',1)">Detail</a></td>
+</tr>
+
+<tr id='pt6.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_CreateClusterNoRequired</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt6.1')" >
+        pass</a>
+
+    <div id='div_pt6.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt6.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt6.1: 2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02010401_UpdateCluster_nohost</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c7',1)">Detail</a></td>
+</tr>
+
+<tr id='pt7.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateCluster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt7.1')" >
+        pass</a>
+
+    <div id='div_pt7.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt7.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt7.1: 2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | Pre-Test: Create cluster 'Cluster-ITC02010401' for this TC.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC02010401'success.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | PASS: ITC02010401_UpdateCluster_nohost SUCCESS.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | PASS: ITC02010401_UpdateCluster_nohost SUCCESS.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | PASS: ITC02010401_UpdateCluster_nohost SUCCESS.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | Post-Test: Delete cluster 'Cluster-ITC02010401-New'.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC02010401-New'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC0201040201_UpdateCluster_host_cputype</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c8',1)">Detail</a></td>
+</tr>
+
+<tr id='pt8.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateCluster_host</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt8.1')" >
+        pass</a>
+
+    <div id='div_pt8.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt8.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt8.1: 2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create cluster 'Cluster-ITC0201040201' for this TC.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC0201040201'success.
+2015-07-20 15:43:31 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create host 'node-ITC0201040201' for this TC.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70'), (u'@id', u'7d175c1a-f215-4b63-9201-327e50428c70'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC0201040201'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/7d175c1a-f215-4b63-9201-327e50428c70/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.241'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.241')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/43002eb5-6330-4815-863f-4544977ef47c'), (u'@id', u'43002eb5-6330-4815-863f-4544977ef47c')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'47:40:ed:53:f6:1c:30:7b:64:95:c4:f4:c5:d1:84:4c')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-20 15:43:58 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC0201040201' SUCCESS.
+2015-07-20 15:43:58 INFO    | PrintLog.py[line:0061] | Test: Edit cluster's cpu type if there are hosts in this cluster.
+OrderedDict([(u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u'[Cannot change Cluster CPU type when all Hosts attached to this Cluster are not in Maintenance.]')]))])
+OrderedDict([(u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u'[Cannot change Cluster CPU type when all Hosts attached to this Cluster are not in Maintenance.]')]))])
+2015-07-20 15:43:58 INFO    | PrintLog.py[line:0061] | PASS: ITC0201040201_test_UpdateCluster_host_cputype SUCCESS.
+2015-07-20 15:43:58 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete host 'node-ITC0201040201'.
+2015-07-20 15:43:58 INFO    | PrintLog.py[line:0061] | INFO: Deactivate host 'node-ITC0201040201' from 'up' to 'maintenance' state.
+2015-07-20 15:44:03 INFO    | PrintLog.py[line:0061] | INFO: Delete host 'node-ITC0201040201' from cluster.
+2015-07-20 15:44:03 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster 'Cluster-ITC0201040201'.
+2015-07-20 15:44:03 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC0201040201'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC0201040202_UpdateCluster_host_upcpu</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c9',1)">Detail</a></td>
+</tr>
+
+<tr id='pt9.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateCluster_host</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt9.1')" >
+        pass</a>
+
+    <div id='div_pt9.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt9.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt9.1: 2015-07-20 15:44:04 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC0201040202'success.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3'), (u'@id', u'd1ee0304-8134-4326-9eed-7d170fbc5ab3'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC0201040202'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/d1ee0304-8134-4326-9eed-7d170fbc5ab3/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.241'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.241')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/17bc1190-0bba-4f69-8f68-89fd7f30ed59'), (u'@id', u'17bc1190-0bba-4f69-8f68-89fd7f30ed59')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'47:40:ed:53:f6:1c:30:7b:64:95:c4:f4:c5:d1:84:4c')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-20 15:44:30 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC0201040202' SUCCESS.
+2015-07-20 15:44:30 INFO    | PrintLog.py[line:0061] | Test: Improve cluster's CPU level while there are hosts in cluster.
+OrderedDict([(u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u'[Cannot change Cluster CPU to higher CPU type when there are active Hosts with lower CPU type.\n-Please move Hosts with lower CPU to maintenance first.]')]))])
+OrderedDict([(u'fault', OrderedDict([(u'reason', u'Operation Failed'), (u'detail', u'[Cannot change Cluster CPU to higher CPU type when there are active Hosts with lower CPU type.\n-Please move Hosts with lower CPU to maintenance first.]')]))])
+2015-07-20 15:44:30 INFO    | PrintLog.py[line:0061] | PASS: ITC0201040202_test_UpdateCluster_host_upcpu SUCCESS.
+2015-07-20 15:44:30 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete host 'node-ITC0201040202'.
+2015-07-20 15:44:30 INFO    | PrintLog.py[line:0061] | INFO: Deactivate host 'node-ITC0201040202' from 'up' to 'maintenance' state.
+2015-07-20 15:44:35 INFO    | PrintLog.py[line:0061] | INFO: Delete host 'node-ITC0201040202' from cluster.
+2015-07-20 15:44:36 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster 'Cluster-ITC0201040202'.
+2015-07-20 15:44:36 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC0201040202'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC0201040203_UpdateCluster_host_name</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c10',1)">Detail</a></td>
+</tr>
+
+<tr id='pt10.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateCluster_host</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt10.1')" >
+        pass</a>
+
+    <div id='div_pt10.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt10.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt10.1: 2015-07-20 15:44:36 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC0201040203'success.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780'), (u'@id', u'f0af7134-03c2-408f-b3fc-ad8de5daf780'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC0201040203'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/f0af7134-03c2-408f-b3fc-ad8de5daf780/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.241'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.241')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/6c183e4c-6231-4a7d-bd2d-dd91049d4b7d'), (u'@id', u'6c183e4c-6231-4a7d-bd2d-dd91049d4b7d')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'47:40:ed:53:f6:1c:30:7b:64:95:c4:f4:c5:d1:84:4c')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-20 15:45:02 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC0201040203' SUCCESS.
+2015-07-20 15:45:02 INFO    | PrintLog.py[line:0061] | Test: Edit cluster's name while there are hosts in cluster.
+2015-07-20 15:45:02 INFO    | PrintLog.py[line:0061] | PASS: ITC0201040203_test_UpdateCluster_host_name SUCCESS.
+2015-07-20 15:45:02 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete host 'node-ITC0201040203'.
+2015-07-20 15:45:02 INFO    | PrintLog.py[line:0061] | INFO: Deactivate host 'node-ITC0201040203' from 'up' to 'maintenance' state.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | INFO: Delete host 'node-ITC0201040203' from cluster.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster 'Cluster-ITC0201040203'.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC0201040203-New'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02010501_DeleteCluster_clear</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c11',1)">Detail</a></td>
+</tr>
+
+<tr id='pt11.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DeleteCluster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt11.1')" >
+        pass</a>
+
+    <div id='div_pt11.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt11.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt11.1: 2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Pre-Test: Create a cluster 'Cluster-ITC02010501' for this TC.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC02010501'success.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Test: Delete the clean cluster 'Cluster-ITC02010501'.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | PASS: Delete Cluster 'Cluster-ITC02010501' info SUCCESS.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Post-Test: Delete cluster 'Cluster-ITC02010501'.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Cluster 'Cluster-ITC02010501' is not exist
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02010502_DeleteCluster_host</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c12',1)">Detail</a></td>
+</tr>
+
+<tr id='pt12.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_DeleteCluster_host</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt12.1')" >
+        pass</a>
+
+    <div id='div_pt12.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt12.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt12.1: 2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create cluster 'Cluster-ITC02010502' for this TC.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC02010502'success.
+2015-07-20 15:45:08 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create host 'node-ITC02010502' for this TC.
+{'status_code': 201, 'result': OrderedDict([(u'host', OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e'), (u'@id', u'808026b0-21a4-41ac-9138-f281ad7cd29e'), (u'actions', OrderedDict([(u'link', [OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/approve'), (u'@rel', u'approve')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/forceselectspm'), (u'@rel', u'forceselectspm')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/iscsilogin'), (u'@rel', u'iscsilogin')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/iscsidiscover'), (u'@rel', u'iscsidiscover')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/commitnetconfig'), (u'@rel', u'commitnetconfig')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/deactivate'), (u'@rel', u'deactivate')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/fence'), (u'@rel', u'fence')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/install'), (u'@rel', u'install')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/activate'), (u'@rel', u'activate')])])])), (u'name', u'node-ITC02010502'), (u'comment', None), (u'link', [OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/storage'), (u'@rel', u'storage')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/nics'), (u'@rel', u'nics')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/tags'), (u'@rel', u'tags')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/permissions'), (u'@rel', u'permissions')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/statistics'), (u'@rel', u'statistics')]), OrderedDict([(u'@href', u'/api/hosts/808026b0-21a4-41ac-9138-f281ad7cd29e/hooks'), (u'@rel', u'hooks')])]), (u'address', u'10.1.85.241'), (u'certificate', OrderedDict([(u'organization', u'Test'), (u'subject', u'O=Test,CN=10.1.85.241')])), (u'status', OrderedDict([(u'state', u'installing')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/98f5370b-0378-42e9-9137-394fb211aeac'), (u'@id', u'98f5370b-0378-42e9-9137-394fb211aeac')])), (u'port', u'54321'), (u'type', u'rhel'), (u'storage_manager', OrderedDict([(u'@priority', u'5'), ('#text', u'false')])), (u'hardware_information', None), (u'power_management', OrderedDict([(u'enabled', u'false'), (u'options', None), (u'automatic_pm_enabled', u'true')])), (u'ksm', OrderedDict([(u'enabled', u'false')])), (u'transparent_hugepages', OrderedDict([(u'enabled', u'false')])), (u'ssh', OrderedDict([(u'port', u'22'), (u'fingerprint', u'47:40:ed:53:f6:1c:30:7b:64:95:c4:f4:c5:d1:84:4c')])), (u'cpu', OrderedDict([(u'topology', None), (u'speed', u'0')])), (u'memory', u'0'), (u'max_scheduling_memory', u'0'), (u'summary', OrderedDict([(u'total', u'0')]))]))])}
+2015-07-20 15:45:34 INFO    | PrintLog.py[line:0061] | INFO-PASS: Create host 'node-ITC02010502' SUCCESS.
+2015-07-20 15:45:34 INFO    | PrintLog.py[line:0061] | Test: Delete cluster Cluster-ITC02010502.
+2015-07-20 15:45:35 INFO    | PrintLog.py[line:0061] | PASS: Returned status code and messages are CORRECT.
+2015-07-20 15:45:35 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete host node-ITC02010502. 
+2015-07-20 15:45:35 INFO    | PrintLog.py[line:0061] | INFO: Deactivate host 'node-ITC02010502' from 'up' to 'maintenance' state.
+2015-07-20 15:45:40 INFO    | PrintLog.py[line:0061] | INFO: Delete host 'node-ITC02010502' from cluster.
+2015-07-20 15:45:40 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster Cluster-ITC02010502. 
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC02010502'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC020201_GetClusterNetworkList</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c13',1)">Detail</a></td>
+</tr>
+
+<tr id='pt13.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetClusterNetworkList</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt13.1')" >
+        pass</a>
+
+    <div id='div_pt13.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt13.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt13.1: 2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create cluster 'Cluster-ITC020201' for this TC.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC020201'success.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Test: Get the cluster Cluster-ITC020201's network list. 
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | PASS: Get Cluster Cluster-ITC020201 Network list SUCCESS.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete cluster Cluster-ITC020201. 
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC020201'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC020202_GetClusterNetworkInfo</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c14',1)">Detail</a></td>
+</tr>
+
+<tr id='pt14.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_GetClusterNetworkInfo</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt14.1')" >
+        pass</a>
+
+    <div id='div_pt14.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt14.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt14.1: 2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create cluster 'Cluster-ITC020202' for this TC.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC020202'success.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create network 'nw_ITC020202' for this TC.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Pre-Test:Create network 'nw_ITC020202'success.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Pre-Test-3: Attach network 'nw_ITC020202'to cluster 'Cluster-ITC020202' for this TC.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Test: Get the cluster Cluster-ITC020202's network info. 
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | PASS: Get ClusterNetwork 'nw_ITC020202' info SUCCESS.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete network 'nw_ITC020202' for this TC.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Post-Test:Delete network 'nw_ITC020202'success.
+2015-07-20 15:45:41 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster 'Cluster-ITC020202' for this TC.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC020202'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC020203_attachNetworktoCluster</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c15',1)">Detail</a></td>
+</tr>
+
+<tr id='pt15.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_attachNetworktoCluster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt15.1')" >
+        pass</a>
+
+    <div id='div_pt15.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt15.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt15.1: 2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create cluster 'Cluster-ITC020203' for this TC.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC020203'success.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create network 'nw_ITC020203' for this TC.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Pre-Test:Create network 'nw_ITC020203'success.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Test: Attach Network nw_ITC020203 to Cluster Cluster-ITC020203. 
+{'status_code': 201, 'result': OrderedDict([(u'network', OrderedDict([(u'@href', u'/api/clusters/20de2698-acd5-45d0-a812-328dc8a99c15/networks/022fcc4a-6670-4bb2-bb50-25076da64443'), (u'@id', u'022fcc4a-6670-4bb2-bb50-25076da64443'), (u'name', u'nw_ITC020203'), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/34ff6deb-d1d0-47f2-9186-f66714efdcfb'), (u'@id', u'34ff6deb-d1d0-47f2-9186-f66714efdcfb')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/20de2698-acd5-45d0-a812-328dc8a99c15'), (u'@id', u'20de2698-acd5-45d0-a812-328dc8a99c15')])), (u'stp', u'false'), (u'status', OrderedDict([(u'state', u'operational')])), (u'display', u'false'), (u'mtu', u'0'), (u'usages', OrderedDict([(u'usage', u'vm')])), (u'required', u'true')]))])}
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | PASS: Attach Network nw_ITC020203 to Cluster Cluster-ITC020203 SUCCESS.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete network 'nw_ITC020203' for this TC.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Post-Test:Delete network 'nw_ITC020203'success.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster 'Cluster-ITC020203' for this TC.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC020203'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC020204_detachNetworkFromCluster</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c16',1)">Detail</a></td>
+</tr>
+
+<tr id='pt16.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_detachNetworkFromCluster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt16.1')" >
+        pass</a>
+
+    <div id='div_pt16.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt16.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt16.1: 2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create cluster 'Cluster-ITC020204' for this TC.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC020204'success.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create network 'nw_ITC020204' for this TC.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Pre-Test:Create network 'nw_ITC020204'success.
+2015-07-20 15:45:42 INFO    | PrintLog.py[line:0061] | Pre-Test-3: Attach network 'nw_ITC020204'to cluster 'Cluster-ITC020204' for this TC.
+2015-07-20 15:45:43 INFO    | PrintLog.py[line:0061] | Test: Detach Network nw_ITC020204 from Cluster Cluster-ITC020204. 
+OrderedDict([(u'@href', u'/api/clusters/ba6f4188-204e-4af5-b368-3ff6385aac11/networks/fb15d05a-f2dc-495b-82bd-fa4c0052e720'), (u'@id', u'fb15d05a-f2dc-495b-82bd-fa4c0052e720'), (u'name', u'ovirtmgmt'), (u'description', u'Management Network'), (u'data_center', OrderedDict([(u'@href', u'/api/datacenters/34ff6deb-d1d0-47f2-9186-f66714efdcfb'), (u'@id', u'34ff6deb-d1d0-47f2-9186-f66714efdcfb')])), (u'cluster', OrderedDict([(u'@href', u'/api/clusters/ba6f4188-204e-4af5-b368-3ff6385aac11'), (u'@id', u'ba6f4188-204e-4af5-b368-3ff6385aac11')])), (u'stp', u'false'), (u'status', OrderedDict([(u'state', u'operational')])), (u'display', u'false'), (u'mtu', u'0'), (u'usages', OrderedDict([(u'usage', u'vm')])), (u'required', u'true')])
+2015-07-20 15:45:43 INFO    | PrintLog.py[line:0061] | PASS: Detach Network nw_ITC020204 from Cluster Cluster-ITC020204 SUCCESS. 
+2015-07-20 15:45:43 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete network 'nw_ITC020204' for this TC.
+2015-07-20 15:45:43 INFO    | PrintLog.py[line:0061] | Post-Test:Delete network 'nw_ITC020204'success.
+2015-07-20 15:45:43 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster 'Cluster-ITC020204' for this TC.
+2015-07-20 15:45:43 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC020204'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC020205_UpdateNetworkofCluster</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c17',1)">Detail</a></td>
+</tr>
+
+<tr id='pt17.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_UpdateNetworkofCluster</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt17.1')" >
+        pass</a>
+
+    <div id='div_pt17.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt17.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt17.1: 2015-07-20 15:45:43 INFO    | PrintLog.py[line:0061] | Pre-Test-1: Create cluster 'Cluster-ITC020205' for this TC.
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Create Cluster 'Cluster-ITC020205'success.
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Pre-Test-2: Create network 'nw_ITC020205' for this TC.
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Pre-Test:Create network 'nw_ITC020205'success.
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Pre-Test-3: Attach network 'nw_ITC020205'to cluster 'Cluster-ITC020205' for this TC.
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Test: Update Network nw_ITC020205 of Cluster Cluster-ITC020205. 
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | PASS: Detach Network nw_ITC020205 from Cluster Cluster-ITC020205 SUCCESS. 
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Post-Test-1: Delete network 'nw_ITC020205' for this TC.
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Post-Test:Delete network 'nw_ITC020205'success.
+2015-07-20 15:45:44 INFO    | PrintLog.py[line:0061] | Post-Test-2: Delete cluster 'Cluster-ITC020205' for this TC.
+2015-07-20 15:45:45 INFO    | PrintLog.py[line:0061] | Delete Cluster 'Cluster-ITC020205'success.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr class='passClass'>
+    <td>TestCases.Cluster.ITC02_TearDown</td>
+    <td>1</td>
+    <td>1</td>
+    <td>0</td>
+    <td>0</td>
+    <td><a href="javascript:showClassDetail('c18',1)">Detail</a></td>
+</tr>
+
+<tr id='pt18.1' class='hiddenRow'>
+    <td class='none'><div class='testcase'>test_TearDown</div></td>
+    <td colspan='5' align='center'>
+
+    <!--css div popup start-->
+    <a class="popup_link" onfocus='this.blur();' href="javascript:showTestDetail('div_pt18.1')" >
+        pass</a>
+
+    <div id='div_pt18.1' class="popup_window">
+        <div style='text-align: right; color:red;cursor:pointer'>
+        <a onfocus='this.blur();' onclick="document.getElementById('div_pt18.1').style.display = 'none' " >
+           [x]</a>
+        </div>
+        <pre>
+        
+pt18.1: 2015-07-20 15:45:45 WARNING | PrintLog.py[line:0067] | The TestCase &lt;ITC02_TearDown&gt; has no data file.
+2015-07-20 15:45:45 INFO    | PrintLog.py[line:0061] | Post-Module-Test: Delete DataCenter 'DC-ITC02-NFS'.
+
+
+        </pre>
+    </div>
+    <!--css div popup end-->
+
+    </td>
+</tr>
+
+<tr id='total_row'>
+    <td>Total</td>
+    <td>18</td>
+    <td>18</td>
+    <td>0</td>
+    <td>0</td>
+    <td>&nbsp;</td>
+</tr>
+</table>
+
+<div id='ending'>&nbsp;</div>
+
+</body>
+</html>

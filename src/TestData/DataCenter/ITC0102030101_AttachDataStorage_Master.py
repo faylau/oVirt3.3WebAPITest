@@ -28,8 +28,8 @@ dc_nfs_name = 'DC-ITC0102030101-NFS'
 xml_dc_info = '''
     <data_center>
         <name>%s</name>
-        <storage_type>nfs</storage_type>
-        <version minor="3" major="3"/>
+        <local>false</local>
+        <version minor="4" major="3"/>
     </data_center>
 ''' % (dc_nfs_name)
 
@@ -50,7 +50,7 @@ xml_cluster_info = '''
 ########################################################################
 # 1个主机信息（node1加入NFS数据中心）                                                                                                                                    
 ########################################################################
-host = Hosts['node4']
+host = Hosts['node2']
 host_name = 'node-ITC0102030101'
 host_ip = host['ip']
 host_password = host['password']

@@ -56,7 +56,7 @@ xml_disk_info = '''
 ''' % (disk_alias, ModuleData.data1_nfs_name)
 
 # 前提3：创建主机的信息
-host2 = Hosts['node1']
+host2 = Hosts['node2']
 host2_name = 'node-ITC05020602'
 host2_ip = host2['ip']
 host2_password = host2['password']

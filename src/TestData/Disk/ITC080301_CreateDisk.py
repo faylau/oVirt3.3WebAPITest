@@ -27,7 +27,7 @@ disk_info_raw = '''
     <storage_domains>
         <storage_domain id = "%s"/>
     </storage_domains>
-    <size>2147483648</size>
+    <size>1147483648</size>
     <sparse>false</sparse>
     <interface>virtio</interface>
     <format>raw</format>

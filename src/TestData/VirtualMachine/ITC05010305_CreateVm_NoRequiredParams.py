@@ -74,26 +74,26 @@ xml_vm3_info = '''
 ---------------------------------------------------------------------------------------------
 '''
 expected_status_code_create_vm_no_name = 400
-expected_status_code_create_vm_no_cluster = 404
-expected_status_code_create_vm_no_template = 404
+expected_status_code_create_vm_no_cluster = 400
+expected_status_code_create_vm_no_template = 400
 expected_status_code_list = [expected_status_code_create_vm_no_name, expected_status_code_create_vm_no_cluster, expected_status_code_create_vm_no_template]
 
 expected_info_create_vm1 = '''
 <fault>
-    <reason>Operation Failed</reason>
-    <detail>[Can not add VM. The given name contains special characters. Only lower-case and upper-case letters, numbers, '_', '-', '.' are allowed., size must be between 1 and 255]</detail>
+    <reason>Incomplete parameters</reason>
+    <detail>VM [name] required for add</detail>
 </fault>
 '''
 expected_info_create_vm2 = '''
 <fault>
-    <reason>Operation Failed</reason>
-    <detail>Entity not found: Cluster: name=</detail>
+    <reason>Incomplete parameters</reason>
+    <detail>VM [cluster.id|name] required for add</detail>
 </fault>
 '''
 expected_info_create_vm3 = '''
 <fault>
-    <reason>Operation Failed</reason>
-    <detail>Entity not found: Template: name=</detail>
+    <reason>Incomplete parameters</reason>
+    <detail>VM [template.id|name] required for add</detail>
 </fault>
 '''
 expected_info_list = [expected_info_create_vm1, expected_info_create_vm2, expected_info_create_vm3]

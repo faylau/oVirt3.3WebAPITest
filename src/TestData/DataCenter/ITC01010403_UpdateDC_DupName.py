@@ -21,12 +21,12 @@ pre_dc_info = '''
 <data_driver>
     <data_center>
         <name>%s</name>
-        <storage_type>nfs</storage_type>
+        <local>true</local>
         <version minor="1" major="3"/>
     </data_center>
     <data_center>
         <name>%s</name>
-        <storage_type>nfs</storage_type>
+        <local>true</local>
         <version minor="1" major="3"/>
     </data_center>
 </data_driver>

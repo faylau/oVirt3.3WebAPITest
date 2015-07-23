@@ -21,7 +21,7 @@ dc_name = 'DC-ITC01010502'
 pre_dc_info = '''
 <data_center>
     <name>%s</name>
-    <storage_type>nfs</storage_type>
+    <local>false</local>
     <version minor="3" major="3"/>
 </data_center>
 ''' % dc_name

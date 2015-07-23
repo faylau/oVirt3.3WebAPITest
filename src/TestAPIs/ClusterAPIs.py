@@ -20,7 +20,7 @@ from BaseAPIs import BaseAPIs
 from NetworkAPIs import NetworkAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
-from TestAPIs.DataCenterAPIs import DataCenterAPIs
+from DataCenterAPIs import DataCenterAPIs
 
 def smart_create_cluster(cluster_info,cluster_name,status_code=201):
     '''
@@ -33,10 +33,10 @@ def smart_create_cluster(cluster_info,cluster_name,status_code=201):
     cluster_api = ClusterAPIs()
     r = cluster_api.createCluster(cluster_info)
     if r ['status_code'] == status_code:
-        LogPrint().info("Pre-Test:Create Cluster '%s'success."%cluster_name)
+        LogPrint().info("Create Cluster '%s'success."%cluster_name)
         return True
     else:
-        LogPrint().error("Pre-Test:Create Cluster '%s' fail."%cluster_name)
+        LogPrint().error("Create Cluster '%s' fail."%cluster_name)
         return False
         
 def smart_delete_cluster(cluster_name,status_code=200):
@@ -51,13 +51,13 @@ def smart_delete_cluster(cluster_name,status_code=200):
         cluster_api.getClusterInfo(cluster_name)
         r = cluster_api.delCluster(cluster_name)
         if r ['status_code'] == status_code:
-            LogPrint().info("Post-Test:Delete Cluster '%s'success."%cluster_name)
+            LogPrint().info("Delete Cluster '%s'success."%cluster_name)
             return True
         else:
-            LogPrint().error("Post-Test:Delete Cluster '%s' fail."%cluster_name)
+            LogPrint().error("Delete Cluster '%s' fail."%cluster_name)
             return False
     except:
-        LogPrint().info("Post-Test:Cluster '%s' is not exist"%cluster_name)
+        LogPrint().info("Cluster '%s' is not exist"%cluster_name)
         return True
     
 class ClusterAPIs(BaseAPIs):
@@ -163,7 +163,6 @@ class ClusterAPIs(BaseAPIs):
         api_url = self.base_url
         method = 'POST'
         r = HttpClient.sendRequest(method=method, api_url=api_url, data=cluster_info)
-        #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)} 
     
     def updateCluster(self, cluster_name, update_info):
@@ -294,26 +293,23 @@ class ClusterAPIs(BaseAPIs):
     
 if __name__=='__main__':
     clusterapi = ClusterAPIs()
-    #print clusterapi.searchClusterByName('Default11')
+    #print clusterapi.searchClusterByName('Default')
     #print clusterapi.getClusterIdByName('Default1')
     #print clusterapi.getClusterNameById('46951ef6-5bdb-4da3-89e0-092782b35487')
     #print clusterapi.getClustersList()
     #print clusterapi.getClusterInfo('aaaa')
     #print clusterapi.getClusterInfo(cluster_id='46951ef6-5bdb-4da3-89e0-092782b35487')
-    '''
-    <name>aaa</name>
-    <cpu id="Intel Penryn Family"/>
-    <data_center  id="8cfa5137-e11f-445b-bbd5-c5611338d8eb"/>
-    '''
-    
+    dc_id = DataCenterAPIs().getDataCenterIdByName("Default")
+    print dc_id
     data = '''
     <cluster>
         <name>aaa</name>
         <cpu id="Intel Penryn Family"/>
-    </cluster>
+        <data_center  id="00000002-0002-0002-0002-000000000146"/>
+</cluster>
     '''
     print clusterapi.createCluster(data)
-    print xmltodict.unparse(clusterapi.createCluster(data)['result']) 
+    #print xmltodict.unparse(clusterapi.createCluster(data)['result']) 
     #print clusterapi.updateCluster('NewCluster22',data)
     data1 = '''
     <action>
