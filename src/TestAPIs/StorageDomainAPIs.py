@@ -704,7 +704,16 @@ if __name__ == "__main__":
     dsdapi = DataStorageAPIs()
     isoapi = ISOStorageAPIs()
     exportapi = ExportStorageAPIs()
+    xml_del_option='''
+    <storage_domain>
+    <host>
+        <name>node-ITC10-2</name>
+    </host>
+    <format>true</format>
+</storage_domain>
+    '''
     
+    print xmltodict.unparse(sdapi.delStorageDomain('iso1-ITC10', xml_del_option)['result'],pretty=True)
 #     print exportapi.getTemplateDiskInfoFromExportStorage('export1', 'template-haproxy-osv', 'haproxy-qcow2_Disk1')
 #     print exportapi.getTemplateDiskIdByNameFromExportStorage('export1', 'template-haproxy-osv', 'haproxy-qcow2_Disk1')
 #     print exportapi.getTemplateDisksListFromExportStorage('export1', 'template-haproxy-osv')

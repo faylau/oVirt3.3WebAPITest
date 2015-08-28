@@ -33,7 +33,7 @@ cluster_info = '''
 </cluster>
 ''' % (cluster_name, dc_id)
 
-host = Hosts['node1']
+host = Hosts['node2']
 host_name = 'node-ITC0201040202'
 host_ip = host['ip']
 host_password = host['password']

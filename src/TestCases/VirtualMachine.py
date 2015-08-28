@@ -1,4 +1,8 @@
 #coding:utf-8
+from Utils import PrintLog
+from time import sleep
+from TestAPIs import VirtualMachineAPIs
+# from TestData.VirtualMachine.scenarios3_Snapshot import vmapi
 
 __authors__ = ['"Liu Fei" <fei.liu@cs2c.com.cn>', '"Keke Wei" <keke.wei@cs2c.com.cn>']
 __version__ = "V0.3"
@@ -13,6 +17,7 @@ __version__ = "V0.3"
 # V0.2           2014/11/15      *对自己编写的部分进行了统一的日志信息补充                              Liu Fei
 #---------------------------------------------------------------------------------------------------
 from __main__ import mod
+from time import sleep
 '''
 
 from BaseTestCase import BaseTestCase
@@ -20,11 +25,13 @@ from TestAPIs.DataCenterAPIs import DataCenterAPIs,smart_attach_storage_domain,s
 from TestAPIs.ClusterAPIs import ClusterAPIs
 from TestAPIs.VirtualMachineAPIs import VirtualMachineAPIs, VmDiskAPIs, VmNicAPIs, smart_create_vmdisk, \
     smart_delete_vmdisk, smart_create_vm, smart_del_vm, smart_create_vmnic,smart_delete_vmnic, \
-    smart_start_vm, smart_deactive_vmdisk, smart_suspend_vm,smart_stop_vm
+    smart_start_vm, smart_deactive_vmdisk, smart_suspend_vm,smart_stop_vm,\
+    VmSnapshotAPIs, smart_active_vmdisk
 from TestAPIs.StorageDomainAPIs import smart_create_storage_domain,smart_del_storage_domain, StorageDomainAPIs
 from TestAPIs.HostAPIs import smart_create_host,smart_del_host, HostAPIs
 from TestAPIs.DiskAPIs import DiskAPIs,smart_create_disk,smart_delete_disk
 import TestData.VirtualMachine.ITC05_SetUp as ModuleData
+import TestData.VirtualMachine.scenarios1_Snapshot as ModuleData1
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
 
@@ -80,12 +87,25 @@ class ITC05_SetUp(BaseTestCase):
         
         #创建一个虚拟机
         self.vmapi = VirtualMachineAPIs()
+        self.Vmdiskapi = VmDiskAPIs()
         r = self.vmapi.createVm(self.dm.vm_info)
         if r['status_code'] == 201:
             self.vm_name = r['result']['vm']['name']
         else:
             LogPrint().error("Create vm failed.Status-code is WRONG.")
             self.assertTrue(False)
+        #创建一个虚拟机和磁盘为测试快照场景做准备
+    
+        r = self.vmapi.createVm(self.dm.vm_scenarios2_info)
+        if r['status_code'] == 201:
+            self.vm_name = r['result']['vm']['name']
+        else:
+            LogPrint().error("Create 'VM-Scenarios2' failed.Status-code is WRONG.")
+            self.assertTrue(False)
+        smart_create_vmdisk(self.dm.snapshot_name,self.dm.xml_disk_info,self.dm.disk_alias,status_code=202)
+
+     
+        
 
 class ITC050101_GetVmsList(BaseTestCase):
     '''
@@ -382,6 +402,52 @@ class ITC05010403_EditVm_DupName(BaseTestCase):
         @note: （1）删除创建的虚拟机；
         '''
         LogPrint().info("Post-Test: Delete vm '%s'." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))
+        
+class ITC0501040401_EditVm_AddCpuOnline(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-01虚拟机操作-04编辑-04更改cpu-01在线增加cpu个数
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境。
+        '''
+        self.dm = super(self.__class__, self).setUp()
+        
+        #前提1：创建一个虚拟机vm1，cpu个数为2
+        LogPrint().info("Pre-Test-1: Create a vm %s with two cpus." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.vm_info))
+        
+        #前提2：启动虚拟机
+        LogPrint().info("Pre-Test-2: Start the vm %s." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))
+        
+    def test__EditVm_AddCpuOnline(self):
+        '''
+        @summary: 测试步骤
+        @note: （1）增加虚拟机cpu个数（2增加到4）
+        @note: （2）验证接口返回的状态码及信息
+        '''
+        self.flag = True
+        self.vm_api = VirtualMachineAPIs()
+        LogPrint().info("Test: Add cpus online to vm %s." % self.dm.vm_name)
+        r = self.vm_api.updateVm(self.dm.vm_name, self.dm.cpu_info)
+        if r['status_code'] == self.dm.expected_status_code:
+            if DictCompare().isSubsetDict(xmltodict.parse(self.dm.cpu_info), r['result']):
+                LogPrint().info("PASS: Add cpus online to vm success.")
+            else:
+                LogPrint().error("FAIL: Add cpus online to vm fail. The cpu info is wrong.")
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Add cpus online to vm fail. The status_code is %s." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def tearDown(self):
+        '''
+        @summary: 资源清理：删除创建的虚拟机
+        '''
+        LogPrint().info("Post-Test: Delete the vm %s." % self.dm.vm_name)
         self.assertTrue(smart_del_vm(self.dm.vm_name))
    
 class ITC0501050101_DelVm_Normal_Down(BaseTestCase):
@@ -1497,13 +1563,12 @@ class ITC05020503_MigrateVm_OnlyOneHost(BaseTestCase):
         vm_api = VirtualMachineAPIs()
         LogPrint().info("Test: Begin to migrate vm '%s' while only 1 host exist." % self.dm.vm_name)
         r = vm_api.migrateVm(self.dm.vm_name, self.dm.xml_migrate_vm_option)
-        #print xmltodict.unparse(r['result'], pretty=True)
         if r['status_code'] == self.dm.expected_status_code_migrate_vm_fail:
             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.expected_info_migrate_vm_fail), r['result']):
                 LogPrint().info("PASS: Returned status code and info are CORRECT when migrating vm with only 1 host.")
                 self.flag = True
             else:
-                LogPrint().error("FAIL: Returned info are INCORRECT when migrating vm with only 1 host.")
+                LogPrint().error("FAIL: Returned info are CORRECT when migrating vm with only 1 host.")
                 self.flag = False
         else:
             LogPrint().error("FAIL: Returned status code '%s' is WRONG when migrating vm with only 1 host." % r['status_code'])
@@ -2064,6 +2129,84 @@ class ITC0503040202_UpdateVMDisk_vmrun_deactive(BaseTestCase):
         LogPrint().info("Post-Test-2: Delete disk %s."%(self.dm.disk_name ))     
         self.assertTrue(smart_delete_vmdisk(ModuleData.vm_name, self.dm.disk_name_new))
                         
+class ITC05030403_UpdateVMDisk_volexpansion(BaseTestCase):
+    '''
+    @summary: ITC-05虚拟机管理-03磁盘管理-04编辑磁盘-03扩容
+    '''
+    def setUp(self):
+        '''
+        @summary: 初始化测试数据、测试环境
+        '''
+        # 初始化测试数据
+        self.dm = super(self.__class__, self).setUp()
+         
+        # 初始化测试环境
+        LogPrint().info("Pre-Test-1: Create a vm %s for this testcase." % self.dm.vm_name)
+        self.assertTrue(smart_create_vm(self.dm.vm_name, self.dm.vm_info))
+        LogPrint().info("Pre-Test-2: Create a disk %s for vm %s." % (self.dm.disk_alias, self.dm.vm_name))
+        r = smart_create_vmdisk(self.dm.vm_name, self.dm.disk_info, self.dm.disk_alias)
+        self.vmdisk_api = VmDiskAPIs()
+        self.assertTrue(r[0])
+        
+    def test_volexpansion_vmdown(self):
+        '''
+        @summary: 虚拟机关闭状态下对其磁盘进行离线扩容
+        @note: 验证接口返回的状态码及信息
+        '''
+        self.flag = True
+        def is_vmdisk_ok():
+            return self.vmdisk_api.getVmDiskStatus(self.dm.vm_name, self.dm.disk_alias) == 'ok'
+        LogPrint().info("Test: Expand the disk %s when vm %s is down." % (self.dm.disk_alias, self.dm.vm_name))
+        r = self.vmdisk_api.updateVmDisk(self.dm.vm_name, self.dm.disk_alias, self.dm.update_disk_info_down)
+        if r['status_code'] == self.dm.expected_status_code:
+            if wait_until(is_vmdisk_ok, 600, 5):
+                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.update_disk_info_down), self.vmdisk_api.getVmDiskInfo(self.dm.vm_name, self.dm.disk_alias)['result']):
+                    LogPrint().info("PASS: Expand the disk %s from 5G to 10G success." % self.dm.disk_alias)
+                else:
+                    LogPrint().error("FAIL: Expand the disk %s from 5G to 10G fail. The disk info is wrong." % self.dm.disk_alias)
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Expand the disk %s from 5G to 10G fail. The disk status is wrong." % self.dm.disk_alias)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Expand the disk %s from 5G to 10G fail. The status_code %s is wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)
+ 
+    def test_volexpansion_vmrun(self):
+        '''
+        @summary: 虚拟机运行状态下对其磁盘进行在线扩容
+        @note: 验证接口返回的状态码及信息
+        '''
+        self.flag = True
+        def is_vmdisk_ok():
+            return self.vmdisk_api.getVmDiskStatus(self.dm.vm_name, self.dm.disk_alias) == 'ok' 
+        LogPrint().info("Pre-Test-3: Start the vm %s." % self.dm.vm_name)
+        self.assertTrue(smart_start_vm(self.dm.vm_name))    
+        LogPrint().info("Test: Expand the disk %s when vm %s is running." % (self.dm.disk_alias, self.dm.vm_name))
+        r = self.vmdisk_api.updateVmDisk(self.dm.vm_name, self.dm.disk_alias, self.dm.update_disk_info_run)
+        if r['status_code'] == self.dm.expected_status_code:
+            if wait_until(is_vmdisk_ok, 600, 5):
+                if DictCompare().isSubsetDict(xmltodict.parse(self.dm.update_disk_info_run), self.vmdisk_api.getVmDiskInfo(self.dm.vm_name, self.dm.disk_alias)['result']):
+                    LogPrint().info("PASS: Expand the disk %s from 5G to 10G success." % self.dm.disk_alias)
+                else:
+                    LogPrint().error("FAIL: Expand the disk %s from 5G to 10G fail. The disk info is wrong." % self.dm.disk_alias)
+                    self.flag = False
+            else:
+                LogPrint().error("FAIL: Expand the disk %s from 5G to 10G fail. The disk status is wrong." % self.dm.disk_alias)
+                self.flag = False
+        else:
+            LogPrint().error("FAIL: Expand the disk %s from 5G to 10G fail. The status_code %s is wrong." % r['status_code'])
+            self.flag = False
+        self.assertTrue(self.flag)      
+        
+    def tearDown(self):
+        '''
+        @summary: 测试环境清理，删除创建的虚拟机
+        '''
+        LogPrint().info("Post-Test: Delete the vm %s." % self.dm.vm_name)
+        self.assertTrue(smart_del_vm(self.dm.vm_name))     
+
 class ITC05030501_DeleteVMDisk_option(BaseTestCase):
     '''
     @summary: ITC-05虚拟机管理-03虚拟机磁盘管理-05删除磁盘-01是否永久删除
@@ -3248,6 +3391,150 @@ class ITC05040702_DeleteVmNic_vmrun_plugged(BaseTestCase):
         LogPrint().info("Post-Test-3: Delete a nic %s of vm %s."%(self.dm.nic_name, ModuleData.vm_name))
         self.assertTrue(smart_delete_vmnic(ModuleData.vm_name, self.dm.nic_name))
 
+class scenarios1_Snapshot(BaseTestCase):
+    '''
+    @summary: 创建离线快照
+    @note: 创建离线快照为后面的恢复和克隆做前提条件；
+    '''
+    def setUp(self): 
+        self.dm = super(self.__class__, self).setUp()
+        self.snp_api = VmSnapshotAPIs()
+     
+    def test_CreateSnapshot_Offline(self):
+        LogPrint().info("Test: Create a offline snapshot by vm %s" %ModuleData.snapshot_name)
+        r = self.snp_api.createVmSnapshot(ModuleData.snapshot_name, self.dm.snapshot_info)
+        if r['status_code'] == self.dm.expected_status_code:
+#             if DictCompare().isSubsetDict(xmltodict.parse(self.dm.snapshot_info), r['result']):
+            LogPrint().info("PASS:Create snapshot by description %s success."%self.dm.description)
+            self.flag=True
+#             else:
+#                 LogPrint().error("FAIL:Create snapshot by description %s fail." %self.dm.description)
+#                 self.flag=False
+        else:
+            LogPrint().error("FAIL:Create offline snapshot fail.The status_code is '%s'."%r['status_code'])
+            self.flag=False
+        self.assertTrue(self.flag)
+
+class scenarios2_Snapshot(BaseTestCase):
+    '''
+    @summary: 克隆和恢复快照；
+    @note: 克隆快照需要虚拟机状态为down的时候，才能进行恢复快照；
+    '''
+    
+    def setUp(self): 
+        self.dm = super(self.__class__, self).setUp()
+        self.snp_api = VmSnapshotAPIs()
+        self.vmapi=VirtualMachineAPIs()
+        
+    def test_cloneVmFromSnapshot(self):
+        LogPrint().info("Test:Clone offline_snapshot from VM '%s' as a vm machine" %ModuleData.snapshot_name)
+        def is_snapshot_OK():
+            return self.snp_api.getVmSnapshotStatus(ModuleData.snapshot_name,self.dm.snapshot_id)=='ok'
+        if wait_until(is_snapshot_OK, 300, 5):
+            LogPrint().info("INFO-STEP: Create offsnapshot vm '%s' finished." % self.dm.cloneVmname)
+        r = self.snp_api.cloneVmFromSnapshot(self.dm.xml_clone_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_create_vm:
+            print r['status_code']
+            #if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_clone_vm_option), r['result']):
+            LogPrint().info("PASS: Clone a offline_snapshot by description '%s' as a vm machine SUCCESS." %self.dm.description) 
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm '%s'." % (r['status_code'], ModuleData.snapshot_name))
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+    def test_restoreVmSnapshot(self):
+        LogPrint().info("Test:Restore vm '%s' snapshot" %ModuleData.snapshot_name)
+        def is_vm_down():
+            return self.vmapi.getVmStatus(self.dm.cloneVmname)=='down'
+        if wait_until(is_vm_down, 300, 5):
+            LogPrint().info("INFO-STEP: clone vm '%s' finished." % self.dm.cloneVmname)
+        r = self.snp_api.restoreVmSnapshot(ModuleData.snapshot_name, self.dm.snapshot_id)
+        if r['status_code'] == self.dm.expected_status_code_restore_vm:
+            LogPrint().info("PASS: Restore offline_snapshot form vm '%s' SUCCESS." %ModuleData.snapshot_name)
+            self.flag = True        
+        else:
+            LogPrint.info("FAIL: Returned status code '%s' is WRONG when restore snaphot" %r['status_code'])
+            self.flag = False
+        self.assert_(self.flag)
+        smart_del_vm(self.dm.cloneVmname, xml_del_vm_option=None, status_code=200)
+        
+class scenarios3_Snapshot(BaseTestCase):
+    
+    '''
+    @summary: 创建单独磁盘在线快照；
+    @note: 创建快照之前虚拟机必须处于开机状态；
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.snp_api = VmSnapshotAPIs()
+        self.vmdisk_api = VmDiskAPIs() 
+        self.vmapi = VirtualMachineAPIs           
+        smart_start_vm(ModuleData.snapshot_name, self.dm.xml_start_vm_once, status_code=200)
+         
+    def test_CreateSnapshot_online(self):
+        LogPrint().info("Test:Create a online with disk snapshot from vm '%s'" %ModuleData.snapshot_name)
+        r = self.snp_api.createVmSnapshot(ModuleData.snapshot_name, self.dm.xml_snapshotOnline_info) 
+        if r['status_code'] == self.dm.expected_status_code_SnapshotOnline:
+            LogPrint().info("PASS:Create online with disk snapshot for vm '%s' SUCESS" %ModuleData.snapshot_name)
+            self.flag = True
+        else:
+            LogPrint().info("FAIL: Returned status code '%s' is WRONG when create online with disk." %r['status_code'])
+            self.flag = False   
+        self.assertTrue(self.flag)
+    
+        
+class scenarios4_Snapshot(BaseTestCase):
+    
+    '''
+    @summary: 克隆和恢复在线快照；
+    @note: 恢复和克隆在线快照之前虚拟机必须处于关机状态；
+    '''
+    def setUp(self):
+        self.dm = super(self.__class__, self).setUp()
+        self.cloneapi = VmSnapshotAPIs()
+        self.vmapi=VirtualMachineAPIs()
+        
+    def test_CloneVmFrom_OnlineSnapshot(self):
+        LogPrint().info("Test:Clone Online_snapshot from VM '%s' as a vm machine" %ModuleData.snapshot_name)
+        def is_snapshot_OK():
+            return self.cloneapi.getVmSnapshotStatus(ModuleData.snapshot_name,self.dm.snapshot_id)=='ok'
+        if wait_until(is_snapshot_OK, 300, 5):
+            LogPrint().info("INFO-STEP: Create onlinesnapshot vm '%s' finished." % self.dm.cloneVmname)
+        r = self.cloneapi.cloneVmFromSnapshot(self.dm.xml_clone_vm_option)
+        if r['status_code'] == self.dm.expected_status_code_Clone_vm:
+            #if DictCompare().isSubsetDict(xmltodict.parse(self.dm.xml_clone_vm_option), r['result']):
+            LogPrint().info("PASS: Clone a Online_snapshot by description '%s' as a vm machine SUCCESS." % self.dm.snapshot_description) 
+            self.flag = True
+        else:
+            LogPrint().error("FAIL: Returned status code '%s' is WRONG when creating vm '%s'." % (r['status_code'], ModuleData.snapshot_name))
+            self.flag = False
+        self.assertTrue(self.flag)
+        
+        
+    def test_RestoreVM_onlineSnapshot(self):
+        def is_vm_down():
+            return self.vmapi.getVmStatus(self.dm.cloneVmname)=='down'
+        if wait_until(is_vm_down, 300, 5):
+            LogPrint().info("INFO-STEP: clone vm '%s' finished." % self.dm.cloneVmname)
+        smart_stop_vm(ModuleData.snapshot_name, status_code=200)
+        LogPrint().info("Test:Restore a online with disk snapshot from vm '%s'" %ModuleData.snapshot_name)
+        r = self.cloneapi.restoreVmSnapshot(ModuleData.snapshot_name,self.dm.snapshot_id, self.dm.xml_restore_vm_option)
+        if r['status_code'] == self.dm.expect_status_code_clone:
+            LogPrint().info("PASS:Restore online snapshot with disk SUCESS")
+            self.flag=True
+        else:
+            LogPrint().info("FAIL: Returned status code '%s' is WRONG")
+            self.flag = False
+        self.assertTrue(self.flag) 
+        smart_del_vm(ModuleData.snapshot_name, xml_del_vm_option=None, status_code=200)
+        smart_del_vm(self.dm.cloneVmname, xml_del_vm_option=None, status_code=200)
+
+        
+
+#     def test_RestoreSnapshot_Online(self):
+#         LogPrint().info("Test:Restore a onlinewith disk snapshot from vm '%s'" %ModuleData.snapshot_name)
+                                 
 class ITC05_TearDown(BaseTestCase):
     '''
     @summary: “虚拟机管理”模块测试环境清理（执行完该模块所有测试用例后，需要执行该用例清理环境）
@@ -3319,10 +3606,10 @@ class ITC05_TearDown(BaseTestCase):
         if capi.searchClusterByName(self.dm.cluster_nfs_name)['result']['clusters']:
             LogPrint().info("Post-Module-Test-8: Delete Cluster '%s'." % self.dm.cluster_nfs_name)
             self.assertTrue(capi.delCluster(self.dm.cluster_nfs_name)['status_code']==self.dm.expected_status_code_del_dc)
-
+            
 if __name__ == "__main__":
 
-    test_cases = ["VirtualMachine.ITC05_TearDown"]
+    test_cases = ["VirtualMachine.scenarios4_Snapshot"]
 
     testSuite = unittest.TestSuite()
     loader = unittest.TestLoader()

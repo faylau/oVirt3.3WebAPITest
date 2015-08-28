@@ -1,16 +1,6 @@
 #encoding:utf-8
 
-__authors__ = ['wei keke']
-__version__ = "V0.1"
 
-'''
-# ChangeLog:
-#---------------------------------------------------------------------------------
-# Version        Date                Desc                            Author
-#---------------------------------------------------------------------------------
-# V0.1           2014/10/17          初始版本                                                         
-#---------------------------------------------------------------------------------
-'''
 
 from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorages
 
@@ -22,39 +12,44 @@ from Configs.GlobalConfig import Hosts, DataStorages, IsoStorages, ExportStorage
 ########################################################################
 # 1个数据中心信息                                                                                                                                    
 ########################################################################
-dc_name = 'DC-ITC02-NFS'
-dc_name_list = [dc_name]
-dc_info = '''
+dc_nfs_name = 'DC-ITC10'
+dc_name_list = [dc_nfs_name]
+xml_dc_info = '''
     <data_center>
         <name>%s</name>
-        <local>false</local>
-        <version major="3" minor="4"/>
+        <storage_type>nfs</storage_type>
+        <version minor="4" major="3"/>
     </data_center>
-''' % (dc_name)
+''' % (dc_nfs_name)
 
 ########################################################################
 # 1个集群信息                                                                                                                                    
 ########################################################################
-cluster_name = 'Cluster-ITC02-NFS'
-cluster_name_list = [cluster_name]
-cluster_info = '''
+cluster_nfs_name = 'Cluster-ITC10'
+cluster_name_list = [cluster_nfs_name]
+xml_cluster_info = '''
     <cluster>
         <name>%s</name>
         <cpu id="Intel Conroe Family"/>
         <data_center>
             <name>%s</name>
         </data_center>
+        <gluster_service>true</gluster_service>
     </cluster>
-''' % (cluster_name, dc_name)
+''' % (cluster_nfs_name, dc_nfs_name)
 
 ########################################################################
 # 1个主机信息（node1加入NFS数据中心）                                                                                                                                    
 ########################################################################
 host1 = Hosts['node1']
-host1_name = 'node-ITC02-1'
+host1_name = 'node-ITC10-1'
 host1_ip = host1['ip']
 host1_password = host1['password']
-host_info = '''
+host2 = Hosts['node2']
+host2_name = 'node-ITC10-2'
+host2_ip = host2['ip']
+host2_password = host2['password']
+xml_host1_info = '''
     <host>
         <cluster>
             <name>%s</name>
@@ -63,29 +58,39 @@ host_info = '''
         <address>%s</address>
         <root_password>%s</root_password>
     </host>
-''' % (cluster_name, host1_name, host1_ip, host1_password)
+''' % (cluster_nfs_name, host1_name, host1_ip, host1_password)
+xml_host2_info = '''
+    <host>
+        <cluster>
+            <name>%s</name>
+        </cluster>
+        <name>%s</name>
+        <address>%s</address>
+        <root_password>%s</root_password>
+    </host>
+''' % (cluster_nfs_name, host2_name, host2_ip, host2_password)
 
 #######################################################################################
 # 4个存储域信息（data1/data2，1个ISO和1个Export域）                                                                                                                               
 #######################################################################################
-data1_nfs_name = 'data1-nfs-ITC02'
+data1_nfs_name = 'data1-nfs-ITC10'
 data1_nfs = DataStorages['nfs']['data1']
 data1_nfs_ip = data1_nfs['ip']
 data1_nfs_path = data1_nfs['path']
-data2_nfs_name = 'data2-nfs-ITC02'
+data2_nfs_name = 'data2-nfs-ITC10'
 data2_nfs = DataStorages['nfs']['data2']
 data2_nfs_ip = data2_nfs['ip']
 data2_nfs_path = data2_nfs['path']
-export1_name = 'export1-ITC02'
+export1_name = 'export1-ITC10'
 export1 =  ExportStorages['Export-Storage2']
 export1_ip = export1['ip']
 export1_path = export1['path']
-iso1_name = 'iso1-ITC02'
+iso1_name = 'iso1-ITC10'
 iso1 = IsoStorages['ISO-Storage1']
 iso1_ip = iso1['ip']
 iso1_path = iso1['path']
 
-storage_info = '''
+xml_storage_info = '''
 <data_driver>
     <storage_domain>
         <name>%s</name>
@@ -145,8 +150,8 @@ storage_info = '''
 '''
 @note: 存储域名称应该由该模块的Setup用例初始化获得，这里暂时用字符串代替
 '''
-vm1_name = 'VM1-ITC02'
-vm1_info='''
+vm_name = 'VM-ITC10'
+vm_info='''
 <vm>
         <name>%s</name>
         <description>Virtual Machine for Module Test.</description>
@@ -166,30 +171,8 @@ vm1_info='''
             <boot dev="hd"/>
         </os>
     </vm>
-''' % (vm1_name, cluster_name)
+''' % (vm_name, cluster_nfs_name)
 
-vm2_name = 'VM2-ITC02'
-vm2_info='''
-<vm>
-        <name>%s</name>
-        <description>Virtual Machine for Module Test.</description>
-        <type>server</type>
-        <memory>536870912</memory>
-        <cluster>
-            <name>%s</name>
-        </cluster>
-        <template>
-            <name>Blank</name>
-        </template>
-        <cpu>
-            <topology sockets="2" cores="1"/>
-        </cpu>
-        <os>
-            <boot dev="cdrom"/>
-            <boot dev="hd"/>
-        </os>
-    </vm>
-''' % (vm2_name, cluster_name)
 
 '''
 ---------------------------------------------------------------------------------------------------

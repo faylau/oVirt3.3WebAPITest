@@ -28,7 +28,9 @@ def smart_create_vm(vm_name, xml_vm_info, status_code=201):
     '''
     vm_api = VirtualMachineAPIs()
     r = vm_api.createVm(xml_vm_info)
-    if r['status_code'] == status_code:
+    def is_vm_down():
+        return vm_api.getVmStatus(vm_name)=='down'
+    if r['status_code'] == status_code and wait_until(is_vm_down, 100, 10):
         LogPrint().info("INFO-PASS: Create vm '%s' success." % vm_name)
         return True
     else:
@@ -140,6 +142,7 @@ def smart_create_vmdisk(vm_name,disk_info,disk_alias,status_code=202):
     r=vmdisk_api.createVmDisk(vm_name, disk_info)
     def is_disk_ok():
         return vmdisk_api.getVmDiskStatus(vm_name, disk_alias=disk_alias)=='ok'
+    print r
     if r['status_code']==status_code:
         disk_id = r['result']['disk']['@id']
         if wait_until(is_disk_ok,600,5):
@@ -1135,33 +1138,61 @@ class VmCdromAPIs(VirtualMachineAPIs):
     
 class VmSnapshotAPIs(VirtualMachineAPIs):
     '''
-    @summary: VM的Snapshot管理子接口类，通过HttpClient调用相应的REST接口实现。
-    '''
+    @summary: VM鐨凷napshot绠＄悊瀛愭帴鍙ｇ被锛岄�杩嘓ttpClient璋冪敤鐩稿簲鐨凴EST鎺ュ彛瀹炵幇銆�    '''
     def __init__(self):
         '''
-        @summary: 初始化函数，定义VM Snapshot相关API的base_url，如'https://10.1.167.2/api/vms'
+        @summary: 鍒濆鍖栧嚱鏁帮紝瀹氫箟VM Snapshot鐩稿叧API鐨刡ase_url锛屽'https://10.1.167.2/api/vms'
         '''
         self.base_url = '%s/vms' % WebBaseApiUrl
         self.sub_url_snapshots = 'snapshots'
         
+    
+        
     def getVmSnapshotsList(self, vm_name):
         '''
-        @summary: 查看虚拟机全部Snapshot列表
-        @param vm_name: 虚拟机名称
-        @return: （1）status_code：请求返回码；（2）result：dict形式的虚拟机快照列表。
-        '''
+        @summary: 鏌ョ湅铏氭嫙鏈哄叏閮⊿napshot鍒楄〃
+        @param vm_name: 铏氭嫙鏈哄悕绉�        @return: 锛�锛塻tatus_code锛氳姹傝繑鍥炵爜锛涳紙2锛塺esult锛歞ict褰㈠紡鐨勮櫄鎷熸満蹇収鍒楄〃銆�        '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
+    def getVmSnapshotIDBydisp(self, vm_name, snapshot_description):
+        '''
+        @summary: 鏍规嵁铏氭嫙鏈哄揩鐓х殑鎻忚堪鑾峰彇ID
+        @param vm_name: 铏氭嫙鏈哄悕绉�        @param snapshot_decription: 铏氭嫙鏈哄揩鐓х殑鎻忚堪淇℃伅
+        @attention: 璇ュ嚱鏁版墽琛岀殑鍓嶆彁鏄紝鍚屼竴铏氭嫙鏈哄揩鐓х殑鎻忚堪蹇呴』鍞竴
+        @return: 杩斿洖铏氭嫙鏈哄揩鐓D
+        '''
+        snapshot_list = self.getVmSnapshotsList(vm_name)['result']['snapshots']['snapshot']
+        if isinstance(snapshot_list, list):
+            for snapshot in snapshot_list:
+                if snapshot['description']==snapshot_description:
+                    return snapshot['@id']
+        else:
+            if snapshot_list['description']==snapshot_description:
+                return snapshot_list['@id']
+    
+    def getVmSnapshot_disk_imageID(self,vm_name,snapshot_id,snapshot_description):       
+        '''
+        @summary: 鏍规嵁VMID 銆丼napshotID 鑾峰彇纾佺洏imagesid
+        @param vm_id: 铏氭嫙鏈篿d/snapshot_id:蹇収ID/snapshot_description锛氬揩鐓х殑鎻忚堪淇℃伅
+        @return: 铏氭嫙鏈哄湪绾垮揩鐓х鐩樼殑ID淇℃伅
+        '''
+        snapshot_id= self.getVmSnapshotIDBydisp(vm_name, snapshot_description)
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s/disks' % (self.base_url, vm_id, self.sub_url_snapshots,snapshot_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        if r.status_code==200:
+            return xmltodict.parse(r.text)['disks']['disk']['image_id']
+    
     def getVmSnapshotInfo(self, vm_name, snapshot_id):
         '''
-        @summary: 根据snapshot id获取虚拟机Snapshot信息
-        @param vm_name: 虚拟机名称
-        @param snapshot_id: 快照ID
-        @return: （1）None（snapshot不存在） ；（2）status_code：请求返回码；result：dict形式的快照信息。
+        @summary: 鏍规嵁snapshot id鑾峰彇铏氭嫙鏈篠napshot淇℃伅
+        @param vm_name: 铏氭嫙鏈哄悕绉�        @param snapshot_id: 蹇収ID
+        @return: 锛�锛塏one锛坰napshot涓嶅瓨鍦級 锛涳紙2锛塻tatus_code锛氳姹傝繑鍥炵爜锛況esult锛歞ict褰㈠紡鐨勫揩鐓т俊鎭�
         '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
@@ -1172,19 +1203,21 @@ class VmSnapshotAPIs(VirtualMachineAPIs):
             return None
         else:
             return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
-    
+        
+    def getVmSnapshotStatus(self, vm_name,snapshot_id):
+        '''
+        @summary: 鑾峰彇蹇収鐨勭姸鎬�        @param vm_name: 铏氭嫙鏈哄悕绉�        @return: 蹇収褰撳墠鐘舵�
+        '''
+        return self.getVmSnapshotInfo(vm_name,snapshot_id)['result']['snapshot']['snapshot_status'] 
+      
     def createVmSnapshot(self, vm_name, xml_snapshot_info):
         '''
-        @summary: 创建虚拟机快照（包括在线快照、离线快照、带内存快照等）
-        @param vm_name: 虚拟机名称
-        @param xml_snapshot_info: 要创建的快照信息，如：
-        (1) 根据persist_memorystate参数来指定是否创建带内存的快照；
-        (2) 当创建离线快照时，persist_memorystate参数无效；
-            <snapshot>
+        @summary: 鍒涘缓铏氭嫙鏈哄揩鐓э紙鍖呮嫭鍦ㄧ嚎蹇収銆佺绾垮揩鐓с�甯﹀唴瀛樺揩鐓х瓑锛�        @param vm_name: 铏氭嫙鏈哄悕绉�        @param xml_snapshot_info: 瑕佸垱寤虹殑蹇収淇℃伅锛屽锛�        (1) 鏍规嵁persist_memorystate鍙傛暟鏉ユ寚瀹氭槸鍚﹀垱寤哄甫鍐呭瓨鐨勫揩鐓э紱
+        (2) 褰撳垱寤虹绾垮揩鐓ф椂锛宲ersist_memorystate鍙傛暟鏃犳晥锛�            <snapshot>
                 <description>snapshot3</description>
                 <persist_memorystate>false</persist_memorystate>
             </snapshot>
-        @return: （1）status_code：请求返回码；（2）result：dict形式的新建快照信息。
+        @return: 锛�锛塻tatus_code锛氳姹傝繑鍥炵爜(202)锛涳紙2锛塺esult锛歞ict褰㈠紡鐨勬柊寤哄揩鐓т俊鎭�
         '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots)
@@ -1193,12 +1226,12 @@ class VmSnapshotAPIs(VirtualMachineAPIs):
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
     
     def restoreVmSnapshot(self, vm_name, snapshot_id, xml_restore_option='<action/>'):
+        
+        '''@Note: preview only is not available from rest (restore = preview + commit).'''
         '''
-        @summary: 恢复虚拟机快照
-        @param vm_name: 虚拟机名称
-        @param snapshot_id: 虚拟机快照ID
-        @param xml_restore_option: 恢复虚拟机快照的操作选项同，缺省值为<action/>
-        @return: （1）status_code：请求返回码；（2）result：dict形式的操作结果。
+        @summary: 鎭㈠铏氭嫙鏈哄揩鐓�        @param vm_name: 铏氭嫙鏈哄悕绉�        @param snapshot_id: 铏氭嫙鏈哄揩鐓D
+        @param xml_restore_option: 鎭㈠铏氭嫙鏈哄揩鐓х殑鎿嶄綔閫夐」鍚岋紝缂虹渷鍊间负<action/>
+        @return: 锛�锛塻tatus_code锛氳姹傝繑鍥炵爜锛涳紙2锛塺esult锛歞ict褰㈠紡鐨勬搷浣滅粨鏋溿�
         '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s/%s/restore' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
@@ -1208,9 +1241,7 @@ class VmSnapshotAPIs(VirtualMachineAPIs):
     
     def cloneVmFromSnapshot(self, xml_clone_vm_option):
         '''
-        @summary: 从快照克隆虚拟机（实际上调用的是创建虚拟机的API：VirtualMachineAPIs.createVm）
-        @param xml_clone_vm_option: XML格式的克隆设置项：
-        (1) 最基本的形式如下：只设定vm名称、cluster以及snapshot id，就可以完成直接从快照克隆虚拟机
+        @summary: 浠庡揩鐓у厠闅嗚櫄鎷熸満锛堝疄闄呬笂璋冪敤鐨勬槸鍒涘缓铏氭嫙鏈虹殑API锛歏irtualMachineAPIs.createVm锛�        @param xml_clone_vm_option: XML鏍煎紡鐨勫厠闅嗚缃」锛�        (1) 鏈�熀鏈殑褰㈠紡濡備笅锛氬彧璁惧畾vm鍚嶇О銆乧luster浠ュ強snapshot id锛屽氨鍙互瀹屾垚鐩存帴浠庡揩鐓у厠闅嗚櫄鎷熸満
             <vm>
                 <name>vmSnapshot</name>
                 <cluster>
@@ -1220,17 +1251,46 @@ class VmSnapshotAPIs(VirtualMachineAPIs):
                     <snapshot id="xxxxxxxxxx"/>
                 </snapshots>
             </vm>
-        (2) 在指定snapshot id的同时，也可以对VM的常规设置项进行配置，具体可参见createVm的接口参数。
-        @return: （1）status_code：请求返回码（202）；（2）result：dict形式的新建VM信息。
-        '''
+        (2) 鍦ㄦ寚瀹歴napshot id鐨勫悓鏃讹紝涔熷彲浠ュVM鐨勫父瑙勮缃」杩涜閰嶇疆锛屽叿浣撳彲鍙傝createVm鐨勬帴鍙ｅ弬鏁般�
+        @return: 锛�锛塻tatus_code锛氳姹傝繑鍥炵爜锛�02锛夛紱锛�锛塺esult锛歞ict褰㈠紡鐨勬柊寤篤M淇℃伅銆�        '''
         return self.createVm(xml_clone_vm_option)
+    
+    def createSnapshotDisk(self,vm_name,snapshot_id,xml_snapshotdisk_info):
+        '''
+        @summary: 涓鸿櫄鎷熸満娣诲姞纾佺洏锛堝寘鎷垱寤恒�闄勫姞绛夊姛鑳斤級
+        @param vm_name: 铏氭嫙鏈哄悕绉�        @param xml_disk_info: XML鏍煎紡鐨勫垱寤虹鐩樹俊鎭細
+        (1) 鍒涘缓鍐呴儴纾佺洏锛�            <disk>
+                <storage_domains>
+                    <storage_domain>
+                        <storage_domains id="">
+                    </storage_domain>
+                </storage_domains>
+                <alias>test1_Disk2</alias>
+                <size>1073741824</size>        # 鍗曚綅涓築
+                <type>system</type>            # system涓虹郴缁熺洏锛堝彲寮曞鐨勶級锛屼笉鍐欒瀛楁鏃朵负鏅�鐩橈紱
+                <interface>virtio</interface>
+                <sparse>false</sparse>         # false锛歅reallocated锛坮aw锛夛紱true锛歵hin Provision锛坈ow锛�                <format>cow</format>           # 鍙彇鍊间负cow/raw锛屽垎鍒笌thin/preallocated瀵瑰簲
+                <bootable>true</bootable>      # 鍙惎鍔ㄧ殑锛堟敞鎰忥紝涓庡彲寮曞鐨勪笉鍚岋級
+                <shareable>true</shareable>    # 鍙叡浜殑
+                <wipe_after_delete>true</wipe_after_delete>
+                <snapshot id="">
+                 # 鍒犻櫎鍚庢竻鐞�            </disk>
+        (2) 鍒涘缓澶栭儴纾佺洏锛氭澶刋ML濡備綍缁勭粐灏氭湭鐮旂┒
+        (3) 闄勫姞娓哥鐘舵�鐨勭鐩橈細
+            <disk id="a1a4b4aa-8239-4ab8-a14b-d0d31a73561c"/>
+        @return: 瀛楀吀锛氾紙1锛塻tatus_code锛氳姹傝繑鍥炵爜锛涳紙2锛塺esult锛歞ict褰㈠紡鐨勬搷浣滅粨鏋溿�
+        @bug: 璇ユ帴鍙ｅ彲鑳藉瓨鍦ㄩ棶棰橈紝鍙互鍚屾椂瀹氫箟澶氫釜bootable鐨勭鐩�        '''
+        vm_id = self.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s/disks' % (self.base_url, vm_id, self.sub_url_snapshots,snapshot_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_snapshotdisk_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
     
     def delVmSnapshot(self, vm_name, snapshot_id):
         '''
-        @summary: 删除虚拟机快照
-        @param vm_name: 虚拟机名称
-        @param 快照id: 
-        @return: （1）status_code：请求返回码（202）；（2）result：dict形式的操作结果。
+        @summary: 鍒犻櫎铏氭嫙鏈哄揩鐓�        @param vm_name: 铏氭嫙鏈哄悕绉�        @param 蹇収id: 
+        @return: 锛�锛塻tatus_code锛氳姹傝繑鍥炵爜锛�02锛夛紱锛�锛塺esult锛歞ict褰㈠紡鐨勬搷浣滅粨鏋溿�
         '''
         vm_id = self.getVmIdByName(vm_name)
         api_url = '%s/%s/%s/%s' % (self.base_url, vm_id, self.sub_url_snapshots, snapshot_id)
@@ -1371,7 +1431,44 @@ if __name__=='__main__':
     vmsnapshotapi = VmSnapshotAPIs()
     vmwatchdogapi = VmWatchdogAPIs()
     vmappapi = VmAppAPIs()
-    
+    xml_vm_info_temp = '''
+<vm>
+    <name>vm-ITC1003-newest</name>
+    <description>Test for ITC1003</description>
+    <type>server</type>
+    <memory>536870912</memory>
+    <cluster id="0441080b-f03e-4ff9-b7cf-a694a27aaff2"/>
+    <template id="3b5443e5-8fb6-4750-b623-ce61131b3d77"/>
+    <cpu>
+        <topology sockets="1" cores="1"/>
+    </cpu>
+    <os type="NKAS6x64">
+        <boot dev="hd"/>
+    </os>
+    <high_availability>
+        <enabled>true</enabled>
+        <priority>50</priority>
+    </high_availability>
+    <display>
+        <type>vnc</type>
+        <monitors>1</monitors>
+        <smartcard_enabled>true</smartcard_enabled>
+    </display>
+    <stateless>true</stateless>
+    <use_latest_template_version>true</use_latest_template_version>
+    <placement_policy>
+        <affinity>migratable</affinity>
+    </placement_policy>
+    <memory_policy>
+        <guaranteed>536870912</guaranteed>
+    </memory_policy>
+    <usb>
+        <enabled>false</enabled>
+    </usb>
+</vm>
+'''
+    print vmapi.getVmIdByName('aa')
+#     print vmapi.createVm(xml_vm_info_temp)
     
 #     print vmdiskapi.getVmDiskInfo('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')
 #     print vmdiskapi.getVmDiskStatus('aa', disk_id='5a4356cd-b6fb-4760-b95e-db3981b65df5')

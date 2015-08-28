@@ -46,13 +46,13 @@ def smart_attach_storage_domain(dc_name, sd_name, data=None):
         def is_storage_up():
             return dc_api.getDCStorageDomainStatus(dc_name, sd_name)=='active'
         if wait_until(is_storage_up, 200, 5):
-            LogPrint().info("Active storage ok.")
+            LogPrint().info("PASS:Active storage ok.")
             return True
         else:
-            LogPrint().info("Active storage overtime.")
+            LogPrint().info("FAIL:Active storage overtime.")
             return False
     else:
-        LogPrint().info("Returned status code is wrong.")
+        LogPrint().info("FAIL:Returned status code is wrong.")
         return False
             
         

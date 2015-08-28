@@ -19,18 +19,19 @@ from Utils.HttpClient import HttpClient
 from Utils.PrintLog import LogPrint
 from Utils.Util import DictCompare,wait_until
 
-def smart_create_template(temp_name,temp_info):
+def smart_create_template(temp_name,temp_info,version_name=None):
     '''
     @summary: 创建模板，并等待其变为ok状态。
     @param temp_name: 新创建的模板名称
     @param temp_info: 创建模板的xml格式信息，用于向接口传参数
+    @param version_name:子模板名称
     @return: True or False
     '''
     tempapi = TemplatesAPIs()
     r = tempapi.createTemplate(temp_info)
     def is_temp_ok():
-        return tempapi.getTemplateInfo(temp_name=temp_name)['result']['template']['status']['state']=='ok'
-    if r['status_code'] == 202:
+            return tempapi.getTemplateInfo(temp_name=temp_name,version_name=version_name)['result']['template']['status']['state']=='ok'
+    if r['status_code'] == 201:
         if wait_until(is_temp_ok, 600, 10):
             LogPrint().info("INFO:Create Template %s success"%temp_name)
             return True
@@ -41,26 +42,26 @@ def smart_create_template(temp_name,temp_info):
         LogPrint().error("INFO:Create Template failed.Status-code is %s."%r['status_code'])
         return False
     
-def smart_delete_template(temp_name):  
+def smart_delete_template(temp_name,version_name=None):  
     '''
     @summary: 删除模板
     @param temp_name: 模板名称
+    @paran version_name:子模板名称
     @return: True or False
     ''' 
     
     tempapi = TemplatesAPIs()
     try:    
-        tempapi.getTemplateIdByName(temp_name)
-        if tempapi.getTemplateStatus(temp_name)!='ok':
+        tempapi.getTemplateIdByName(temp_name, version_name)
+        if tempapi.getTemplateStatus(temp_name,version_name)!='ok':
             LogPrint().warning("WARN: The template is not 'ok'. It cannot be deleted.")
             return False
         else:
             def is_temp_delete():
-                return tempapi.is_Exist(temp_name) == False   
-            r = tempapi.delTemplate(temp_name)
-            print r
+                return tempapi.is_Exist(temp_name,version_name) == False   
+            r = tempapi.delTemplate(temp_name,version_name)
             if r['status_code'] == 200:
-                if wait_until(is_temp_delete, 300, 10):
+                if wait_until(is_temp_delete, 60, 10):
                     LogPrint().info("Delete template success.")
                     return True
                 else:
@@ -129,16 +130,28 @@ class TemplatesAPIs(BaseAPIs):
         return self.searchObject('templates', temp_name)
     
     
-    def getTemplateIdByName(self, temp_name):
+    def getTemplateIdByName(self, temp_name,version_name=None):
         '''
-        @summary: 根据模板名称获得其id(系统中模板名称唯一)
+        @summary: 根据模板名称和版本获得其id
         @param temp_name: 模板名称
+        @param version: 版本名称
         @return: 模板id
         '''
         if self.searchTemplateByName(temp_name)['result']['templates']:
-            return self.searchTemplateByName(temp_name)['result']['templates']['template']['@id']
+            temp_list=self.searchTemplateByName(temp_name)['result']['templates']['template']
+            if isinstance(temp_list, dict):
+                return temp_list['@id']
+            else:
+                for temp in temp_list:
+                    if version_name and temp.has_key('version'):
+                        if temp_name == temp['name'] and version_name ==temp['version']['version_name']:
+                            return temp['@id']
+                    else:
+                        if not temp_name and temp_name ==temp['name']:
+                            return temp['@id']
         else:
             return None
+                
     
     def getTemplateNameById(self, temp_id):
         '''
@@ -152,19 +165,32 @@ class TemplatesAPIs(BaseAPIs):
         if r.status_code==200:
             return xmltodict.parse(r.text)['template']['name']
         
-    def getTemplateStatus(self,temp_name):
-        return self.getTemplateInfo(temp_name)['result']['template']['status']['state']
+    def getTemplateStatus(self,temp_name,version_name=None):
+        return self.getTemplateInfo(temp_name=temp_name,version_name=version_name)['result']['template']['status']['state']
     
-    def is_Exist(self,temp_name):
+    def is_Exist(self,temp_name,version_name=None):
         '''
         @summary: 检查模板是否存在
         @return: True False
         '''  
-        r = self.searchTemplateByName(temp_name)['result']['templates'] 
-        if r == None:
-            return False
+        if self.searchTemplateByName(temp_name)['result']['templates']:
+            temp_list=self.searchTemplateByName(temp_name)['result']['templates']['template']
+            if isinstance(temp_list, dict):
+                if version_name and temp_list.has_key('version') and version_name ==temp_list['version']['version_name']:
+                    return True
+                if not version_name and not temp_list.has_key('version') and temp_name == temp_list['name']:
+                    return True
+                return False
+            else:
+                for temp in temp_list:
+                    if version_name and temp.has_key('version') and version_name ==temp['version']['version_name']:
+                        return True
+                    if not version_name and not temp.has_key('version') and temp_name == temp['name']:
+                        return True
+                return False
         else:
-            return True
+            LogPrint().info("cc")
+            return False
         
     def getTemplatesList(self):
         '''
@@ -177,7 +203,7 @@ class TemplatesAPIs(BaseAPIs):
         r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
     
-    def getTemplateInfo(self, temp_name=None,temp_id=None):
+    def getTemplateInfo(self, temp_name=None,temp_id=None,version_name=None):
         '''
         @summary: 根据模板名称或id获取其详细信息
         @param temp_name: 模板名称
@@ -185,7 +211,7 @@ class TemplatesAPIs(BaseAPIs):
         @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的数据中心信息
         '''
         if not temp_id and temp_name:
-            temp_id = self.getTemplateIdByName(temp_name)
+            temp_id = self.getTemplateIdByName(temp_name,version_name)
         api_url = '%s/%s' % (self.base_url, temp_id)
         method = 'GET'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
@@ -252,6 +278,7 @@ class TemplatesAPIs(BaseAPIs):
             r = HttpClient.sendRequest(method=method, api_url=api_url, data=(temp_info %vm_id))
         if vm_id and disk_id and sd_id:
             r=HttpClient.sendRequest(method=method, api_url=api_url, data=(temp_info %(vm_id,disk_id,sd_id)))
+        print r
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}      
     
     def updateTemplate(self, temp_name,update_info):
@@ -269,13 +296,13 @@ class TemplatesAPIs(BaseAPIs):
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
         
         
-    def delTemplate(self, temp_name):
+    def delTemplate(self, temp_name,version_name=None):
         '''
         @summary: 删除模板
         @param temp_name: 模板名称
         @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
         '''
-        temp_id = self.getTemplateIdByName(temp_name)
+        temp_id = self.getTemplateIdByName(temp_name,version_name)
         api_url = '%s/%s' % (self.base_url, temp_id)
         method = 'DELETE'
         r = HttpClient.sendRequest(method=method, api_url=api_url)
@@ -578,8 +605,11 @@ if __name__=='__main__':
     #print tempapi.getTemplateIdByName('temp')
     #print tempapi.getTemplateNameById(tempapi.getTemplateIdByName('temp'))
     #print tempapi.getTemplatesList()
-    #print tempapi.getTemplateInfo('temp3')
-
+    #print tempapi.getTemplateIdByName('a')
+    #print tempapi.getTemplateInfo(temp_name='Blank',version_name='temp_ITC10')
+    print tempapi.is_Exist('temp_ITC1003', 'version2')
+    
+#     print smart_delete_template('temp_ITC10','temp_ITC10')
     
     base_temp_id = tempapi.getTemplateIdByName("temp1")
     temp_info1 = '''

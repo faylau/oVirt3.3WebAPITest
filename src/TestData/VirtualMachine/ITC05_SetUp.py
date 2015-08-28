@@ -158,10 +158,52 @@ vm_info='''
     </vm>
 ''' % (vm_name, cluster_nfs_name)
 
+snapshot_name = 'VM-Scenarios2'
 
+vm_scenarios2_info='''
+<vm>
+        <name>%s</name>
+        <description>Virtual Machine for Module Test.</description>
+        <type>server</type>
+        <memory>536870912</memory>
+        <cluster>
+            <name>%s</name>
+        </cluster>
+        <template>
+            <name>Blank</name>
+        </template>
+        <cpu>
+            <topology sockets="2" cores="1"/>
+        </cpu>
+        <os>
+            <boot dev="cdrom"/>
+            <boot dev="hd"/>
+        </os>
+    </vm>
+''' % (snapshot_name, cluster_nfs_name)
+
+
+disk_alias = 'snapshot_disk'
+xml_disk_info='''
+<disk>
+    <name>%s</name>
+    <storage_domains>
+        <storage_domain>
+            <name>%s</name>
+        </storage_domain>
+    </storage_domains>
+    <size>1059061760</size>
+    <sparse>false</sparse>
+    <interface>virtio</interface>
+    <format>raw</format>
+    <bootable>true</bootable>
+    <shareable>false</shareable>
+    <wipe_after_delete>false</wipe_after_delete>
+</disk>
+'''%(disk_alias,data1_nfs_name)
 '''
 ---------------------------------------------------------------------------------------------------
-@note: Post-Test-Data
+@note: Post-Test-Data 
 ---------------------------------------------------------------------------------------------------
 '''
 xml_del_host_option = '''

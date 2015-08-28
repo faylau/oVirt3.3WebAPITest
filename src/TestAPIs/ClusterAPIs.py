@@ -1,5 +1,9 @@
 #encoding:utf-8
 
+from telnetlib import STATUS
+from _multiprocessing import flags
+from __builtin__ import True
+
 
 
 __authors__ = ['"keke wei" <keke.wei@cs2c.com.cn>']
@@ -21,6 +25,7 @@ from NetworkAPIs import NetworkAPIs
 from Configs.GlobalConfig import WebBaseApiUrl
 from Utils.HttpClient import HttpClient
 from DataCenterAPIs import DataCenterAPIs
+from VirtualMachineAPIs import VirtualMachineAPIs
 
 def smart_create_cluster(cluster_info,cluster_name,status_code=201):
     '''
@@ -59,6 +64,96 @@ def smart_delete_cluster(cluster_name,status_code=200):
     except:
         LogPrint().info("Cluster '%s' is not exist"%cluster_name)
         return True
+def smart_create_volume(xml_volume_info,cluster_name,volume_name,status_code=201):
+    '''
+    @return: True/False  
+    '''
+    volume_api = GlusterVolumeAPIs()
+    r = volume_api.createGlusterVolume(cluster_name, xml_volume_info)
+    if r ['status_code'] == status_code:
+        LogPrint().info("Create Volume '%s'success."%volume_name)
+        return True
+    else:
+        LogPrint().error("Create Volume '%s' fail."%volume_name)
+        return False 
+      
+def smart_start_volume(cluster_name, volume_name,status_code=200):
+        r = volumeapi.startGlusterVolume(cluster_name, volume_name)
+        if r['status_code'] == status_code:
+            def is_volume_up():
+                return volumeapi.getClusterVolumeStatus(cluster_name, volume_name) == "up"
+            if wait_until(is_volume_up, 600, 5):
+                LogPrint().info("Start volume success.")
+                return True
+            else:
+                LogPrint().error("Start volume failed.Status is not UP.")
+                return False
+        else:
+            LogPrint().error("Status_code is WRONG.")
+            return False
+        
+def smart_stop_volume(cluster_name, volume_name,status_code=200):
+        r = volumeapi.stopGlusterVolume(cluster_name, volume_name)
+        if r['status_code'] == status_code:
+            def is_volume_down():
+                return volumeapi.getClusterVolumeStatus(cluster_name, volume_name) == "down"
+            if wait_until(is_volume_down, 600, 5):
+                LogPrint().info("Start volume success.")
+                return True
+            else:
+                LogPrint().error("Start volume failed.Status is not UP.")
+                return False
+        else:
+            LogPrint().error("Status_code is WRONG.")
+            return False  
+             
+def smart_delete_volume(cluster_name, volume_name,status_code=201):
+        r = volumeapi.deleteGlusterVolume(cluster_name, volume_name)
+        if r['status_code'] == status_code:
+            LogPrint().info("Start volume success.")
+            return True
+        else:
+            LogPrint().error("Status_code is WRONG.")
+            return False     
+def smart_create_affinitygroups(cluster_name,group_info,group_name,status_code=201):
+    '''
+    @summary: 创建亲和组
+    @param cluster_name: 亲和组所属的集群名称
+    @param group_info: 亲和组的xml信息
+    @param group_name: 亲和组名称
+    @param status_code: 创建亲和组返回的状态码，成功为201
+    @return: True/False
+    '''
+    affinitygroups_api = AffinityGroupsAPIs()
+    r = affinitygroups_api.createAffinityGroups(cluster_name, group_info)
+    if r['status_code'] == status_code:
+        LogPrint().info("Create AffinityGroups '%s' success." % group_name)
+        return True
+    else:
+        LogPrint().error("Create AffinityGroups '%s' fail." % group_name)
+        return False
+    
+def smart_delete_affinitygroups(cluster_name,group_name,status_code=200):
+    '''
+    @summary: 删除亲和组
+    @param cluster_name: 亲和组所属的集群名称
+    @param group_name: 亲和组名称
+    @param status_code: 删除亲和组返回的状态码，成功为200
+    @return: True/False
+    '''
+    affinitygroups_api = AffinityGroupsAPIs()
+    try:
+        affinitygroups_api.getAffinityGroupsInfo(cluster_name,group_name)
+        r = affinitygroups_api.deleteAffinityGroups(cluster_name,group_name)
+        if r['status_code'] == status_code:
+            LogPrint().info("Delete AffinityGroups '%s' success." % group_name)
+            return True
+        else:
+            LogPrint().error("Delete AffinityGroups '%s' fail." % group_name)
+            return True
+    except:
+        LogPrint().info("AffinityGroups '%s' is not exist." % group_name)
+        return False
     
 class ClusterAPIs(BaseAPIs):
     '''
@@ -133,7 +228,7 @@ class ClusterAPIs(BaseAPIs):
         '''
         @summary: 创建集群
         @param cluster_info: XML形式的集群信息，调用接口时需要传递此xml数据
-        创建集群时集群名称、cpuid和数据中心为必需，其余为可选；
+              创建集群时集群名称、cpuid和数据中心为必需，其余为可选；
     1)内存优化
     <memory_policy>
         <overcommit percent="150"/>  ；100，150，200，默认为200
@@ -290,9 +385,344 @@ class ClusterAPIs(BaseAPIs):
         r = HttpClient.sendRequest(method=method, api_url=api_url,data=data)
         #r.raise_for_status()
         return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+class GlusterVolumeAPIs(ClusterAPIs):
+    '''
+    @summary: 提供集群各种常用操作，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义集群相关API的base_url，如'https://10.1.167.2/api/clusters'
+        '''
+        self.base_url = '%s/clusters' % WebBaseApiUrl 
+        self.sub_url_volumes = 'glustervolumes'
+        
+    def getGlusterVolumeList(self, cluster_name):
+        '''
+        @summary: 获取集群内卷列表
+        @param cluster_name: 集群名称
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷列表。
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        api_url = '%s/%s/%s' % (self.base_url, cluster_id, self.sub_url_volumes)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
+    
+    def getVolumeIdByName(self, cluster_name, volume_name):
+        '''
+        @summary: 根据卷名称返回卷ID
+        @param cluster_name: 集群名称
+        @param volume_name: 卷名称
+        @return: 返回卷ID
+        '''
+        cluster_volumes = self.getGlusterVolumeList(cluster_name)['result']['gluster_volumes']['gluster_volume']
+        if isinstance(cluster_volumes, list):
+            for volume in cluster_volumes:
+                if volume['name']==volume_name:
+                    return volume['@id']
+        else:
+            if cluster_volumes['name']==volume_name:
+                return cluster_volumes['@id']
+            
+    def getGlusterVolumeInfo(self, cluster_name, volume_name):
+        '''
+        @summary: 获取集群内的卷信息
+        @param cluster_name: 集群名称
+        @param volume_name: 卷名称
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷信息。
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        volume_id = self.getVolumeIdByName(cluster_name, volume_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, cluster_id, self.sub_url_volumes, volume_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
+    
+    def getClusterVolumeStatus(self, cluster_name, volume_name):
+        '''
+        @summary: 获取集群内卷的状态
+        @param cluster_name: 集群名称
+        @param volume_name: 卷名称
+        @return: 卷状态（down、up）
+        '''
+        volume_info = self.getGlusterVolumeInfo(cluster_name, volume_name)
+        return volume_info['result']['gluster_volume']['status']['state'] 
+    
+    def createGlusterVolume(self, cluster_name, xml_volume_info):
+        '''
+        @summary: 创建一个卷
+        @param cluster_name: 集群名称
+        @param xml_volume_info: 卷xml配置信息
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷信息。
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        api_url = '%s/%s/%s' % (self.base_url, cluster_id, self.sub_url_volumes)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=xml_volume_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    def startGlusterVolume(self, cluster_name, volume_name):
+        '''
+        @summary: 启动卷
+        @param cluster_name: 集群名称
+        @param volume_name: 卷名称
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷信息。
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        volume_id = self.getVolumeIdByName(cluster_name, volume_name)
+        api_url = '%s/%s/%s/%s/start' % (self.base_url, cluster_id, self.sub_url_volumes, volume_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data='<action/>')
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
+    def stopGlusterVolume(self, cluster_name, volume_name):
+        '''
+        @summary: 关闭卷
+        @param cluster_name: 集群名称
+        @param volume_name: 卷名称
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷信息。
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        volume_id = self.getVolumeIdByName(cluster_name, volume_name)
+        api_url = '%s/%s/%s/%s/stop' % (self.base_url, cluster_id, self.sub_url_volumes, volume_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data='<action/>')
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}   
+
+    def deleteGlusterVolume(self, cluster_name, volume_name):
+        '''
+        @summary: 删除卷
+        @param cluster_name: 集群名称
+        @param volume_name: 卷名称
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷信息。
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        volume_id = self.getVolumeIdByName(cluster_name, volume_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, cluster_id, self.sub_url_volumes, volume_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    def addbrick(self, cluster_id, volume_id, brick_info):
+        '''
+        @summary: 为卷添加brick
+        @param volume_id: 卷id
+        @param brick_info: brick信息
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷信息。
+        '''
+        api_url = '%s/%s/%s/%s/bricks' % (self.base_url, cluster_id, self.sub_url_volumes, volume_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=brick_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    def delbrick(self, cluster_id, volume_id, brick_id):
+        '''
+        @summary: 为卷删除brick
+        @param volume_id: 卷id
+        @param brick_id: 卷id
+        @return: 字典：（1）status_code：请求返回码；（2）result：dict形式的卷信息。
+        '''
+        api_url = '%s/%s/%s/%s/bricks/%s' % (self.base_url, cluster_id, self.sub_url_volumes, volume_id, brick_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+class AffinityGroupsAPIs(ClusterAPIs):
+    '''
+    @summary: 提供虚拟机亲和组各种常用操作，通过HttpClient调用相应的REST接口实现。
+    '''
+    def __init__(self):
+        '''
+        @summary: 初始化函数，定义亲和组相关API的base_url，如'https://10.1.167.2/api/clusters'
+        '''
+        self.base_url = '%s/clusters' % WebBaseApiUrl
+        self.sub_url_groups = 'affinitygroups'
+            
+    def getAffinityGroupsList(self,cluster_name):
+        '''
+        @summary: 根据集群名称获取关联的亲和组列表
+        @param cluster_name: 集群名称 
+        @return: 字典，包括：（1）status_code:http请求返回码      （2）result:请求返回的内容
+        
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        api_url = '%s/%s/%s' % (self.base_url, cluster_id,self.sub_url_groups)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def isGroupExist(self,cluster_name,group_name):
+        '''
+        @summary: 判断亲和组是否存在
+        @param cluster_name: 亲和组所属的集群名称
+        @param group_name: 亲和组名称
+        @return: 亲和组存在则返回True，不存在则返回False
+        
+        '''
+        affinity_groups = self.getAffinityGroupsList(cluster_name)['result']['affinity_groups']
+        if affinity_groups == None:
+            return False
+        else:
+            affinity_groups = self.getAffinityGroupsList(cluster_name)['result']['affinity_groups']['affinity_group']
+        flag = False
+        if isinstance(affinity_groups, dict):
+            if affinity_groups['name'] == group_name:
+                return True
+            else:
+                return False
+        else:
+            for group in affinity_groups:
+                if group['name'] == group_name:
+                    flag = True
+            return flag
+        
+    def getGroupIdByName(self,cluster_name,group_name):
+        '''
+        @summary: 根据亲和组名称获取其id
+        @param cluster_name: 亲和组所属的集群名称
+        @param group_name: 亲和组名称
+        @return: 亲和组的id
+        
+        '''
+        affinity_groups = self.getAffinityGroupsList(cluster_name)['result']['affinity_groups']['affinity_group']
+        if isinstance(affinity_groups, list):
+            for group in affinity_groups:
+                if group['name']==group_name:
+                    return group['@id']
+        else:
+            if affinity_groups['name']==group_name:
+                return affinity_groups['@id']
+    
+    def getAffinityGroupsInfo(self,cluster_name,group_name):
+        '''
+        @summary: 根据集群名称获取其关联亲和组的详细信息
+        @param cluster_name: 集群名称
+        @param affinitygroup_name: 亲和组名称
+        @return: 字典，包括：（1）status_code:http请求返回码       （2）result:请求返回的内容
+        
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        group_id = self.getGroupIdByName(cluster_name, group_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url,cluster_id,self.sub_url_groups,group_id)
+        method = 'GET'
+        r = HttpClient.sendRequest(method=method, api_url=api_url)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def createAffinityGroups(self,cluster_name,group_info):
+        '''
+        @summary: 创建亲和组
+        @param cluster_name: 亲和组所属的集群名称
+        @param groups_info: XML形式的亲和组信息，调用接口时需要传递此xml数据
+        @return: 字典：包括：（1）status_code:http请求返回码     （2）result:请求返回的内容
+        
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        api_url = '%s/%s/%s' % (self.base_url, cluster_id,self.sub_url_groups)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=group_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
+    def addVmtoAffinityGroups(self,cluster_name,group_name,vm_name):
+        '''
+        @summary: 添加虚拟机到亲和组
+        @param cluster_name: 亲和组所属的集群名称
+        @param group_name: 亲和组名称
+        @param vm_name: 要添加到亲和组的虚拟机名称
+        @return: 字典：包括：（1）status_code: http请求返回码      （2）result: 请求返回的内容
+        
+        '''
+        vm_api = VirtualMachineAPIs()
+        cluster_id = self.getClusterIdByName(cluster_name)
+        group_id = self.getGroupIdByName(cluster_name, group_name)
+        vm_info = xmltodict.unparse(vm_api.getVmInfo(vm_name)['result'])
+        api_url = '%s/%s/%s/%s/vms' % (self.base_url, cluster_id,self.sub_url_groups,group_id)
+        method = 'POST'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=vm_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def removeVmfromAffinityGroups(self,cluster_name,group_name,vm_name,async=None):
+        '''
+        @summary: 移除亲和组中的虚拟机
+        @param cluster_name: 亲和组所属的集群名称
+        @param group_name: 亲和组名称
+        @param vm_name: 要从亲和组中移除的虚拟机名称
+        @param async: 是否异步，xml文件
+        <action>
+            <async>false</async>
+        </action>
+        @return: 字典：包括：（1）status_code: http请求返回码      （2）result: 请求返回的内容
+        
+        '''
+        vm_api = VirtualMachineAPIs()
+        cluster_id = self.getClusterIdByName(cluster_name)
+        group_id = self.getGroupIdByName(cluster_name, group_name)
+        vm_id = vm_api.getVmIdByName(vm_name)
+        api_url = '%s/%s/%s/%s/vms/%s' % (self.base_url, cluster_id,self.sub_url_groups,group_id, vm_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
+    def updateAffinityGroups(self,cluster_name,group_name,update_info):
+        '''
+        @summary: 编辑虚拟机亲和组
+        @param cluster_name: 亲和组所属的集群名称
+        @param update_info: XML形式的亲和组信息，调用接口时需要传递此xml数据
+        @return: 字典：包括：（1）status_code:http请求返回码     （2）result:请求返回的内容
+        
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        group_id = self.getGroupIdByName(cluster_name, group_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, cluster_id,self.sub_url_groups,group_id)
+        method = 'PUT'
+        r = HttpClient.sendRequest( method=method, api_url=api_url, data=update_info)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+        
+    def deleteAffinityGroups(self,cluster_name,group_name,async=None):
+        '''
+        @summary: 根据集群名称和亲和组名称删除集群下的亲和组，包含同步和异步
+        @param cluster_name: 集群名称
+        @param group_name: 亲和组名称
+        @param async: 是否异步，xml文件
+        <action>
+            <async>false</async>
+        </action>
+        @return: 字典，包括：（1）status_code：http请求返回码；（2）result：请求返回的内容。
+        '''
+        cluster_id = self.getClusterIdByName(cluster_name)
+        group_id = self.getGroupIdByName(cluster_name, group_name)
+        api_url = '%s/%s/%s/%s' % (self.base_url, cluster_id,self.sub_url_groups,group_id)
+        method = 'DELETE'
+        r = HttpClient.sendRequest(method=method, api_url=api_url, data=async)
+        return {'status_code':r.status_code, 'result':xmltodict.parse(r.text)}
+    
     
 if __name__=='__main__':
     clusterapi = ClusterAPIs()
+    vm_api = VirtualMachineAPIs()
+    affgroups_api = AffinityGroupsAPIs()
+    group_name = '1234567'
+    group_info = '''
+    <affinity_group>
+        <name>%s</name>
+        <positive>false</positive>
+        <enforcing>false</enforcing>
+    </affinity_group>
+    ''' % (group_name)
+    r = affgroups_api.updateAffinityGroups('Cluster-ITC10', group_name, group_info)
+    #r = affgroups_api.updateAffinityGroups('Cluster-ITC10', '123456', group_info)
+    #r = affgroups_api.addVmtoAffinityGroups('Cluster-ITC10', group_name, '22')
+    #r2 = affgroups_api.addVmtoAffinityGroups('Cluster-ITC10', group_name, 'aa')
+    #t = vm_api.getVmInfo('22')
+    #t1 = xmltodict.unparse(t['result'])
+    #print xmltodict.unparse(t['result'], pretty=True)
+    #r = affgroups_api.addVmtoAffinityGroups('Cluster-ITC10', group_name, t1)
+    #r = affgroups_api.updateAffinityGroups('Cluster-ITC10', group_name, group_info)
+    #r = affgroups_api.addVmtoAffinityGroups('Cluster-ITC10', group_name, '22')
+    print r['status_code']
+    print xmltodict.unparse(r['result'], pretty=True)
+    #print r2['status_code']
+    #print xmltodict.unparse(r['result'],pretty=True)
+    
+    #smart_create_affinitygroups('Cluster-ITC10', group_info, group_name, 201)
+    #smart_delete_affinitygroups('Cluster-ITC10', group_name, 200)
+   
+    #print xmltodict.unparse(r['result'], pretty=True)
     #print clusterapi.searchClusterByName('Default')
     #print clusterapi.getClusterIdByName('Default1')
     #print clusterapi.getClusterNameById('46951ef6-5bdb-4da3-89e0-092782b35487')
@@ -300,7 +730,7 @@ if __name__=='__main__':
     #print clusterapi.getClusterInfo('aaaa')
     #print clusterapi.getClusterInfo(cluster_id='46951ef6-5bdb-4da3-89e0-092782b35487')
     dc_id = DataCenterAPIs().getDataCenterIdByName("Default")
-    print dc_id
+    #print dc_id
     data = '''
     <cluster>
         <name>aaa</name>
@@ -308,7 +738,7 @@ if __name__=='__main__':
         <data_center  id="00000002-0002-0002-0002-000000000146"/>
 </cluster>
     '''
-    print clusterapi.createCluster(data)
+    #print clusterapi.createCluster(data)
     #print xmltodict.unparse(clusterapi.createCluster(data)['result']) 
     #print clusterapi.updateCluster('NewCluster22',data)
     data1 = '''
